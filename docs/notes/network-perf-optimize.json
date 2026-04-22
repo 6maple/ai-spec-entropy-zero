@@ -1,0 +1,85 @@
+{
+  "id": "note_netwo_20260422",
+  "title": "前端首屏性能与网络优化核心要点",
+  "abstract": "资源压缩、CDN分发、HTTP/2与渲染策略优化是提升前端首屏性能的关键。",
+  "source": {
+    "input_path": "docs/raw/network.md",
+    "line_range": [1, 80],
+    "checksum": "netmd2026"
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "资源体积压缩与分包能显著提升首屏加载速度。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "import()分包、按需引入、Tree Shaking、图片与静态资源压缩。"
+        },
+        "source_lines": [11, 20]
+      },
+      {
+        "claim": "合理利用CDN分发和HTTP/2多路复用可提升并发与响应速度。",
+        "evidence": {
+          "type": "api",
+          "description": "CDN最近节点分发，HTTP/2多路复用，强缓存与预加载。"
+        },
+        "source_lines": [21, 36]
+      },
+      {
+        "claim": "SSR/SSG与骨架屏优化能极大提升用户首屏感知速度。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "服务端渲染、静态生成、骨架屏减少等待焦虑。"
+        },
+        "source_lines": [37, 46]
+      },
+      {
+        "claim": "初始化与第三方资源应后置或异步加载，减少渲染阻塞。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "非核心接口后置、defer/async加载、减少阻塞。"
+        },
+        "source_lines": [47, 56]
+      },
+      {
+        "claim": "细节极致优化如CSS内联、字体裁剪可进一步压缩首屏体积。",
+        "evidence": {
+          "type": "code_example",
+          "description": "CSS内联、字体裁剪等极致优化技巧。"
+        },
+        "source_lines": [57, 80]
+      }
+    ],
+    "refinement": {
+      "summary": "首屏性能优化需从资源压缩、分发、并发利用和渲染策略多维度协同。避免同步加载大资源和未压缩静态文件。",
+      "anti_patterns": [
+        "静态资源未压缩，导致加载慢",
+        "所有第三方脚本同步加载，阻塞渲染"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "supplement",
+        "target_concept": "Service Worker离线缓存",
+        "context": "Service Worker可缓存关键资源，提升离线体验。"
+      },
+      {
+        "relation": "extension",
+        "target_concept": "现代前端构建工具Vite、Webpack",
+        "context": "这些工具支持分包、Tree Shaking和自动压缩。"
+      },
+      {
+        "relation": "analogy",
+        "target_concept": "CDN分发如快递分仓",
+        "context": "CDN最近节点优先，类似快递分仓配送。"
+      }
+    ]
+  },
+  "metadata": {
+    "created_at": "2026-04-22T10:30:00Z",
+    "updated_at": "2026-04-22T10:30:00Z",
+    "domain": ["前端开发", "性能优化", "网络"],
+    "confidence": 0.93,
+    "status": "active"
+  }
+}

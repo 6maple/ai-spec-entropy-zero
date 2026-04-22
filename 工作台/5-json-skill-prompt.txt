@@ -1,0 +1,247 @@
+<<角色>>
+你是资深AI Native开发工程师，基于我提供的一份功能设计，帮我设计一套<target>初始知识到精炼笔记的流程</target>。
+
+<<关键点>>
+
+1. 需要先阅读https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f中的内容。
+2. <important>必须严格按照claude angent skill的要求（https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md）输出，不得直接通过api的方式调用大模型，能够在claude中作为skill使用</important>。
+3. <important>输出的技能必须用英文</important>
+
+<<输出要求>>
+输出为 claude ingest-json skill，输出到 gen-skills/ 目录
+
+<<要求>>
+
+1. 只考虑知识熵减步骤，输入（docs/raw）是markdown知识，输出（docs/notes/*.json）是markdown笔记的JSON数据（用于后续在前端界面展示）、（docs/note-cards/*.json）是复习卡的JSON数据（用于后续在前端界面展示）。
+2. 需要包含具体的Prompt和处理流程，如果有涉及程序代码的也要说明。
+3. 你要做的是模拟一个在学习知识的人做笔记，而不是单纯压缩知识内容。
+4. 以下面这个知识为例：
+
+<input> docs/raw 中的知识
+```
+减少大型不可变数据的响应性开销​
+Vue 的响应性系统默认是深度的。虽然这让状态管理变得更直观，但在数据量巨大时，深度响应性也会导致不小的性能负担，因为每个属性访问都将触发代理的依赖追踪。好在这种性能负担通常只有在处理超大型数组或层级很深的对象时，例如一次渲染需要访问 100,000+ 个属性时，才会变得比较明显。因此，它只会影响少数特定的场景。
+
+Vue 确实也为此提供了一种解决方案，通过使用 shallowRef() 和 shallowReactive() 来绕开深度响应。浅层式 API 创建的状态只在其顶层是响应式的，对所有深层的对象不会做任何处理。这使得对深层级属性的访问变得更快，但代价是，我们现在必须将所有深层级对象视为不可变的，并且只能通过替换整个根状态来触发更新：
+
+const shallowArray = shallowRef([
+  /* 巨大的列表，里面包含深层的对象 */
+])
+
+// 这不会触发更新...
+shallowArray.value.push(newObject)
+// 这才会触发更新
+shallowArray.value = [...shallowArray.value, newObject]
+
+// 这不会触发更新...
+shallowArray.value[0].foo = 1
+// 这才会触发更新
+shallowArray.value = [
+  {
+    ...shallowArray.value[0],
+    foo: 1
+  },
+  ...shallowArray.value.slice(1)
+]
+
+```
+
+<output> docs/notes/*.json 笔记的JSON数据
+{
+  "id": "note_3f2a1b_20260512",
+  "title": "Vue 大型不可变数据的响应性优化策略",
+  "abstract": "为了避免 Vue 深度响应式系统在处理超大数组或深层对象时的性能负担，应使用浅层响应式 API 并遵循不可变数据更新模式。",
+  "source": {
+    "input_path": "docs/raw/vue-performance-deep.md",
+    "line_range": [1, 22],
+    "checksum": "a1b2c3d4e5f6"
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "Vue 默认的深度响应式在数据量极大时（例如 100,000+ 属性访问）会产生明显的性能负担。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "因为每个属性的访问都会触发代理（Proxy）的依赖追踪逻辑。"
+        },
+        "source_lines": [1, 2]
+      },
+      {
+        "claim": "shallowRef() 和 shallowReactive() 是官方提供的解决方案，它们只对顶层属性进行响应式处理。",
+        "evidence": {
+          "type": "api",
+          "description": "Vue 提供的浅层式 API。"
+        },
+        "source_lines": [5]
+      },
+      {
+        "claim": "使用浅层 API 的代价是必须将深层对象视为不可变数据，并通过替换根状态来触发更新。",
+        "evidence": {
+          "type": "code_example",
+          "description": "shallowArray.value = [...shallowArray.value, newObject] 是正确的触发方式。"
+        },
+        "source_lines": [8, 14, 16, 18]
+      }
+    ],
+    "refinement": {
+      "summary": "当面临 Vue 性能瓶颈且数据层级深、体积大时，切换至 shallowRef 并配合解构赋值或 Immer 风格的替换逻辑，是以牺牲部分便捷性换取渲染性能的关键手段。",
+      "anti_patterns": [
+        "试图通过 `shallowArray.value.push()` 修改内容。",
+        "试图直接修改深层属性 `shallowArray.value[0].foo = 1`。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "补充",
+        "target_concept": "Vue 响应式原理 (Proxy vs Object.defineProperty)",
+        "context": "解释了深度响应式的实现机制为何会成为性能瓶颈。"
+      },
+      {
+        "relation": "对立",
+        "target_concept": "Vue 组合式 API 中 ref 的自动解包",
+        "context": "shallowRef 不具备深层自动解包能力，使用时需注意 .value 访问。"
+      },
+      {
+        "relation": "延伸",
+        "target_concept": "Immer (不可变数据库)",
+        "context": "利用不可变数据结构配合浅层响应式是标准的前端高性能优化模式。"
+      }
+    ]
+  },
+  "metadata": {
+    "created_at": "2026-04-22T10:00:00Z",
+    "updated_at": "2026-04-22T10:00:00Z",
+    "domain": ["前端开发", "Vue.js", "性能优化"],
+    "confidence": 0.95,
+    "status": "active"
+  }
+}
+
+<output> docs/note-cards/*.json 复习卡的JSON数据
+{
+  "note_id": "note_3f2a1b_20260512",
+  "note_title": "Vue 大型不可变数据的响应性优化策略",
+  "source_trace": {
+    "input_path": "docs/raw/vue-performance-deep.md",
+    "line_range": [5, 14]
+  },
+  "cards": [
+    {
+      "card_id": "card_a1_20260512",
+      "type": "qa",
+      "question": "在 Vue 3 中处理一个包含 10 万条数据的列表渲染，发现页面卡顿。根据优化原则，应该优先将 `ref` 替换为什么 API？",
+      "answer": "优先替换为 `shallowRef`。",
+      "explanation": "因为 `shallowRef` 跳过了深层属性的依赖追踪，能显著减少大列表初始化时的代理开销。",
+      "source_lines": [5]
+    },
+    {
+      "card_id": "card_a2_20260512",
+      "type": "fill_in_blank",
+      "template": "在使用 `shallowRef` 包裹数组 `arr` 时，为了触发视图更新，我们不能写 `arr.value.push(x)`，而必须写：\n```javascript\narr.value = __________\n```",
+      "answer": "[...arr.value, x]",
+      "explanation": "必须通过替换整个根对象的引用来触发浅层响应式的 setter 逻辑。",
+      "source_lines": [14, 16]
+    },
+    {
+      "card_id": "card_a3_20260512",
+      "type": "error_correction",
+      "code_snippet": "const state = shallowRef({ list: [] });\nstate.value.list.push('new item');",
+      "question": "上述代码存在什么问题？它会导致什么后果？",
+      "answer": "视图不会更新。因为 `shallowRef` 无法追踪 `.value` 之下的深层属性变更（如 `push` 操作）。",
+      "explanation": "只有替换 `state.value` 本身才会触发响应式更新。",
+      "source_lines": [16, 18]
+    }
+  ]
+}
+
+
+<<json 设计说明>>
+约束要求	我的设计体现
+1. 只考虑熵减与制卡	content.core_claims 和 refinement 字段专门用于承载 解构后的逻辑，而非原文。hooks 字段为 森林地图的连接 提供数据基础。
+2. 模拟人做笔记	证据 (Evidence) 分离：人类做笔记时，会区分“观点”和“原因”。claims 与 evidence 的分离正是模拟这一过程。
+反模式 (Anti-patterns)：人类学习的最佳方式是知道“什么不能做”。refinement.anti_patterns 抓住了这一认知特点。
+3. 溯源精确到行	严格遵循 source_lines 数组设计，支持区间 [1, 3] 或多行单点 [5, 14]。
+4. 通用性与低耦合	解耦示例内容：虽然示例是 Vue，但结构中的 claims, evidence, hooks 是通用逻辑骨架。它同样适用于历史笔记（Claim: 滑铁卢战役失败的原因，Evidence: 雨天导致炮兵行动迟缓）或商业分析。
+
+JSON Schema 定义参考
+// Note Schema
+{
+  "type": "object",
+  "required": ["id", "title", "abstract", "source", "content"],
+  "properties": {
+    "source": {
+      "type": "object",
+      "properties": {
+        "line_range": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "items": { "type": "integer" }
+        }
+      }
+    },
+    "content": {
+      "properties": {
+        "hooks": {
+          "type": "array",
+          "items": {
+            "properties": {
+              "relation": { "enum": ["补充", "对立", "因果", "延伸", "相似"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+<<参考资料>>
+Entropy Zero (熵减笔记) 详细功能设计说明书
+
+1. 产品定位与核心价值
+      定位： 基于 AI 驱动的“熵减”逻辑，将碎片化信息转化为结构化知识森林的数字大脑系统。
+      核心价值： 解决“录入即忘”的知识焦虑，通过 AI 自动化梳理（熵减）降低认知负担，通过可视化森林提供宏观掌控感。
+2. 知识录入层 (Input Layer)
+      2.1 智能对话沙盒 (The Forge)
+      Prompt 驱动生成： 用户输入指令，AI 基于模型能力生成系统化的知识内容。
+      标记系统： 所有 AI 生成的内容自动携带 Generated 标签，以便与人工录入区分。
+      选择性吸收： 用户可以对生成内容进行勾选，只有被“吸收”的内容才会进入下一步的熵减引擎，未被吸收的保留在对话流中。
+      2.2 手动录入 (Manual Entry)
+      Markdown 支持： 提供纯粹的 Markdown 编辑器，支持标准语法。
+      录入即触发： 手动保存后，系统自动将其视为“原始素材”，启动处理流程。
+3. 逻辑处理层 (Entropy Engine)
+      3.1 熵减工作流 (Deconstruction & Reconstruction)
+      这是系统的关键逻辑，分为以下三个步骤：
+
+逻辑解构： 将原始长文或对话拆解为最小逻辑单元（Atomic Concepts）。
+生成索引化笔记 (Leaf Note)：
+摘要 (Abstract)： 一句话总结核心内容。
+精炼 (Refinement)： 提炼关键结论（Claims）与支撑证据（Evidence）。
+关联点 (Hooks)： 自动识别该内容与库中已有知识的关系（如：补充、对立、因果）。
+冲突检测： 若新知识与旧知识存在逻辑矛盾，系统将挂起入库流程，弹出“知识冲突”对比框，引导用户进行手动确认（更新、保留或合并）。
+3.2 自动制卡 (Auto-Flashcarding)
+提取逻辑： AI 根据索引笔记自动生成 Q&A 形式的记忆卡片。
+卡片挂载： 卡片作为“树叶”的附属属性，不独立于笔记存在，确保复习时有据可依。4. 视觉呈现层 (Knowledge Forest)
+4.1 二维知识森林地图
+森林结构：树木 (Tree)： 代表知识分类或主题。
+树叶 (Leaf)： 代表具体的索引化笔记。
+多维视图切换：领域视图 (Category View)： 按知识本身的学科或类型（如：技术、哲学、艺术）对树木进行聚类排列。
+状态视图 (Status View)： 根据新旧程度、复习紧迫性进行排列。
+视觉反馈：生长逻辑： 包含树叶越多，树木越粗壮。
+健康度： 已内化（复习好）的树叶为绿色，待复习的树叶表现为枯黄或下垂。
+4.2 双向溯源系统 (Traceability)
+溯源按钮： 每片“树叶”详情页均有一个明显的【源】按钮。
+弹窗展示： 点击后，侧边栏或浮窗显示该笔记对应的初始 Markdown 录入稿或 AI 原始对话记录。5. 记忆与反馈层 (Retention Layer)
+5.1 间隔复习系统
+FSRS 算法集成： 基于自由间隔复习调度算法，精准计算每片树叶的复习时间。
+经营压力： 复习任务积累时，整片森林的视觉效果会变得“杂乱”或“干枯”，产生经营紧迫感。
+5.2 轻量游戏化经营
+修剪模式： 用户点击“经营森林”，系统筛选出今日待复习的树叶。
+复习反馈： 采用 Anki 式反馈（难/中/易）。
+视觉奖励： 复习成功后，对应的树叶变绿，树木可能触发“开花”或“结果”的特效。6. 搜索与交互 (Interaction)
+6.1 意图感知搜索
+语义搜索： 基于向量索引，支持用户通过模糊描述寻找相关笔记。
+搜索即复习： 搜索结果中会优先高亮显示那些“处于复习临界点”的相关树叶。7. 产品路线图 (MVP 规格)
+Phase 1： 实现 Markdown 录入与 AI 熵减生成索引笔记的功能，支持基础复习。
+Phase 2： 开发二维森林地图，支持“领域”与“状态”双视图切换。
+Phase 3： 完善对话生成沙盒及冲突处理机制，加入森林经营的游戏化动效。

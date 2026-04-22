@@ -1,0 +1,43 @@
+{
+  "note_id": "note_vuepe_20260422",
+  "note_title": "Vue组件性能优化与通信复用核心要点",
+  "source_trace": {
+    "input_path": "docs/raw/vue.md",
+    "line_range": [11, 80]
+  },
+  "cards": [
+    {
+      "card_id": "card_a1q_20260422",
+      "type": "qa",
+      "question": "Vue中如何优化大数据量渲染和频繁切换组件的性能？",
+      "answer": "采用虚拟滚动和Keep-alive缓存。",
+      "explanation": "虚拟列表只渲染可见区域，Keep-alive缓存组件状态。",
+      "source_lines": [21, 36]
+    },
+    {
+      "card_id": "card_b2f_20260422",
+      "type": "fill_in_blank",
+      "template": "处理大对象时，推荐使用__________以提升初始化速度。",
+      "answer": "shallowRef 或 shallowReactive",
+      "explanation": "浅层响应式跳过深层递归，适合大数据展示。",
+      "source_lines": [37, 46]
+    },
+    {
+      "card_id": "card_c3e_20260422",
+      "type": "error_correction",
+      "code_snippet": "<div v-for=\"item in list\" v-if=\"item.show\">{{item.name}}</div>",
+      "question": "这段代码有什么性能隐患？如何优化？",
+      "answer": "v-for与v-if混用会导致多次判断，应先用computed过滤数据再v-for。",
+      "explanation": "避免每次渲染都遍历和判断，提升性能。",
+      "source_lines": [47, 56]
+    },
+    {
+      "card_id": "card_d4q_20260422",
+      "type": "qa",
+      "question": "Vue组件间有哪些主流通信方式？",
+      "answer": "Props/Emits、Provide/Inject、Pinia/Vuex、Mitt等。",
+      "explanation": "不同通信模式适配不同复杂度的组件关系。",
+      "source_lines": [57, 70]
+    }
+  ]
+}

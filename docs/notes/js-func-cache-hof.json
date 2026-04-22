@@ -1,0 +1,93 @@
+{
+  "id": "note_jsfun_20260422",
+  "title": "JavaScript高阶函数与缓存优化实战",
+  "abstract": "高阶函数、memoize缓存与组合技术是提升前端性能与代码复用性的核心手段。",
+  "source": {
+    "input_path": "docs/raw/js.md",
+    "line_range": [1, 80],
+    "checksum": "jsmd2026"
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "函数缓存通过以参数为key、结果为value存储，避免重复计算，提升性能。",
+        "evidence": {
+          "type": "code_example",
+          "description": "Map/Object存储缓存，参数序列化为唯一key。"
+        },
+        "source_lines": [11, 26]
+      },
+      {
+        "claim": "memoize高阶函数可通用封装缓存逻辑，支持多类型key。",
+        "evidence": {
+          "type": "code_example",
+          "description": "通用memoize实现，适用于多场景。"
+        },
+        "source_lines": [27, 36]
+      },
+      {
+        "claim": "Vue的computed属性和API请求缓存是函数缓存的典型应用。",
+        "evidence": {
+          "type": "api",
+          "description": "computed自动缓存依赖结果，API缓存减少重复请求。"
+        },
+        "source_lines": [37, 46]
+      },
+      {
+        "claim": "只有纯函数适合缓存，副作用或依赖外部变量的函数不应缓存。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "非纯函数缓存会导致结果不一致或bug。"
+        },
+        "source_lines": [47, 56]
+      },
+      {
+        "claim": "柯里化（Currying）将多参数函数转为链式单参函数，便于参数复用和延迟执行。",
+        "evidence": {
+          "type": "code_example",
+          "description": "curry(fn)实现链式调用，提升灵活性。"
+        },
+        "source_lines": [57, 66]
+      },
+      {
+        "claim": "函数组合（Composition）可将多个小函数右向左嵌套执行，提升代码复用性和可读性。",
+        "evidence": {
+          "type": "code_example",
+          "description": "compose(f, g, h)实现函数嵌套。"
+        },
+        "source_lines": [67, 80]
+      }
+    ],
+    "refinement": {
+      "summary": "合理使用memoize和高阶函数，能极大提升前端性能和代码复用性。注意只对纯函数做缓存，参数序列化需权衡性能。",
+      "anti_patterns": [
+        "对非纯函数使用缓存，导致结果不一致",
+        "参数序列化成本过高，反而拖慢性能"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "supplement",
+        "target_concept": "LRU缓存算法",
+        "context": "LRU可自动清理旧缓存，防止内存膨胀。"
+      },
+      {
+        "relation": "extension",
+        "target_concept": "函数式编程库lodash/fp、ramda",
+        "context": "这些库提供丰富的高阶函数和组合工具。"
+      },
+      {
+        "relation": "analogy",
+        "target_concept": "memoize与函数值表",
+        "context": "memoize类似数学中的函数值表，输入唯一决定输出。"
+      }
+    ]
+  },
+  "metadata": {
+    "created_at": "2026-04-22T10:20:00Z",
+    "updated_at": "2026-04-22T10:20:00Z",
+    "domain": ["前端开发", "JavaScript", "高阶函数"],
+    "confidence": 0.94,
+    "status": "active"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "note_id": "note_devup_20260422",
+  "note_title": "大文件上传与智能搜索框的前端实现要点",
+  "source_trace": {
+    "input_path": "docs/raw/development.md",
+    "line_range": [11, 80]
+  },
+  "cards": [
+    {
+      "card_id": "card_a1q_20260422",
+      "type": "qa",
+      "question": "大文件上传时，如何保证上传过程在网络波动下依然高效且不中断？",
+      "answer": "通过切片、并发上传、断点续传和自动重试机制。",
+      "explanation": "切片和并发提升效率，断点续传和重试保证稳定性。",
+      "source_lines": [11, 46]
+    },
+    {
+      "card_id": "card_b2f_20260422",
+      "type": "fill_in_blank",
+      "template": "要让前端只上传未完成的切片，需依赖后端返回的__________列表。",
+      "answer": "切片索引",
+      "explanation": "后端返回已收到切片索引，前端过滤后只上传缺失部分。",
+      "source_lines": [37, 46]
+    },
+    {
+      "card_id": "card_c3e_20260422",
+      "type": "error_correction",
+      "code_snippet": "// 错误示例：无限并发上传\nfor (const chunk of chunks) {\n  upload(chunk);\n}",
+      "question": "这段代码可能导致什么问题？如何优化？",
+      "answer": "可能导致浏览器卡顿或崩溃，应限制并发数（如每次只上传3-6个切片）。",
+      "explanation": "无限并发会超出浏览器连接数上限，需用并发队列控制。",
+      "source_lines": [55, 66]
+    },
+    {
+      "card_id": "card_d4q_20260422",
+      "type": "qa",
+      "question": "实现响应式搜索框时，如何避免每次输入都触发后端请求？",
+      "answer": "使用防抖（debounce）策略，只在输入停顿后请求。",
+      "explanation": "防抖能减少无效请求，降低接口压力。",
+      "source_lines": [67, 80]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "note_id": "note_cssla_20260422",
+  "note_title": "CSS布局核心：盒模型、BFC与响应式方案",
+  "source_trace": {
+    "input_path": "docs/raw/css.md",
+    "line_range": [11, 80]
+  },
+  "cards": [
+    {
+      "card_id": "card_a1q_20260422",
+      "type": "qa",
+      "question": "如果页面出现margin重叠或浮动塌陷，应该优先检查和调整哪项CSS机制？",
+      "answer": "应优先检查BFC（块级格式化上下文）的触发与应用。",
+      "explanation": "BFC能隔离内部布局，防止margin重叠和浮动塌陷，是解决此类问题的关键。",
+      "source_lines": [38, 76]
+    },
+    {
+      "card_id": "card_b2f_20260422",
+      "type": "fill_in_blank",
+      "template": "要让元素的width包含padding和border，需设置：\n```css\nbox-sizing: __________\n```",
+      "answer": "border-box",
+      "explanation": "border-box模式下，width包含了padding和border，避免布局错乱。",
+      "source_lines": [21, 36]
+    },
+    {
+      "card_id": "card_c3e_20260422",
+      "type": "error_correction",
+      "code_snippet": "div { width: 100px; padding: 20px; border: 1px solid #000; }",
+      "question": "为什么实际宽度超出100px？如何修正？",
+      "answer": "因为默认box-sizing为content-box，width不含padding和border。应加box-sizing: border-box。",
+      "explanation": "content-box模式下，width只算内容区，padding和border会额外增加宽度。",
+      "source_lines": [21, 36]
+    },
+    {
+      "card_id": "card_d4q_20260422",
+      "type": "qa",
+      "question": "实现移动端自适应布局时，常用哪些CSS技术？",
+      "answer": "常用媒体查询、百分比布局、Flexbox和Grid。",
+      "explanation": "这些技术能适配不同屏幕宽度，实现响应式布局。",
+      "source_lines": [77, 80]
+    }
+  ]
+}

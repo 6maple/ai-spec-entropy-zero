@@ -1,0 +1,50 @@
+{
+  "notes": [
+    {
+      "id": "note_cssla_20260422",
+      "title": "CSS布局核心：盒模型、BFC与响应式方案",
+      "slug": "css-layout-core",
+      "domain": ["前端开发", "CSS", "布局"],
+      "abstract": "理解盒模型、BFC机制和响应式布局是实现高兼容性、高性能Web页面的基础。",
+      "source_path": "docs/raw/css.md",
+      "created_at": "2026-04-22T10:00:00Z"
+    },
+    {
+      "id": "note_devup_20260422",
+      "title": "大文件上传与智能搜索框的前端实现要点",
+      "slug": "dev-upload-search",
+      "domain": ["前端开发", "大文件上传", "组件交互"],
+      "abstract": "高效大文件上传与智能搜索框的实现，依赖切片、哈希、断点续传、并发控制、异常处理和响应式交互优化。",
+      "source_path": "docs/raw/development.md",
+      "created_at": "2026-04-22T10:10:00Z"
+    },
+    {
+      "id": "note_jsfun_20260422",
+      "title": "JavaScript高阶函数与缓存优化实战",
+      "slug": "js-func-cache-hof",
+      "domain": ["前端开发", "JavaScript", "高阶函数"],
+      "abstract": "高阶函数、memoize缓存与组合技术是提升前端性能与代码复用性的核心手段。",
+      "source_path": "docs/raw/js.md",
+      "created_at": "2026-04-22T10:20:00Z"
+    },
+    {
+      "id": "note_netwo_20260422",
+      "title": "前端首屏性能与网络优化核心要点",
+      "slug": "network-perf-optimize",
+      "domain": ["前端开发", "性能优化", "网络"],
+      "abstract": "资源压缩、CDN分发、HTTP/2与渲染策略优化是提升前端首屏性能的关键。",
+      "source_path": "docs/raw/network.md",
+      "created_at": "2026-04-22T10:30:00Z"
+    }
+    ,
+    {
+      "id": "note_vuepe_20260422",
+      "title": "Vue组件性能优化与通信复用核心要点",
+      "slug": "vue-perf-comm-reuse",
+      "domain": ["前端开发", "Vue.js", "组件复用"],
+      "abstract": "组件细粒度拆分、响应式优化、通信模式与组合式复用是高效Vue开发的关键。",
+      "source_path": "docs/raw/vue.md",
+      "created_at": "2026-04-22T10:40:00Z"
+    }
+  ]
+}

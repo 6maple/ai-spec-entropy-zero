@@ -1,0 +1,150 @@
+<<important>>
+
+<角色>
+
+1. 你是资深前端开发工程师，同时擅长UI/UX设计，特别是移动端优先的响应式网页设计。
+2. 你也是一个经验丰富的学习者，知道什么样的笔记才方便复习和记忆。
+
+<要求>
+
+1. 基于我提供的JSON创建一个笔记页面，不得修改JSON中的内容。
+2. 必须能够直观地展示知识，少用tab，布局紧凑。
+3. 你要站在一个记笔记的人的角度，去思考这个页面要怎么样才能方便我复习知识
+4. 页面需要层次分明，方便阅读。界面展示要以内容层级为主，基于description的内容分析内容层级。
+
+<<description>>
+
+字段详解
+
+1. 元信息层
+   字段 类型 说明
+   id string 全局唯一标识符，建议格式：leaf*{日期}*{主题}\_{关键词}
+   title string 笔记标题，简明概括本叶子所含的核心概念
+   tree string 所属的知识树/分类，对应森林地图中的“树木”节点
+   created_at / updated_at ISO8601 时间戳，用于版本追踪和复习调度
+2. 溯源层（核心要求）
+   字段 类型 说明
+   source.type enum "markdown" 或 "generated"，用于区分人工录入与AI生成
+   source.path string 原始文件的存储路径
+   source.title string 原始文档的标题
+   source.section string 原文中的章节/段落标题，辅助快速定位
+   evidence.source_lines [int, int] 关键：精确到行号，便于点击【源】按钮时高亮展示原文片段
+   溯源的设计遵循功能说明书中的“双向溯源系统”要求：每片树叶详情页有一个【源】按钮，点击后弹窗展示原始Markdown录入稿，并高亮对应的行。
+
+3. 知识提炼层
+   字段 类型 说明
+   summary.abstract string 一句话概括核心内容（不超过80字）
+   summary.takeaway string 最关键的结论或行动指引，用户可据此快速回忆
+   claims[] array 关键论断及其证据列表，每个claim可有多条evidence
+   claims是笔记的核心：它不是原文的复述，而是经过学习者消化后的断言，每条断言都锚定原文证据。这符合功能说明书中“精炼：提炼关键结论（Claims）与支撑证据（Evidence）”的要求。
+
+4. 关联层（知识网络）
+   字段 类型 说明
+   hooks.incoming array 指向本笔记的前置知识（哪些知识需要先理解）
+   hooks.outgoing array 本笔记引出的后续知识（延伸阅读方向）
+   hooks[].relation enum 关系类型：depends_on（前置）、precedes（引出）、complements（互补）、contrasts（对比）、refines（细化）
+   关联点的自动识别是“熵减引擎”的关键功能：AI在生成笔记时，会基于语义相似度和现有知识图谱，自动建立与新笔记的关联。
+
+5. 冲突检测层
+   字段 类型 说明
+   conflicts[] array 与现有知识库中其他笔记的冲突记录
+   当新知识与旧知识存在逻辑矛盾时，系统在此字段中记录冲突信息并挂起入库流程，引导用户手动确认。在Vue性能优化这个示例中，暂无已知冲突，故为空数组。
+
+6. 记忆层
+   字段 类型 说明
+   flashcards[] array 由AI自动生成的Q&A卡片，每条卡片对应一个关键记忆点
+   review object FSRS算法所需的复习状态数据（stability、difficulty、下次复习时间等）
+   卡片作为树叶的附属属性，不独立存在，确保复习时“有据可依”。这正是功能说明书中“自动制卡”模块的要求。
+
+7. 检索层
+   字段 类型 说明
+   tags array 扁平标签，支持多维度分类
+   vector_embedding float[] 文本向量，用于语义搜索和相似度匹配（生成时填充）
+
+<<json>>
+
+JSX代码中以这个JSON为输入：
+
+{
+"id": "leaf_20260121_vue_perf_lazy_loading",
+"title": "Vue异步组件与路由懒加载",
+"tree": "Vue性能优化",
+"created_at": "2026-01-21T10:30:00Z",
+"updated_at": "2026-01-21T10:30:00Z",
+"source": {
+"type": "markdown",
+"path": "docs/raw/vue-performance-guide.md",
+"title": "Vue.js性能优化指南",
+"section": "包体积与Tree-shaking优化"
+},
+"summary": {
+"abstract": "异步组件与路由懒加载是Vue应用减小首屏包体积的核心手段，通过将非首屏必需的代码推迟到实际需要时再加载，可以显著提升页面加载性能。",
+"takeaway": "使用defineAsyncComponent定义异步组件，配合Vue Router的动态import实现路由级别的代码分割。"
+},
+"claims": [
+{
+"id": "claim_001",
+"statement": "异步组件只有在被渲染时才会加载对应的JavaScript代码",
+"evidence": [
+{
+"type": "source_quote",
+"content": "当使用defineAsyncComponent定义一个异步组件时，它只会在被渲染时才会从服务器上加载相关组件。",
+"source_lines": [42, 43]
+}
+]
+},
+{
+"id": "claim_002",
+"statement": "路由懒加载可以将不同路由对应的组件分割成独立的代码块",
+"evidence": [
+{
+"type": "source_quote",
+"content": "使用动态导入语法，Vue Router会在路由被访问时才加载对应的组件。",
+"source_lines": [45, 47]
+}
+]
+}
+],
+"hooks": {
+"incoming": [
+{
+"relation": "depends_on",
+"target_leaf_id": "leaf_20260120_vue_bundle_size",
+"description": "理解包体积优化的重要性是使用懒加载的前提"
+}
+],
+"outgoing": [
+{
+"relation": "precedes",
+"target_leaf_id": "leaf_20260122_vue_ssr",
+"description": "如果懒加载仍无法满足首屏要求，可进一步考虑SSR"
+},
+{
+"relation": "complements",
+"target_leaf_id": "leaf_20260121_vue_tree_shaking",
+"description": "Tree-shaking在编译时消除死代码，懒加载在运行时推迟加载，两者互补"
+}
+]
+},
+"conflicts": [],
+"flashcards": [
+{
+"question": "Vue中如何定义一个异步组件？",
+"answer": "使用defineAsyncComponent API，传入一个返回动态import的函数",
+"hint": "需要从vue中导入defineAsyncComponent"
+},
+{
+"question": "路由懒加载在Vue Router中如何实现？",
+"answer": "在路由配置的component字段中使用动态import语法：() => import('./MyComponent.vue')"
+}
+],
+"review": {
+"stability": 0,
+"difficulty": 0,
+"last_reviewed": null,
+"next_review": null,
+"state": "fresh"
+},
+"tags": ["vue", "性能", "懒加载", "异步组件", "代码分割"],
+"vector_embedding": null
+}

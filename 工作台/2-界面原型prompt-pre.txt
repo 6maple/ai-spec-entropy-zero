@@ -1,0 +1,137 @@
+作为全球顶尖的UI/UX设计师和擅长用笔记记忆知识的人，你觉得一个笔记页面需要具备什么样的特质？
+
+增加暗色主题
+亮色、暗色主题的整体风格要换成适合笔记、知识类网站的。
+**笔记页面 — 护眼且色彩丰富的配色方案**
+
+目标：为笔记/长时间阅读页面提供一个“护眼、色彩丰富、可分类且可扩展”的配色系统，支持浅色与深色主题、标签与图表用色，并满足可访问性（对比度）要求。
+
+一、设计原则
+
+- 护眼：使用低饱和、偏暖或偏冷的柔和色块作为大面积背景，减少强烈白/黑对比。
+- 色彩丰富：在低对比的基础上提供 6-8 个可识别的“标签/分类色”，用于标签、状态与小面积强调。
+- 可访问性：正文对比度 >= 4.5:1，次要文字 >= 3:1。按钮与交互颜色保证足够对比或提供边框/阴影提示。
+- 扩展性：使用 CSS 变量或设计 token，便于在 Tailwind/设计系统中映射。
+
+二、核心配色（Light 模式）
+
+- 背景（page-bg）：#F6F8F4 — 轻微暖绿调，缓和眼睛疲劳
+- 表面（card-bg）：#FFFFFF — 卡片与输入框背景（轻微阴影）
+- 边框/分割（border）：#E6ECE6 — 柔和分割
+- 主文本（text-primary）：#0F2A26 — 深色但不纯黑（更柔和）
+- 次文本（text-muted）：#55686A — 用于注释与占位文字
+- 主色（primary）：#2B8F80 — 护眼的青绿色（用于主要 CTA、链接）
+- 主色深（primary-700）：#196B5E — 按钮背景大色块时使用（保证白字对比）
+- 次色（secondary）：#5A5FB5 — 柔和的靛蓝，用于次要 CTA 或强调
+- 强调色（accent）：#F4B84A — 暖色强调，用于高亮、提醒（不可作为全文底色）
+- 成功（success）：#4CAD84
+- 警告（warning）：#E08E4A
+- 错误（danger）：#D66A5A
+- 代码/行内高亮背景（code-bg）：#F1F6F4
+- 文本选择色（selection）：#CDEEE6（半透明覆盖）
+
+三、标签 & 分类色（按可识别度排列，均为低饱和度）
+
+- Tag-1（水母蓝）：#A6D8D0
+- Tag-2（薰衣紫）：#D6C9FF
+- Tag-3（琥珀）：#FFE3A7
+- Tag-4（柔粉）：#F9C1D9
+- Tag-5（薄荷）：#CFE7A9
+- Tag-6（天蓝）：#B6E0FF
+- Tag-7（浅珊瑚）：#FFD1C0
+
+四、深色（Dark）模式对照
+
+- 背景（page-bg-dark）：#0B1213 — 非纯黑，减小眩光
+- 表面（card-bg-dark）：#0F1A1A
+- 边框（border-dark）：#163033
+- 主文本（text-primary-dark）：#E6F0EE — 轻微偏绿的近白色
+- 次文本（text-muted-dark）：#98B0AD
+- 主色（primary-dark）：#48B7A6 — 在深色背景上更亮、更清晰
+- 主色深（primary-700-dark）：#2B8F80
+- 次色（secondary-dark）：#8F93E6
+- 强调色（accent-dark）：#FFD89A
+- 代码背景（code-bg-dark）：#081514
+
+五、配色使用规范（场景与建议）
+
+- 页面主背景：使用 `page-bg`；正文卡片使用 `card-bg` 并加轻微阴影（box-shadow: 0 6px 18px rgba(15,42,38,0.04)）。
+- 主要按钮：`background: primary-700; color: #FFFFFF;`（在浅色模式下），圆角 8px，`padding: 10px 16px`。
+- 次要按钮：透明背景 + `border: 1px solid border` + `color: primary`。
+- 链接：使用 `primary`，hover 使用 `primary-700`；为可访问加下划线样式可选。
+- 表格/列表行高：行高 1.6；大块文字使用 `text-primary`（保证可读）。
+- 代码块：使用 `code-bg`，圆角 6px，字体为等宽字体并保留 1rem 内边距。
+- 高亮笔记段落：用 `accent` 的 12-16% 不透明度背景（例如 `rgba(244,184,74,0.12)`）。
+
+六、无障碍与对比检查
+
+- 正文（text-primary）对比背景 page-bg 应 >= 4.5:1（本配色已按此目标挑选）。
+- 大号文本（>= 18pt/24px 或加粗）对比度可 >= 3:1。
+- 按钮文字若为白色，按钮背景须满足白色对比度 >= 4.5:1，或提供外框与阴影辅助。
+- 提供可选高对比切换（用户设置）——把 `text-primary` 置为 `#071218`，`page-bg` 置为 `#FCFEFE`。
+
+七、CSS 变量示例（可直接放入根主题）
+
+```css
+:root {
+  --page-bg: #f6f8f4;
+  --card-bg: #ffffff;
+  --border: #e6ece6;
+  --text-primary: #0f2a26;
+  --text-muted: #55686a;
+  --primary: #2b8f80;
+  --primary-700: #196b5e;
+  --secondary: #5a5fb5;
+  --accent: #f4b84a;
+  --success: #4cad84;
+  --warning: #e08e4a;
+  --danger: #d66a5a;
+  --code-bg: #f1f6f4;
+  --selection: rgba(205, 238, 230, 0.6);
+}
+/* Dark mode variables: .dark */
+.dark {
+  --page-bg: #0b1213;
+  --card-bg: #0f1a1a;
+  --border: #163033;
+  --text-primary: #e6f0ee;
+  --text-muted: #98b0ad;
+  --primary: #48b7a6;
+  --primary-700: #2b8f80;
+  --secondary: #8f93e6;
+  --accent: #ffd89a;
+  --code-bg: #081514;
+}
+```
+
+八、Tailwind 映射建议（简短）
+
+- 将上方变量映射到 Tailwind 的 `theme.extend.colors`，例如 `primary`, `accent`, `muted` 等。
+- 提供 `light` 与 `dark` 两套 token，并使用 `class` 模式切换（`.dark`）。
+
+九、图表与可视化颜色组（视觉层次清晰，宜用于条形/折线/饼图）
+
+- Chart Palette: [#2B8F80, #5A5FB5, #F4B84A, #A6D8D0, #D6C9FF, #B6E0FF]
+- 建议：主趋势使用 `primary`，对比系列使用 `secondary` 与 `accent`，微量标注用浅色 Tag 系列。
+
+十、示例配色对（常用配对，便于设计师参考）
+
+- 主 CTA：`primary-700` (#196B5E) + 白字
+- 成功提示：`success` (#4CAD84) + 白字或深色字
+- 警告条：`accent` (#F4B84A) + 深色字
+- 信息卡片：`card-bg` (#FFFFFF) + `border` (#E6ECE6)
+
+十一、附加建议
+
+- 字体：正文 16px，行高 1.6；标题使用更稳重的衬线或半衬线配对（视项目风格）。
+- 动画：交互动画保持 150-220ms，禁用过度移动以照顾易感人群（尊重 `prefers-reduced-motion`）。
+- 颜色存档：将 `MASTER.md` 或 `design-system/` 下保存此配色，便于未来页面覆盖与维护。
+
+——
+如果你希望，我可以：
+
+- 把上面的变量直接生成 `tailwind.config.js` 的 `theme.extend.colors` 节点；
+- 生成 `design-system/MASTER.md` 并把这份配色放入其中；
+- 输出一套 SVG 图标配色示例或 Figma 变量导出格式。
+
+（文件由 AI 生成，若需更换“偏暖/偏冷”基调或调整标签配色，请告诉我你偏好的色调方向。）
