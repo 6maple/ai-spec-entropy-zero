@@ -1,0 +1,74 @@
+{
+  "id": "note_js_20260423_float_precision",
+  "title": "JavaScript 浮点数精度丢失：二进制表示与精度库",
+  "source": {
+    "input_path": "docs/raw/js.md",
+    "line_range": [
+      296,
+      344
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "JavaScript 使用 IEEE 754 双精度浮点数表示数字，十进制小数在二进制中通常无法精确表示。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档解释了浮点数存储标准和二进制转换问题。"
+        },
+        "source_lines": [
+          304,
+          305,
+          306
+        ]
+      },
+      {
+        "claim": "0.1 与 0.2 等十进制数在二进制中是无限循环，会因舍入导致计算结果出现偏差。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出精度丢失的根因在于二进制截断和舍入误差。"
+        },
+        "source_lines": [
+          305,
+          306
+        ]
+      },
+      {
+        "claim": "toFixed 返回字符串，并且在某些场景下可能出现不稳定的四舍五入行为，适合用于 UI 渲染而非计算逻辑。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档提醒 toFixed 的字符串类型结果和边缘 rounding 风险。"
+        },
+        "source_lines": [
+          332
+        ]
+      },
+      {
+        "claim": "对于精度要求高的计算，应使用 Big.js、Decimal.js 或 Math.js 等精度库。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列出了常用的精度计算库。"
+        },
+        "source_lines": [
+          337,
+          338,
+          339
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "直接使用浮点运算判断金额或精度关键值。",
+        "混用 toFixed 结果和数值比较逻辑。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "extension",
+        "target_concept": "函数式编程",
+        "context": "精确数值计算常与纯函数式逻辑结合，避免副作用和隐式类型转换。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

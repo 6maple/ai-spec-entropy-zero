@@ -1,0 +1,70 @@
+{
+  "note_id": "note_js_20260423_memory_management",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_js_20260423_memory_management:0",
+      "type": "qa",
+      "question": "为什么JavaScript 内存生命周期包括分配、使用和释放",
+      "answer": "JavaScript 内存生命周期包括分配、使用和释放。",
+      "explanation": "文档概述了内存生命周期的三个阶段。",
+      "source_lines": [
+        230,
+        231,
+        232
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_js_20260423_memory_management:1",
+      "type": "qa",
+      "question": "为什么现代浏览器 GC 采用可达性分析，从根对象出发判断对象是否可达，而不是仅靠引用计数",
+      "answer": "现代浏览器 GC 采用可达性分析，从根对象出发判断对象是否可达，而不是仅靠引用计数。",
+      "explanation": "文档解释了 GC 的可达性原则并说明引用计数的局限。",
+      "source_lines": [
+        238,
+        239
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_js_20260423_memory_management:2",
+      "type": "qa",
+      "question": "为什么常见内存泄漏来源包括全局变量、未清理定时器、DOM 引用、闭包监听和未移除事件",
+      "answer": "常见内存泄漏来源包括全局变量、未清理定时器、DOM 引用、闭包监听和未移除事件。",
+      "explanation": "文档列举了五类典型的 JS 内存泄漏场景。",
+      "source_lines": [
+        245,
+        246,
+        247,
+        248,
+        249
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_js_20260423_memory_management:3",
+      "type": "qa",
+      "question": "为什么防止泄漏应及时解除引用、使用 WeakMap/WeakSet，并在组件卸载时清理定时器和监听器",
+      "answer": "防止泄漏应及时解除引用、使用 WeakMap/WeakSet，并在组件卸载时清理定时器和监听器。",
+      "explanation": "文档提供了内存泄漏清理的代码层面实践。",
+      "source_lines": [
+        253,
+        254,
+        255
+      ]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_js_20260423_memory_management:4",
+      "type": "qa",
+      "question": "为什么使用 Memory 和 Performance 面板对内存曲线进行监控，可帮助定位持续上升的内存泄漏",
+      "answer": "使用 Memory 和 Performance 面板对内存曲线进行监控，可帮助定位持续上升的内存泄漏。",
+      "explanation": "文档推荐使用浏览器开发者工具进行内存监控。",
+      "source_lines": [
+        293,
+        294
+      ]
+    }
+  ]
+}

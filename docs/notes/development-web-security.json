@@ -1,0 +1,66 @@
+{
+  "id": "note_dev_md_20260423_web_security",
+  "title": "Web 安全防御：XSS、CSRF、SQL 注入与点击劫持",
+  "source": {
+    "input_path": "docs/raw/development.md",
+    "line_range": [287, 336]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "防御 XSS 需要输入过滤、输出转义，使用 DOMPurify 消毒 v-html 数据，并通过 HttpOnly Cookie 和 CSP 限制风险。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列出了 XSS 的输入过滤、输出转义、DOMPurify、HttpOnly 和 CSP 多层防御。"
+        },
+        "source_lines": [291, 294, 295, 296, 297]
+      },
+      {
+        "claim": "防御 CSRF 应使用 SameSite Cookie、CSRF Token，并校验 Referer/Origin 来源。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档介绍了 CSRF 的 SameSite、Token 和请求来源验证策略。"
+        },
+        "source_lines": [299, 304, 305, 306]
+      },
+      {
+        "claim": "防御 SQL 注入的最有效方式是参数化查询，并遵循最小权限原则。",
+        "evidence": {
+          "type": "code_example",
+          "description": "文档对比了字符串拼接和参数化查询的正确与错误示例。"
+        },
+        "source_lines": [308, 313, 314, 316, 317, 318, 320, 321]
+      },
+      {
+        "claim": "防御点击劫持应通过 X-Frame-Options 或 CSP frame-ancestors 限制 iframe 嵌套。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出点击劫持本质是嵌入透明 iframe，防御策略为框架限制头。"
+        },
+        "source_lines": [324, 326, 329, 330]
+      },
+      {
+        "claim": "其他安全实践包括 HTTPS 全站加密、HSTS 强制 HTTPS 访问和依赖安全扫描。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档强调 HTTPS、HSTS 和 npm audit 等安全实践。"
+        },
+        "source_lines": [333, 334, 335, 336]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "直接渲染用户输入为 HTML，导致 XSS 漏洞。",
+        "使用字符串拼接构造 SQL 语句，导致 SQL 注入风险。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "parallel",
+        "target_concept": "搜索框输入过滤",
+        "context": "搜索框的输入过滤和高亮处理与 XSS 防御共享同一类安全原则。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

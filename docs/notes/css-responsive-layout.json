@@ -1,0 +1,100 @@
+{
+  "id": "note_css_20260423_responsive_layout",
+  "title": "CSS 响应式布局：媒体查询、Flex、Grid 与视口单位",
+  "source": {
+    "input_path": "docs/raw/css.md",
+    "line_range": [
+      67,
+      98
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "响应式布局的基础是媒体查询，通常采用移动端优先策略，在小屏基础上逐步适配大屏。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出 media queries 是响应式的基石，并推荐移动端优先。"
+        },
+        "source_lines": [
+          71,
+          72
+        ]
+      },
+      {
+        "claim": "百分比布局适合流式尺寸，但基于父级计算的高度关系复杂，难以处理高度适配。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档分析了百分比布局的优缺点。"
+        },
+        "source_lines": [
+          72
+        ]
+      },
+      {
+        "claim": "Flexbox 是现代布局首选，用于局部组件排列、自动换行与剩余空间分配。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档描述了 flex-wrap 和 flex-grow/shrink 的设计价值。"
+        },
+        "source_lines": [
+          73
+        ]
+      },
+      {
+        "claim": "Grid 是二维布局利器，特别适合后台管理等大框架场景。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档强调 Grid 在控制行列方面优于 Flex。"
+        },
+        "source_lines": [
+          73,
+          74
+        ]
+      },
+      {
+        "claim": "现代响应式单位包括 rem 和 vw/vh，rem 依赖根字号，vw/vh 直接基于视口尺寸。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档比较了 rem 和 vw/vh 的原理与实践方式。"
+        },
+        "source_lines": [
+          78,
+          79,
+          81,
+          82,
+          83
+        ]
+      },
+      {
+        "claim": "组件化响应式方案通过断点组件、栅格系统、Tailwind 类名和响应式图片，提升工程效率。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档把响应式 UI 框架、组件化方案与图片响应式整合为工程实践。"
+        },
+        "source_lines": [
+          87,
+          88,
+          89,
+          90,
+          91,
+          92
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "固定断点写死样式，忽视内容何时真正变丑。",
+        "过度依赖百分比布局而忽略高度计算复杂性。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "extension",
+        "target_concept": "BFC",
+        "context": "响应式布局中的自适应容器常与 BFC 结合，避免浮动和外边距问题影响适配。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

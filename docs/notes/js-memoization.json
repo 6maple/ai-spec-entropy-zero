@@ -1,0 +1,98 @@
+{
+  "id": "note_js_20260423_memoization",
+  "title": "JavaScript 函数缓存：Map、JSON 序列化与缓存边界",
+  "source": {
+    "input_path": "docs/raw/js.md",
+    "line_range": [
+      12,
+      47
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "函数缓存通过将输入参数映射到执行结果，避免重复计算并以空间换时间。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档定义函数缓存的核心原理和空间换时间策略。"
+        },
+        "source_lines": [
+          14,
+          18
+        ]
+      },
+      {
+        "claim": "通用 memoize 实现通常用 Map 存储缓存，并用 JSON.stringify 将参数序列化为键。",
+        "evidence": {
+          "type": "code_example",
+          "description": "文档给出了 memoize 函数的核心实现代码。"
+        },
+        "source_lines": [
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24
+        ]
+      },
+      {
+        "claim": "Vue 计算属性是函数缓存的典型场景，只有依赖变化时才重新计算。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档把 Vue 计算属性列为函数缓存的代表应用。"
+        },
+        "source_lines": [
+          39
+        ]
+      },
+      {
+        "claim": "昂贵递归计算和相同参数的 API 请求过滤，都是函数缓存的典型应用场景。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列举了递归计算和 API 请求过滤的实际应用。"
+        },
+        "source_lines": [
+          40,
+          41
+        ]
+      },
+      {
+        "claim": "函数缓存仅适用于纯函数，依赖外部状态或随机值的函数不应缓存。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档强调缓存前提是纯函数，避免副作用影响结果一致性。"
+        },
+        "source_lines": [
+          45
+        ]
+      },
+      {
+        "claim": "缓存带来的内存占用和参数序列化成本，也需要在工程中加以权衡。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档提醒缓存可能导致内存膨胀和序列化成本问题。"
+        },
+        "source_lines": [
+          46,
+          47
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "对非纯函数使用缓存，导致结果不一致。",
+        "无上限缓存所有输入，造成内存膨胀。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "函数式编程",
+        "context": "函数缓存依赖纯函数和不可变性等函数式编程原则。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

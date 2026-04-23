@@ -1,0 +1,57 @@
+{
+  "note_id": "note_css_20260423_box_model",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_css_20260423_box_model:0",
+      "type": "qa",
+      "question": "为什么CSS 盒模型由内容区、内边距、边框和外边距四个区域构成",
+      "answer": "CSS 盒模型由内容区、内边距、边框和外边距四个区域构成。",
+      "explanation": "文档列出盒模型的四个区域并说明它们的布局角色。",
+      "source_lines": [
+        18,
+        19,
+        20,
+        21
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_css_20260423_box_model:1",
+      "type": "qa",
+      "question": "为什么标准盒模型（content-box）将 width 仅应用于内容区，padding 和 border 会增加元素总宽度",
+      "answer": "标准盒模型（content-box）将 width 仅应用于内容区，padding 和 border 会增加元素总宽度。",
+      "explanation": "文档说明 content-box 计算公式，以及 padding 和 border 如何影响最终尺寸。",
+      "source_lines": [
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_css_20260423_box_model:2",
+      "type": "qa",
+      "question": "为什么怪异盒模型（border-box）将 padding 与 border 包含在 width 内，保持元素总尺寸不变",
+      "answer": "怪异盒模型（border-box）将 padding 与 border 包含在 width 内，保持元素总尺寸不变。",
+      "explanation": "文档说明 border-box 的计算方式和对内容区的挤压效果。",
+      "source_lines": [
+        30,
+        31,
+        32
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_css_20260423_box_model:3",
+      "type": "qa",
+      "question": "为什么`box-sizing` 是切换盒模型计算逻辑的关键属性",
+      "answer": "`box-sizing` 是切换盒模型计算逻辑的关键属性。",
+      "explanation": "文档通过 box-sizing 的两个值对比说明不同布局计算方式。",
+      "source_lines": [
+        27,
+        31
+      ]
+    }
+  ]
+}

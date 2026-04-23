@@ -1,0 +1,66 @@
+{
+  "id": "note_dev_md_20260423_visibility",
+  "title": "可视区域判断：IntersectionObserver 与经典方案",
+  "source": {
+    "input_path": "docs/raw/development.md",
+    "line_range": [114, 178]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "Intersection Observer API 是现代可视区域判断的首选方案，性能高且无需滚动事件。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将 Intersection Observer 描述为最优雅且性能最优的方案。"
+        },
+        "source_lines": [116, 120, 123, 133, 134]
+      },
+      {
+        "claim": "getBoundingClientRect 是经典方案，但需要配合滚动事件和防抖/节流来控制频率。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了 getBoundingClientRect 的判定逻辑及其对防抖/节流的依赖。"
+        },
+        "source_lines": [141, 143, 144, 147, 155]
+      },
+      {
+        "claim": "offsetTop 与 scrollTop 可用于传统可视判断，但在多层嵌套或 CSS 变换场景下容易出错。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出传统计算方式在复杂布局下更容易出现错误。"
+        },
+        "source_lines": [161, 163, 164]
+      },
+      {
+        "claim": "在 Vue 中应将可视性判断封装为指令或组合式函数，提升复用性并确保正确销毁。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档建议用自定义指令或 useIntersectionObserver 进行工程化封装。"
+        },
+        "source_lines": [168, 170, 171, 172]
+      },
+      {
+        "claim": "对于现代浏览器优先使用 Intersection Observer，兼容低版本时可退回到 getBoundingClientRect+节流方案。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档总结了首选和备选方案的适用场景。"
+        },
+        "source_lines": [176, 177]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "在可视性判断中直接监听滚动事件而不做节流，导致性能问题。",
+        "没有封装生命周期销毁逻辑，导致指令或 observer 泄漏。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "虚拟滚动",
+        "context": "虚拟滚动和可视区域判断都依赖准确的视口检测与滚动关系。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

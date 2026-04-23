@@ -1,0 +1,89 @@
+{
+  "id": "note_js_20260423_memory_management",
+  "title": "JavaScript 内存管理：GC、泄漏场景与清理实践",
+  "source": {
+    "input_path": "docs/raw/js.md",
+    "line_range": [
+      224,
+      296
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "JavaScript 内存生命周期包括分配、使用和释放。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档概述了内存生命周期的三个阶段。"
+        },
+        "source_lines": [
+          230,
+          231,
+          232
+        ]
+      },
+      {
+        "claim": "现代浏览器 GC 采用可达性分析，从根对象出发判断对象是否可达，而不是仅靠引用计数。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档解释了 GC 的可达性原则并说明引用计数的局限。"
+        },
+        "source_lines": [
+          238,
+          239
+        ]
+      },
+      {
+        "claim": "常见内存泄漏来源包括全局变量、未清理定时器、DOM 引用、闭包监听和未移除事件。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列举了五类典型的 JS 内存泄漏场景。"
+        },
+        "source_lines": [
+          245,
+          246,
+          247,
+          248,
+          249
+        ]
+      },
+      {
+        "claim": "防止泄漏应及时解除引用、使用 WeakMap/WeakSet，并在组件卸载时清理定时器和监听器。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档提供了内存泄漏清理的代码层面实践。"
+        },
+        "source_lines": [
+          253,
+          254,
+          255
+        ]
+      },
+      {
+        "claim": "使用 Memory 和 Performance 面板对内存曲线进行监控，可帮助定位持续上升的内存泄漏。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档推荐使用浏览器开发者工具进行内存监控。"
+        },
+        "source_lines": [
+          293,
+          294
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "组件卸载后不移除定时器或事件监听，导致对象无法释放。",
+        "在全局作用域保存大量 DOM 引用。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "Vue keepalive",
+        "context": "组件缓存与内存管理密切相关，缓存策略会影响内存释放。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

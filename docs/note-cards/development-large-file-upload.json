@@ -1,0 +1,50 @@
+{
+  "note_id": "note_dev_md_20260423_upload",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_dev_md_20260423_upload:0",
+      "type": "qa",
+      "question": "为什么大文件上传通常先做固定大小切片？",
+      "answer": "切片可以降低单请求失败成本并支持并行上传，提高传输稳定性。",
+      "explanation": "文档指出切片是上传流程第一步，可以分片并行发送，提高抗中断能力。",
+      "source_lines": [16, 18, 19, 20]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_dev_md_20260423_upload:1",
+      "type": "qa",
+      "question": "大文件哈希为什么需要用 Worker 或抽样策略优化？",
+      "answer": "因为全量哈希计算耗时大，Worker 或抽样哈希能降低阻塞并兼顾速度。",
+      "explanation": "文档建议使用 spark-md5 并通过 Worker/抽样提高哈希计算性能。",
+      "source_lines": [36, 38, 39]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_dev_md_20260423_upload:2",
+      "type": "qa",
+      "question": "秒传和断点续传在上传前校验接口中分别做了什么？",
+      "answer": "秒传检查 Hash 是否存在，断点续传获取已收到切片索引并只补传缺失部分。",
+      "explanation": "文档把验证接口分为秒传和断点续传两种行为。",
+      "source_lines": [43, 45, 46]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_dev_md_20260423_upload:3",
+      "type": "qa",
+      "question": "切片上传完成后为什么还要发起合并请求？",
+      "answer": "需要按顺序还原原始文件并校验完整性，同时清理临时切片。",
+      "explanation": "文档将合并、完整性校验和临时清理看作上传收尾步骤。",
+      "source_lines": [50, 51, 52]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_dev_md_20260423_upload:4",
+      "type": "qa",
+      "question": "大文件上传稳定体验的关键因素有哪些？",
+      "answer": "需要进度聚合、并发上限和失败重试三者结合，而不是单一机制。",
+      "explanation": "文档强调进度条、3-6 个并发和 2-3 次重试共同保障体验。",
+      "source_lines": [56, 57, 58]
+    }
+  ]
+}

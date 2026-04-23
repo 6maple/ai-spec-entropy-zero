@@ -1,0 +1,50 @@
+{
+  "note_id": "note_dev_md_20260423_visibility",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_dev_md_20260423_visibility:0",
+      "type": "qa",
+      "question": "为什么 Intersection Observer 是现代可视区域判断的首选？",
+      "answer": "它性能高、不依赖滚动事件，并且异步检测目标与视口的交叉状态。",
+      "explanation": "文档把 Intersection Observer 描述为最优雅且性能最优的方案。",
+      "source_lines": [116, 120, 123, 133, 134]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_dev_md_20260423_visibility:1",
+      "type": "qa",
+      "question": "getBoundingClientRect 方案需要额外注意什么？",
+      "answer": "它需要配合滚动事件和防抖/节流，否则频繁计算会影响性能。",
+      "explanation": "文档说明 getBoundingClientRect 的判定逻辑与节流依赖。",
+      "source_lines": [141, 143, 144, 147, 155]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_dev_md_20260423_visibility:2",
+      "type": "qa",
+      "question": "offsetTop/scrollTop 方案有哪些局限？",
+      "answer": "在多层嵌套或 CSS 变换场景下容易出错，计算逻辑较复杂。",
+      "explanation": "文档指出传统方案在复杂布局下更容易产生错误。",
+      "source_lines": [161, 163, 164]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_dev_md_20260423_visibility:3",
+      "type": "qa",
+      "question": "在 Vue 中如何工程化可视区域判断？",
+      "answer": "应封装为指令或组合式函数，并在 mounted/unmounted 中正确初始化和销毁。",
+      "explanation": "文档建议用自定义指令或 useIntersectionObserver 进行封装。",
+      "source_lines": [168, 170, 171, 172]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_dev_md_20260423_visibility:4",
+      "type": "qa",
+      "question": "如果兼容低版本浏览器，可视判断方案应如何选？",
+      "answer": "优先使用 Intersection Observer，低版本兼容时退回 getBoundingClientRect+节流。",
+      "explanation": "文档总结了首选与备选策略。",
+      "source_lines": [176, 177]
+    }
+  ]
+}

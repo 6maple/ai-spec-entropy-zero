@@ -1,0 +1,58 @@
+{
+  "id": "note_dev_md_20260423_pull_refresh",
+  "title": "上拉加载与下拉刷新：状态管理与触发策略",
+  "source": {
+    "input_path": "docs/raw/development.md",
+    "line_range": [226, 285]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "下拉刷新依赖 touchstart、touchmove 和 touchend 的位移计算，并且只有在页面顶部才允许触发刷新。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了通过 touch 事件计算下拉位移并判断 scrollTop 是否为 0。"
+        },
+        "source_lines": [232, 234, 235]
+      },
+      {
+        "claim": "上拉加载通过判断 scrollTop+clientHeight 与 scrollHeight 的距离，或使用底部哨兵的 Intersection Observer 来触发。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档给出了基于阈值和哨兵元素的上拉加载触发策略。"
+        },
+        "source_lines": [245, 247, 248, 251]
+      },
+      {
+        "claim": "必须严格管理 Loading、Finished、Error 和 Pulling 四种状态，避免重复触发和用户迷惑。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列出了四个关键状态，强调它们在上拉/下拉逻辑中的作用。"
+        },
+        "source_lines": [276, 277, 278, 279]
+      },
+      {
+        "claim": "如果使用 scroll 事件监听，应配合节流；当数据量巨大时，应结合虚拟列表减少渲染压力。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档建议对 scroll 监听做 throttle，并在数据量大时使用虚拟列表。"
+        },
+        "source_lines": [283, 284, 285]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "在 scroll 事件中不做节流，导致频繁计算和性能下降。",
+        "没有 finished 状态控制，导致到底部后重复触发加载。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "虚拟滚动",
+        "context": "大数据量下的上拉加载最好与虚拟滚动结合，减少 DOM 渲染压力。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

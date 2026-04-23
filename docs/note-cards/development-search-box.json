@@ -1,0 +1,50 @@
+{
+  "note_id": "note_dev_md_20260423_searchbox",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_dev_md_20260423_searchbox:0",
+      "type": "qa",
+      "question": "搜索框需要维护哪些核心状态？",
+      "answer": "需要维护关键词、候选列表、选中索引和加载状态，支持键盘导航。",
+      "explanation": "文档提到 v-model、watch、suggestions、activeIndex 和 loading。",
+      "source_lines": [64, 65, 66]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_dev_md_20260423_searchbox:1",
+      "type": "qa",
+      "question": "为什么搜索框要做防抖处理？",
+      "answer": "防抖可以避免每输入一个字符都发送请求，减少接口压力和卡顿。",
+      "explanation": "文档建议把搜索触发延迟到约 300ms 后再调用接口。",
+      "source_lines": [68, 70]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_dev_md_20260423_searchbox:2",
+      "type": "qa",
+      "question": "如何避免搜索结果被旧请求覆盖？",
+      "answer": "应取消重复请求，确保页面最终展示最后一次输入对应的结果。",
+      "explanation": "文档推荐使用 AbortController 或 CancelToken 处理竞态。",
+      "source_lines": [71, 72]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_dev_md_20260423_searchbox:3",
+      "type": "qa",
+      "question": "相同关键词的搜索结果为什么可以缓存？",
+      "answer": "缓存可以减少重复请求，降低后端压力并提高响应速度。",
+      "explanation": "文档提到使用 Map 做简单缓存。",
+      "source_lines": [72]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_dev_md_20260423_searchbox:4",
+      "type": "qa",
+      "question": "中文输入时为什么要监听 compositionstart/compositionend？",
+      "answer": "避免拼音输入阶段提前触发搜索，只有汉字真正上屏后再检索。",
+      "explanation": "文档指出中文输入需要在上屏后再触发检索，防止中间态误触。",
+      "source_lines": [103]
+    }
+  ]
+}

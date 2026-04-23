@@ -1,0 +1,50 @@
+{
+  "note_id": "note_dev_md_20260423_web_security",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_dev_md_20260423_web_security:0",
+      "type": "qa",
+      "question": "防御 XSS 需要哪些手段组合？",
+      "answer": "输入过滤、输出转义、DOMPurify 消毒 v-html、HttpOnly Cookie 和 CSP。",
+      "explanation": "文档提出多层防御策略来降低脚本注入风险。",
+      "source_lines": [291, 294, 295, 296, 297]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_dev_md_20260423_web_security:1",
+      "type": "qa",
+      "question": "CSRF 防御有哪些常见措施？",
+      "answer": "使用 SameSite Cookie、CSRF Token，并校验 Referer/Origin。",
+      "explanation": "文档列出了三种常见 CSRF 防御手段。",
+      "source_lines": [299, 304, 305, 306]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_dev_md_20260423_web_security:2",
+      "type": "qa",
+      "question": "为什么参数化查询比字符串拼接更安全？",
+      "answer": "参数化查询避免 SQL 语句和用户输入直接拼接，从而防止注入。",
+      "explanation": "文档对比了错误拼接和正确参数化的 SQL 代码示例。",
+      "source_lines": [308, 313, 314, 316, 317, 318, 320, 321]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_dev_md_20260423_web_security:3",
+      "type": "qa",
+      "question": "如何防御点击劫持攻击？",
+      "answer": "通过 X-Frame-Options 或 CSP frame-ancestors 限制页面被 iframe 嵌套。",
+      "explanation": "文档指出点击劫持本质是透明 iframe 嵌套，对策是框架嵌套限制。",
+      "source_lines": [324, 326, 329, 330]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_dev_md_20260423_web_security:4",
+      "type": "qa",
+      "question": "除了具体漏洞防御，还有哪些基础安全实践？",
+      "answer": "HTTPS 全站加密、HSTS 强制 HTTPS 和依赖安全扫描。",
+      "explanation": "文档强调传输层加密和依赖审计是整体安全防御的一部分。",
+      "source_lines": [333, 334, 335, 336]
+    }
+  ]
+}

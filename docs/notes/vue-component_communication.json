@@ -1,0 +1,93 @@
+{
+  "id": "note_vue_20260423_component_communication",
+  "title": "Vue 组件间通信：Props/Emits、Provide/Inject 与全局状态",
+  "source": {
+    "input_path": "docs/raw/vue.md",
+    "line_range": [
+      44,
+      82
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "父子组件通信首选 Props 传数据和 Emits 触发事件，保持单向数据流。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将 Props/Emits 定义为 Vue 的核心父子通信方式。"
+        },
+        "source_lines": [
+          48,
+          49
+        ]
+      },
+      {
+        "claim": "v-model 是 Props/Emits 的语法糖，适合构建自定义表单控件。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档解释了 Vue 3 v-model 的本质绑定机制。"
+        },
+        "source_lines": [
+          49,
+          50
+        ]
+      },
+      {
+        "claim": "Template refs 与 defineExpose 用于父组件直接访问子组件实例。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了 refs/expose 在组件间共享方法和状态时的应用。"
+        },
+        "source_lines": [
+          50
+        ]
+      },
+      {
+        "claim": "Provide/Inject 可避免跨层级 Props 逐层传递，但需要提供 Ref 或 Reactive 保持响应性。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将 Provide/Inject 描述为跨级通信的主要手段。"
+        },
+        "source_lines": [
+          54,
+          55
+        ]
+      },
+      {
+        "claim": "$attrs 用于传递未声明的属性，适合二次封装第三方组件。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出 $attrs 可用于属性透传和封装组件库。"
+        },
+        "source_lines": [
+          55
+        ]
+      },
+      {
+        "claim": "Pinia/Vuex 适合复杂全局状态管理，mitt 适合简单解耦的发布订阅场景。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档对全局状态管理和事件总线的选型做了区分。"
+        },
+        "source_lines": [
+          59,
+          60
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "无节制使用 Provide/Inject，导致状态来源不明确。",
+        "将复杂共享状态用 EventBus 实现，难以追踪和调试。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "extension",
+        "target_concept": "Pinia 全局状态",
+        "context": "组件通信方式与全局状态管理共同构成复杂业务的数据流方案。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

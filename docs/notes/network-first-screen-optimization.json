@@ -1,0 +1,99 @@
+{
+  "id": "note_network_20260423_first_screen_optimization",
+  "title": "首屏加载优化：压缩、缓存、SSR 与骨架屏",
+  "source": {
+    "input_path": "docs/raw/network.md",
+    "line_range": [
+      12,
+      42
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "首屏加载优化应通过路由懒加载和动态 import 分离首页 JS 体积。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档推荐使用 import() 将首页之外的代码按需加载。"
+        },
+        "source_lines": [
+          16
+        ]
+      },
+      {
+        "claim": "按需引入库、Tree Shaking 和静态资源压缩是减少首屏体积的关键手段。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档强调依赖按需、ESM 规范和图片/压缩优化。"
+        },
+        "source_lines": [
+          17,
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      {
+        "claim": "CDN 和 HTTP/2 可以加速资源传输，利用节点距离和多路复用降低网络延迟。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档介绍了 CDN 分发与 HTTP/2 多路复用的性能优势。"
+        },
+        "source_lines": [
+          25,
+          26
+        ]
+      },
+      {
+        "claim": "合理缓存策略应结合强缓存、协商缓存和 preload/prefetch 提前加载关键资源。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了缓存手段与预加载策略对首屏的作用。"
+        },
+        "source_lines": [
+          27,
+          28,
+          29
+        ]
+      },
+      {
+        "claim": "SSR/SSG 和骨架屏可以显著改善首屏感知性能，减少用户等待焦虑。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将服务端渲染与骨架屏作为优化首屏体验的核心方案。"
+        },
+        "source_lines": [
+          33,
+          34
+        ]
+      },
+      {
+        "claim": "将非核心脚本设置为 defer 或 async，可以减少首屏加载期间的阻塞。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出非必要插件脚本应延后加载，避免阻塞首页渲染。"
+        },
+        "source_lines": [
+          35,
+          36,
+          37
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "将所有 JS 一次性打包进首页，导致首屏包体过大。",
+        "不区分核心和非核心资源，导致初次渲染被脚本阻塞。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "Vue 路由懒加载",
+        "context": "首页首屏优化与 Vue 路由懒加载密切相关，都是首屏体积控制手段。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

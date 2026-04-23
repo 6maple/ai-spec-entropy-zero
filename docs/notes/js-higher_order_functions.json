@@ -1,0 +1,86 @@
+{
+  "id": "note_js_20260423_higher_order_functions",
+  "title": "JavaScript 高阶函数：柯里化、组合与管道",
+  "source": {
+    "input_path": "docs/raw/js.md",
+    "line_range": [
+      49,
+      116
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "柯里化将多参数函数转换为一系列单参数函数，便于预设参数和延迟执行。",
+        "evidence": {
+          "type": "code_example",
+          "description": "文档给出了 curry 函数实现并说明其参数复用价值。"
+        },
+        "source_lines": [
+          51,
+          57,
+          71
+        ]
+      },
+      {
+        "claim": "函数组合将多个纯函数从右向左嵌套执行，使数据流更声明式。",
+        "evidence": {
+          "type": "code_example",
+          "description": "文档以 compose 示例说明将多个函数链式连接的思想。"
+        },
+        "source_lines": [
+          75,
+          81,
+          92
+        ]
+      },
+      {
+        "claim": "管道与组合类似，但执行顺序改为从左向右，更符合线性思维。",
+        "evidence": {
+          "type": "code_example",
+          "description": "文档演示 pipe 的实现和数据处理的可读性提升。"
+        },
+        "source_lines": [
+          100,
+          106,
+          112
+        ]
+      },
+      {
+        "claim": "高阶函数、组合和管道都鼓励编写单一职责的纯函数，提升可维护性。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档总结这些技术的工程价值和声明式好处。"
+        },
+        "source_lines": [
+          96,
+          98
+        ]
+      },
+      {
+        "claim": "在复杂数据预处理场景下，函数管道可以让数据处理链条更清晰。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档提到管道在表单数据清洗等场景中的优势。"
+        },
+        "source_lines": [
+          116
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "将复杂逻辑写成深度嵌套调用，降低可读性。",
+        "滥用柯里化而让函数签名变得难以理解。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "extension",
+        "target_concept": "函数式编程",
+        "context": "高阶函数是函数式编程的重要工具之一。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

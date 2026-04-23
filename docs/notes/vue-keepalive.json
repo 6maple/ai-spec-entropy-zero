@@ -1,0 +1,95 @@
+{
+  "id": "note_vue_20260423_keepalive",
+  "title": "Vue Keep-alive：组件缓存、生命周期与限额控制",
+  "source": {
+    "input_path": "docs/raw/vue.md",
+    "line_range": [
+      132,
+      175
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "Keep-alive 缓存组件实例，使被包裹组件切换时不被销毁，保留渲染状态。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了 Keep-alive 的缓存作用与状态保留效果。"
+        },
+        "source_lines": [
+          134
+        ]
+      },
+      {
+        "claim": "被缓存组件会触发 activated 和 deactivated 钩子，而 mounted/unmounted 仅在首次加载和最终销毁时触发。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档总结了 Keep-alive 下新增生命周期。"
+        },
+        "source_lines": [
+          142,
+          143
+        ]
+      },
+      {
+        "claim": "include/exclude/max 可精准控制缓存组件范围和最大缓存数，避免内存占用过高。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了 Keep-alive 的三个核心属性及 LRU 缓存行为。"
+        },
+        "source_lines": [
+          150,
+          151,
+          152
+        ]
+      },
+      {
+        "claim": "在路由视图中使用 Keep-alive 可以缓存搜索页、详情页等频繁切换页面，提高体验。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档给出了 router-view 与 keep-alive 结合的使用场景。"
+        },
+        "source_lines": [
+          158,
+          164
+        ]
+      },
+      {
+        "claim": "Keep-alive 是空间换时间策略，应仅缓存交互复杂或频繁返回的页面，避免无差别缓存。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档提醒要权衡内存成本与缓存收益。"
+        },
+        "source_lines": [
+          168,
+          169
+        ]
+      },
+      {
+        "claim": "确保被缓存组件含有 name 属性，并在 activated 中恢复滚动位置，否则可能出现缓存失效或页面滚动重置。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列出了常见 Keep-alive 问题及解决措施。"
+        },
+        "source_lines": [
+          174,
+          175
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "对所有页面都包裹 Keep-alive，导致内存压力过大。",
+        "缓存组件未设置 name，造成 include/exclude 匹配失效。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "comparison",
+        "target_concept": "内存管理",
+        "context": "Keep-alive 的缓存策略需要与内存释放机制共同权衡。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

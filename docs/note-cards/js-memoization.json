@@ -1,0 +1,80 @@
+{
+  "note_id": "note_js_20260423_memoization",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_js_20260423_memoization:0",
+      "type": "qa",
+      "question": "为什么函数缓存通过将输入参数映射到执行结果，避免重复计算并以空间换时间",
+      "answer": "函数缓存通过将输入参数映射到执行结果，避免重复计算并以空间换时间。",
+      "explanation": "文档定义函数缓存的核心原理和空间换时间策略。",
+      "source_lines": [
+        14,
+        18
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_js_20260423_memoization:1",
+      "type": "qa",
+      "question": "为什么通用 memoize 实现通常用 Map 存储缓存，并用 JSON.stringify 将参数序列化为键",
+      "answer": "通用 memoize 实现通常用 Map 存储缓存，并用 JSON.stringify 将参数序列化为键。",
+      "explanation": "文档给出了 memoize 函数的核心实现代码。",
+      "source_lines": [
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_js_20260423_memoization:2",
+      "type": "qa",
+      "question": "为什么Vue 计算属性是函数缓存的典型场景，只有依赖变化时才重新计算",
+      "answer": "Vue 计算属性是函数缓存的典型场景，只有依赖变化时才重新计算。",
+      "explanation": "文档把 Vue 计算属性列为函数缓存的代表应用。",
+      "source_lines": [
+        39
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_js_20260423_memoization:3",
+      "type": "qa",
+      "question": "为什么昂贵递归计算和相同参数的 API 请求过滤，都是函数缓存的典型应用场景",
+      "answer": "昂贵递归计算和相同参数的 API 请求过滤，都是函数缓存的典型应用场景。",
+      "explanation": "文档列举了递归计算和 API 请求过滤的实际应用。",
+      "source_lines": [
+        40,
+        41
+      ]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_js_20260423_memoization:4",
+      "type": "qa",
+      "question": "为什么函数缓存仅适用于纯函数，依赖外部状态或随机值的函数不应缓存",
+      "answer": "函数缓存仅适用于纯函数，依赖外部状态或随机值的函数不应缓存。",
+      "explanation": "文档强调缓存前提是纯函数，避免副作用影响结果一致性。",
+      "source_lines": [
+        45
+      ]
+    },
+    {
+      "card_id": "card_06_20260423",
+      "claim_ref": "note_js_20260423_memoization:5",
+      "type": "qa",
+      "question": "为什么缓存带来的内存占用和参数序列化成本，也需要在工程中加以权衡",
+      "answer": "缓存带来的内存占用和参数序列化成本，也需要在工程中加以权衡。",
+      "explanation": "文档提醒缓存可能导致内存膨胀和序列化成本问题。",
+      "source_lines": [
+        46,
+        47
+      ]
+    }
+  ]
+}

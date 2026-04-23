@@ -1,0 +1,75 @@
+{
+  "note_id": "note_vue_20260423_component_communication",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_vue_20260423_component_communication:0",
+      "type": "qa",
+      "question": "为什么父子组件通信首选 Props 传数据和 Emits 触发事件，保持单向数据流",
+      "answer": "父子组件通信首选 Props 传数据和 Emits 触发事件，保持单向数据流。",
+      "explanation": "文档将 Props/Emits 定义为 Vue 的核心父子通信方式。",
+      "source_lines": [
+        48,
+        49
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_vue_20260423_component_communication:1",
+      "type": "qa",
+      "question": "为什么v-model 是 Props/Emits 的语法糖，适合构建自定义表单控件",
+      "answer": "v-model 是 Props/Emits 的语法糖，适合构建自定义表单控件。",
+      "explanation": "文档解释了 Vue 3 v-model 的本质绑定机制。",
+      "source_lines": [
+        49,
+        50
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_vue_20260423_component_communication:2",
+      "type": "qa",
+      "question": "为什么Template refs 与 defineExpose 用于父组件直接访问子组件实例",
+      "answer": "Template refs 与 defineExpose 用于父组件直接访问子组件实例。",
+      "explanation": "文档说明了 refs/expose 在组件间共享方法和状态时的应用。",
+      "source_lines": [
+        50
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_vue_20260423_component_communication:3",
+      "type": "qa",
+      "question": "为什么Provide/Inject 可避免跨层级 Props 逐层传递，但需要提供 Ref 或 Reactive 保持响应性",
+      "answer": "Provide/Inject 可避免跨层级 Props 逐层传递，但需要提供 Ref 或 Reactive 保持响应性。",
+      "explanation": "文档将 Provide/Inject 描述为跨级通信的主要手段。",
+      "source_lines": [
+        54,
+        55
+      ]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_vue_20260423_component_communication:4",
+      "type": "qa",
+      "question": "为什么$attrs 用于传递未声明的属性，适合二次封装第三方组件",
+      "answer": "$attrs 用于传递未声明的属性，适合二次封装第三方组件。",
+      "explanation": "文档指出 $attrs 可用于属性透传和封装组件库。",
+      "source_lines": [
+        55
+      ]
+    },
+    {
+      "card_id": "card_06_20260423",
+      "claim_ref": "note_vue_20260423_component_communication:5",
+      "type": "qa",
+      "question": "为什么Pinia/Vuex 适合复杂全局状态管理，mitt 适合简单解耦的发布订阅场景",
+      "answer": "Pinia/Vuex 适合复杂全局状态管理，mitt 适合简单解耦的发布订阅场景。",
+      "explanation": "文档对全局状态管理和事件总线的选型做了区分。",
+      "source_lines": [
+        59,
+        60
+      ]
+    }
+  ]
+}

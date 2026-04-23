@@ -1,0 +1,71 @@
+{
+  "id": "note_js_20260423_tail_recursion",
+  "title": "JavaScript 尾递归：结构、优化与支持现状",
+  "source": {
+    "input_path": "docs/raw/js.md",
+    "line_range": [
+      348,
+      387
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "普通递归在返回语句中包含表达式运算，必须等待下层返回后才能完成调用。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档对比了普通递归和尾递归的控制流结构。"
+        },
+        "source_lines": [
+          358
+        ]
+      },
+      {
+        "claim": "尾递归通过将中间结果传递给累加器，使函数调用成为最后一步，从而有利于优化。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明尾递归结构的核心特性。"
+        },
+        "source_lines": [
+          367,
+          369
+        ]
+      },
+      {
+        "claim": "JavaScript 的尾调用优化支持度有限，Safari 的 JavaScriptCore 实现较完整，而 V8 默认未启用。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档评估了不同引擎对 TCO 的支持现状。"
+        },
+        "source_lines": [
+          383,
+          384
+        ]
+      },
+      {
+        "claim": "即使引擎支持不足，编写尾递归风格代码仍有助于逻辑清晰，并可在必要时重构为迭代循环。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档建议将尾递归作为结构清晰的实践，并在条件不满足时改用迭代。"
+        },
+        "source_lines": [
+          385
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "盲目依赖 JS 引擎进行 TCO，而不考虑实际运行时兼容性。",
+        "将深度递归写成普通递归，导致调用栈溢出。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "causation",
+        "target_concept": "内存管理",
+        "context": "尾递归和迭代风格是避免深递归调用栈压力的通用内存与性能策略。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "note_id": "note_vue_20260423_component_performance",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_vue_20260423_component_performance:0",
+      "type": "qa",
+      "question": "为什么组件细粒度拆分可以让局部状态变化仅触发相关子组件重渲染，避免整树对比开销",
+      "answer": "组件细粒度拆分可以让局部状态变化仅触发相关子组件重渲染，避免整树对比开销。",
+      "explanation": "文档强调拆分复杂页面组件以降低虚拟 DOM 更新成本。",
+      "source_lines": [
+        16
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_vue_20260423_component_performance:1",
+      "type": "qa",
+      "question": "为什么路由懒加载通过动态 import 将页面资源按需加载，显著减少首屏体积",
+      "answer": "路由懒加载通过动态 import 将页面资源按需加载，显著减少首屏体积。",
+      "explanation": "文档推荐将路由组件按需加载以减小首页 JS。",
+      "source_lines": [
+        17
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_vue_20260423_component_performance:2",
+      "type": "qa",
+      "question": "为什么虚拟滚动只渲染可视区 DOM 节点，从根本上解决海量列表的卡顿问题",
+      "answer": "虚拟滚动只渲染可视区 DOM 节点，从根本上解决海量列表的卡顿问题。",
+      "explanation": "文档把虚拟列表列为长列表优化的核心技术。",
+      "source_lines": [
+        18
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_vue_20260423_component_performance:3",
+      "type": "qa",
+      "question": "为什么shallowRef/shallowReactive 和非响应式数据可避免不必要的深层依赖追踪",
+      "answer": "shallowRef/shallowReactive 和非响应式数据可避免不必要的深层依赖追踪。",
+      "explanation": "文档指出应将无需响应的数据从 Vue 响应式系统中隔离。",
+      "source_lines": [
+        23,
+        24
+      ]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_vue_20260423_component_performance:4",
+      "type": "qa",
+      "question": "为什么v-show 与 v-if 应根据切换频率选择，避免错误使用导致渲染性能下降",
+      "answer": "v-show 与 v-if 应根据切换频率选择，避免错误使用导致渲染性能下降。",
+      "explanation": "文档比较了 v-show 和 v-if 的使用时机。",
+      "source_lines": [
+        31,
+        32
+      ]
+    },
+    {
+      "card_id": "card_06_20260423",
+      "claim_ref": "note_vue_20260423_component_performance:5",
+      "type": "qa",
+      "question": "为什么Tree Shaking 和按需引入插件帮助减少构建包体和页面首次加载成本",
+      "answer": "Tree Shaking 和按需引入插件帮助减少构建包体和页面首次加载成本。",
+      "explanation": "文档建议使用 ES 模块和插件按需引入来优化构建体积。",
+      "source_lines": [
+        40,
+        41,
+        42
+      ]
+    }
+  ]
+}

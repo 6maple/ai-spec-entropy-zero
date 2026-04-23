@@ -1,0 +1,51 @@
+{
+  "note_id": "note_js_20260423_tail_recursion",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_js_20260423_tail_recursion:0",
+      "type": "qa",
+      "question": "为什么普通递归在返回语句中包含表达式运算，必须等待下层返回后才能完成调用",
+      "answer": "普通递归在返回语句中包含表达式运算，必须等待下层返回后才能完成调用。",
+      "explanation": "文档对比了普通递归和尾递归的控制流结构。",
+      "source_lines": [
+        358
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_js_20260423_tail_recursion:1",
+      "type": "qa",
+      "question": "为什么尾递归通过将中间结果传递给累加器，使函数调用成为最后一步，从而有利于优化",
+      "answer": "尾递归通过将中间结果传递给累加器，使函数调用成为最后一步，从而有利于优化。",
+      "explanation": "文档说明尾递归结构的核心特性。",
+      "source_lines": [
+        367,
+        369
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_js_20260423_tail_recursion:2",
+      "type": "qa",
+      "question": "为什么JavaScript 的尾调用优化支持度有限，Safari 的 JavaScriptCore 实现较完整，而 V8 默认未启用",
+      "answer": "JavaScript 的尾调用优化支持度有限，Safari 的 JavaScriptCore 实现较完整，而 V8 默认未启用。",
+      "explanation": "文档评估了不同引擎对 TCO 的支持现状。",
+      "source_lines": [
+        383,
+        384
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_js_20260423_tail_recursion:3",
+      "type": "qa",
+      "question": "为什么即使引擎支持不足，编写尾递归风格代码仍有助于逻辑清晰，并可在必要时重构为迭代循环",
+      "answer": "即使引擎支持不足，编写尾递归风格代码仍有助于逻辑清晰，并可在必要时重构为迭代循环。",
+      "explanation": "文档建议将尾递归作为结构清晰的实践，并在条件不满足时改用迭代。",
+      "source_lines": [
+        385
+      ]
+    }
+  ]
+}

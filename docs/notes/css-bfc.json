@@ -1,0 +1,89 @@
+{
+  "id": "note_css_20260423_bfc",
+  "title": "CSS BFC：布局隔离与浮动清除",
+  "source": {
+    "input_path": "docs/raw/css.md",
+    "line_range": [
+      34,
+      67
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "BFC 是一个独立的布局容器，其内部布局不影响外部，外部元素也不影响内部。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将 BFC 描述为独立容器，并说明其隔离特性。"
+        },
+        "source_lines": [
+          36,
+          39
+        ]
+      },
+      {
+        "claim": "BFC 可以由浮动、定位、inline-block/flex/grid/table-cell、overflow 非 visible 或根元素触发。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列出了常见的 BFC 触发条件。"
+        },
+        "source_lines": [
+          44,
+          45,
+          46,
+          47,
+          48
+        ]
+      },
+      {
+        "claim": "BFC 内部元素垂直排列，上下 margin 会发生重叠，左 margin 与包含块左边界接触。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档总结了 BFC 的渲染规则和外边距行为。"
+        },
+        "source_lines": [
+          52,
+          53,
+          54,
+          55,
+          56
+        ]
+      },
+      {
+        "claim": "利用 BFC 可以防止外边距重叠、清除内部浮动并解决高度塌陷问题。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将 BFC 应用场景与布局异常修复联系起来。"
+        },
+        "source_lines": [
+          60,
+          62
+        ]
+      },
+      {
+        "claim": "在两栏布局中，左侧浮动和右侧触发 BFC 的区域可以实现宽度自适应且不被浮动覆盖。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了 BFC 与 float 的协同布局方式。"
+        },
+        "source_lines": [
+          64
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "依靠 margin 解决浮动高度塌陷，而非引入 BFC。",
+        "在需要布局隔离的场景中未触发 BFC，导致外部元素干扰内部布局。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "comparison",
+        "target_concept": "响应式布局",
+        "context": "BFC 提供的独立布局环境可以与响应式容器组合，避免浮动元素影响自适应结构。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "note_id": "note_dev_md_20260423_pull_refresh",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_dev_md_20260423_pull_refresh:0",
+      "type": "qa",
+      "question": "下拉刷新通常依赖哪些触摸事件？",
+      "answer": "依赖 touchstart、touchmove 和 touchend，并且只有在页面顶部才触发刷新。",
+      "explanation": "文档说明基于 touch 事件计算位移并判断 scrollTop 是否为 0。",
+      "source_lines": [232, 234, 235]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_dev_md_20260423_pull_refresh:1",
+      "type": "qa",
+      "question": "如何判断上拉加载应触发？",
+      "answer": "当 scrollTop + clientHeight >= scrollHeight - threshold，或底部哨兵进入可视区时触发。",
+      "explanation": "文档给出基于阈值和 Intersection Observer 哨兵的触发策略。",
+      "source_lines": [245, 247, 248, 251]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_dev_md_20260423_pull_refresh:2",
+      "type": "qa",
+      "question": "上拉/下拉交互中应管理哪几种状态？",
+      "answer": "必须管理 Loading、Finished、Error 和 Pulling 四种状态。",
+      "explanation": "文档列出这四种关键状态，强调它们对界面和重试逻辑的重要性。",
+      "source_lines": [276, 277, 278, 279]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_dev_md_20260423_pull_refresh:3",
+      "type": "qa",
+      "question": "为什么上拉加载需要配合节流和虚拟列表？",
+      "answer": "节流减少 scroll 事件频率，虚拟列表降低大数据量下的渲染压力。",
+      "explanation": "文档建议 scroll 监听时使用 throttle，并在大量数据时结合虚拟列表。",
+      "source_lines": [283, 284, 285]
+    }
+  ]
+}

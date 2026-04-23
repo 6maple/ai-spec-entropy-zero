@@ -1,0 +1,97 @@
+{
+  "id": "note_vue_20260423_permission_management",
+  "title": "Vue 权限管理：路由守卫、指令与动态路由",
+  "source": {
+    "input_path": "docs/raw/vue.md",
+    "line_range": [
+      84,
+      130
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "页面级权限应通过路由守卫在 beforeEach 中校验 token 和角色，未授权则重定向。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将路由守卫作为最核心的权限防线。"
+        },
+        "source_lines": [
+          90,
+          91,
+          92
+        ]
+      },
+      {
+        "claim": "动态路由可根据用户角色动态注入，确保菜单与路由实时同步。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明了动态添加路由的实现价值。"
+        },
+        "source_lines": [
+          90,
+          92
+        ]
+      },
+      {
+        "claim": "视图级权限可通过自定义指令 v-permission 控制按钮或元素的渲染。",
+        "evidence": {
+          "type": "code_example",
+          "description": "文档提供了 permissionDirective 的指令实现思路。"
+        },
+        "source_lines": [
+          98,
+          100,
+          111
+        ]
+      },
+      {
+        "claim": "接口级权限应在请求拦截器中统一注入 Authorization Token，并处理 401/403 响应。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档把请求拦截和响应拦截作为接口级权限保障手段。"
+        },
+        "source_lines": [
+          120
+        ]
+      },
+      {
+        "claim": "权限数据应持久化存储，菜单过滤和路由生成应使用统一权限标识符。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档强调权限标识符一致性和持久化的必要性。"
+        },
+        "source_lines": [
+          124,
+          125,
+          126
+        ]
+      },
+      {
+        "claim": "角色切换或登出时应 resetRouter 清空动态路由，避免权限残留。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出动态替换路由与数据闭环的重要性。"
+        },
+        "source_lines": [
+          129,
+          130
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "前端直接信任路由权限，而不对后端接口权限做二次校验。",
+        "角色切换后不重置路由，导致旧权限逻辑残留。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "全局状态管理",
+        "context": "权限管理依赖全局状态存储，确保页面刷新后权限信息一致。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

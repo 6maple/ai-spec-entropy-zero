@@ -1,0 +1,50 @@
+{
+  "note_id": "note_dev_md_20260423_virtual_scroll",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_dev_md_20260423_virtual_scroll:0",
+      "type": "qa",
+      "question": "虚拟滚动通过什么方式实现长列表的按需渲染？",
+      "answer": "只渲染可视区内的节点，并使用占位背景撑高来保持原生滚动行为。",
+      "explanation": "文档描述了 Phantom Layer 和绝对定位渲染列表的核心思想。",
+      "source_lines": [181, 183, 189, 191]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_dev_md_20260423_virtual_scroll:1",
+      "type": "qa",
+      "question": "虚拟滚动的关键计算逻辑包括哪些变量？",
+      "answer": "包括 startIndex、endIndex 和 offset，由 scrollTop 和 itemHeight 计算得出。",
+      "explanation": "文档明确列出这三个变量是滚动事件中的核心计算。",
+      "source_lines": [195, 197, 198, 199]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_dev_md_20260423_virtual_scroll:2",
+      "type": "qa",
+      "question": "Vue 3 中虚拟滚动如何计算可见数据和偏移？",
+      "answer": "用 visibleData.slice(...) 获取当前可视项，并用 listOffset = startIndex * itemHeight 计算偏移。",
+      "explanation": "文档给出了 visibleData 和 listOffset 的计算示例。",
+      "source_lines": [205, 206, 210, 211, 212]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_dev_md_20260423_virtual_scroll:3",
+      "type": "qa",
+      "question": "为什么虚拟滚动需要缓冲区和 ResizeObserver？",
+      "answer": "缓冲区防止快速滚动白屏，ResizeObserver 解决高度变化导致的位置误差。",
+      "explanation": "文档建议 buffer 与高度观察来保持体验稳定。",
+      "source_lines": [217, 218, 219]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_dev_md_20260423_virtual_scroll:4",
+      "type": "qa",
+      "question": "虚拟滚动适合什么时候使用？",
+      "answer": "适用于海量列表场景，复杂业务中优先考虑成熟库如 vue-virtual-scroller。",
+      "explanation": "文档指出在后台管理、商品列表等大数据场景中更适合使用成熟方案。",
+      "source_lines": [223, 224]
+    }
+  ]
+}

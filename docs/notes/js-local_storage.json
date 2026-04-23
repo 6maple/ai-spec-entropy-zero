@@ -1,0 +1,93 @@
+{
+  "id": "note_js_20260423_local_storage",
+  "title": "浏览器本地存储对比：Cookie、LocalStorage、SessionStorage 与 IndexedDB",
+  "source": {
+    "input_path": "docs/raw/js.md",
+    "line_range": [
+      167,
+      222
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "Cookie 适合小数据且会随请求自动发送，通常用于身份凭证而非大容量缓存。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档对 Cookie 的作用和限制进行了说明。"
+        },
+        "source_lines": [
+          181
+        ]
+      },
+      {
+        "claim": "LocalStorage 提供持久化存储，适合保存主题偏好等长期配置。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出 LocalStorage 的持久性和应用场景。"
+        },
+        "source_lines": [
+          184
+        ]
+      },
+      {
+        "claim": "SessionStorage 生命周期与标签页绑定，适合存储临时会话数据。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将 SessionStorage 的失效规则与使用场景联系起来。"
+        },
+        "source_lines": [
+          187
+        ]
+      },
+      {
+        "claim": "IndexedDB 支持大量结构化数据，适用于离线应用和大数据缓存。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档描述了 IndexedDB 的容量与结构化数据优势。"
+        },
+        "source_lines": [
+          190
+        ]
+      },
+      {
+        "claim": "访问浏览器存储应封装 JSON 序列化/反序列化，并处理异常。",
+        "evidence": {
+          "type": "code_example",
+          "description": "文档提供了封装 localStorage 读写的实用工具示例。"
+        },
+        "source_lines": [
+          197,
+          215
+        ]
+      },
+      {
+        "claim": "不同存储方式应根据用途选型：Cookie for auth, LocalStorage for persistence, SessionStorage for session, IndexedDB for offline/large-data。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档给出了针对不同数据类型的存储选型建议。"
+        },
+        "source_lines": [
+          219,
+          220,
+          221,
+          222
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "将大数据直接放入 Cookie，造成请求体膨胀。",
+        "把所有临时状态都存入 LocalStorage，导致持久化污染。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "comparison",
+        "target_concept": "网络首屏优化",
+        "context": "浏览器存储策略与首屏优化的缓存层设计互为补充。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "id": "note_vue_20260423_component_performance",
+  "title": "Vue 组件性能优化：拆分、虚拟列表与模板策略",
+  "source": {
+    "input_path": "docs/raw/vue.md",
+    "line_range": [
+      12,
+      42
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "组件细粒度拆分可以让局部状态变化仅触发相关子组件重渲染，避免整树对比开销。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档强调拆分复杂页面组件以降低虚拟 DOM 更新成本。"
+        },
+        "source_lines": [
+          16
+        ]
+      },
+      {
+        "claim": "路由懒加载通过动态 import 将页面资源按需加载，显著减少首屏体积。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档推荐将路由组件按需加载以减小首页 JS。"
+        },
+        "source_lines": [
+          17
+        ]
+      },
+      {
+        "claim": "虚拟滚动只渲染可视区 DOM 节点，从根本上解决海量列表的卡顿问题。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档把虚拟列表列为长列表优化的核心技术。"
+        },
+        "source_lines": [
+          18
+        ]
+      },
+      {
+        "claim": "shallowRef/shallowReactive 和非响应式数据可避免不必要的深层依赖追踪。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档指出应将无需响应的数据从 Vue 响应式系统中隔离。"
+        },
+        "source_lines": [
+          23,
+          24
+        ]
+      },
+      {
+        "claim": "v-show 与 v-if 应根据切换频率选择，避免错误使用导致渲染性能下降。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档比较了 v-show 和 v-if 的使用时机。"
+        },
+        "source_lines": [
+          31,
+          32
+        ]
+      },
+      {
+        "claim": "Tree Shaking 和按需引入插件帮助减少构建包体和页面首次加载成本。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档建议使用 ES 模块和插件按需引入来优化构建体积。"
+        },
+        "source_lines": [
+          40,
+          41,
+          42
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "把需频繁切换的元素用 v-if 而不是 v-show。",
+        "将整个 UI 库一次性导入到首屏包。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "网络首屏优化",
+        "context": "Vue 组件懒加载与首屏优化策略共同决定页面初次加载性能。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "note_id": "note_css_20260423_responsive_layout",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_css_20260423_responsive_layout:0",
+      "type": "qa",
+      "question": "为什么响应式布局的基础是媒体查询，通常采用移动端优先策略，在小屏基础上逐步适配大屏",
+      "answer": "响应式布局的基础是媒体查询，通常采用移动端优先策略，在小屏基础上逐步适配大屏。",
+      "explanation": "文档指出 media queries 是响应式的基石，并推荐移动端优先。",
+      "source_lines": [
+        71,
+        72
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_css_20260423_responsive_layout:1",
+      "type": "qa",
+      "question": "为什么百分比布局适合流式尺寸，但基于父级计算的高度关系复杂，难以处理高度适配",
+      "answer": "百分比布局适合流式尺寸，但基于父级计算的高度关系复杂，难以处理高度适配。",
+      "explanation": "文档分析了百分比布局的优缺点。",
+      "source_lines": [
+        72
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_css_20260423_responsive_layout:2",
+      "type": "qa",
+      "question": "为什么Flexbox 是现代布局首选，用于局部组件排列、自动换行与剩余空间分配",
+      "answer": "Flexbox 是现代布局首选，用于局部组件排列、自动换行与剩余空间分配。",
+      "explanation": "文档描述了 flex-wrap 和 flex-grow/shrink 的设计价值。",
+      "source_lines": [
+        73
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_css_20260423_responsive_layout:3",
+      "type": "qa",
+      "question": "为什么Grid 是二维布局利器，特别适合后台管理等大框架场景",
+      "answer": "Grid 是二维布局利器，特别适合后台管理等大框架场景。",
+      "explanation": "文档强调 Grid 在控制行列方面优于 Flex。",
+      "source_lines": [
+        73,
+        74
+      ]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_css_20260423_responsive_layout:4",
+      "type": "qa",
+      "question": "为什么现代响应式单位包括 rem 和 vw/vh，rem 依赖根字号，vw/vh 直接基于视口尺寸",
+      "answer": "现代响应式单位包括 rem 和 vw/vh，rem 依赖根字号，vw/vh 直接基于视口尺寸。",
+      "explanation": "文档比较了 rem 和 vw/vh 的原理与实践方式。",
+      "source_lines": [
+        78,
+        79,
+        81,
+        82,
+        83
+      ]
+    },
+    {
+      "card_id": "card_06_20260423",
+      "claim_ref": "note_css_20260423_responsive_layout:5",
+      "type": "qa",
+      "question": "为什么组件化响应式方案通过断点组件、栅格系统、Tailwind 类名和响应式图片，提升工程效率",
+      "answer": "组件化响应式方案通过断点组件、栅格系统、Tailwind 类名和响应式图片，提升工程效率。",
+      "explanation": "文档把响应式 UI 框架、组件化方案与图片响应式整合为工程实践。",
+      "source_lines": [
+        87,
+        88,
+        89,
+        90,
+        91,
+        92
+      ]
+    }
+  ]
+}

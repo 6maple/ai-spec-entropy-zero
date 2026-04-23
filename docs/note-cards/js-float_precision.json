@@ -1,0 +1,54 @@
+{
+  "note_id": "note_js_20260423_float_precision",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_js_20260423_float_precision:0",
+      "type": "qa",
+      "question": "为什么JavaScript 使用 IEEE 754 双精度浮点数表示数字，十进制小数在二进制中通常无法精确表示",
+      "answer": "JavaScript 使用 IEEE 754 双精度浮点数表示数字，十进制小数在二进制中通常无法精确表示。",
+      "explanation": "文档解释了浮点数存储标准和二进制转换问题。",
+      "source_lines": [
+        304,
+        305,
+        306
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_js_20260423_float_precision:1",
+      "type": "qa",
+      "question": "为什么0.1 与 0.2 等十进制数在二进制中是无限循环，会因舍入导致计算结果出现偏差",
+      "answer": "0.1 与 0.2 等十进制数在二进制中是无限循环，会因舍入导致计算结果出现偏差。",
+      "explanation": "文档指出精度丢失的根因在于二进制截断和舍入误差。",
+      "source_lines": [
+        305,
+        306
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_js_20260423_float_precision:2",
+      "type": "qa",
+      "question": "为什么toFixed 返回字符串，并且在某些场景下可能出现不稳定的四舍五入行为，适合用于 UI 渲染而非计算逻辑",
+      "answer": "toFixed 返回字符串，并且在某些场景下可能出现不稳定的四舍五入行为，适合用于 UI 渲染而非计算逻辑。",
+      "explanation": "文档提醒 toFixed 的字符串类型结果和边缘 rounding 风险。",
+      "source_lines": [
+        332
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_js_20260423_float_precision:3",
+      "type": "qa",
+      "question": "为什么对于精度要求高的计算，应使用 Big.js、Decimal.js 或 Math.js 等精度库",
+      "answer": "对于精度要求高的计算，应使用 Big.js、Decimal.js 或 Math.js 等精度库。",
+      "explanation": "文档列出了常用的精度计算库。",
+      "source_lines": [
+        337,
+        338,
+        339
+      ]
+    }
+  ]
+}

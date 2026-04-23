@@ -1,0 +1,81 @@
+{
+  "note_id": "note_network_20260423_first_screen_optimization",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_network_20260423_first_screen_optimization:0",
+      "type": "qa",
+      "question": "为什么首屏加载优化应通过路由懒加载和动态 import 分离首页 JS 体积",
+      "answer": "首屏加载优化应通过路由懒加载和动态 import 分离首页 JS 体积。",
+      "explanation": "文档推荐使用 import() 将首页之外的代码按需加载。",
+      "source_lines": [
+        16
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_network_20260423_first_screen_optimization:1",
+      "type": "qa",
+      "question": "为什么按需引入库、Tree Shaking 和静态资源压缩是减少首屏体积的关键手段",
+      "answer": "按需引入库、Tree Shaking 和静态资源压缩是减少首屏体积的关键手段。",
+      "explanation": "文档强调依赖按需、ESM 规范和图片/压缩优化。",
+      "source_lines": [
+        17,
+        18,
+        19,
+        20,
+        21
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_network_20260423_first_screen_optimization:2",
+      "type": "qa",
+      "question": "为什么CDN 和 HTTP/2 可以加速资源传输，利用节点距离和多路复用降低网络延迟",
+      "answer": "CDN 和 HTTP/2 可以加速资源传输，利用节点距离和多路复用降低网络延迟。",
+      "explanation": "文档介绍了 CDN 分发与 HTTP/2 多路复用的性能优势。",
+      "source_lines": [
+        25,
+        26
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_network_20260423_first_screen_optimization:3",
+      "type": "qa",
+      "question": "为什么合理缓存策略应结合强缓存、协商缓存和 preload/prefetch 提前加载关键资源",
+      "answer": "合理缓存策略应结合强缓存、协商缓存和 preload/prefetch 提前加载关键资源。",
+      "explanation": "文档说明了缓存手段与预加载策略对首屏的作用。",
+      "source_lines": [
+        27,
+        28,
+        29
+      ]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_network_20260423_first_screen_optimization:4",
+      "type": "qa",
+      "question": "为什么SSR/SSG 和骨架屏可以显著改善首屏感知性能，减少用户等待焦虑",
+      "answer": "SSR/SSG 和骨架屏可以显著改善首屏感知性能，减少用户等待焦虑。",
+      "explanation": "文档将服务端渲染与骨架屏作为优化首屏体验的核心方案。",
+      "source_lines": [
+        33,
+        34
+      ]
+    },
+    {
+      "card_id": "card_06_20260423",
+      "claim_ref": "note_network_20260423_first_screen_optimization:5",
+      "type": "qa",
+      "question": "为什么将非核心脚本设置为 defer 或 async，可以减少首屏加载期间的阻塞",
+      "answer": "将非核心脚本设置为 defer 或 async，可以减少首屏加载期间的阻塞。",
+      "explanation": "文档指出非必要插件脚本应延后加载，避免阻塞首页渲染。",
+      "source_lines": [
+        35,
+        36,
+        37
+      ]
+    }
+  ]
+}

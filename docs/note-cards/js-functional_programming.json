@@ -1,0 +1,56 @@
+{
+  "note_id": "note_js_20260423_functional_programming",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_js_20260423_functional_programming:0",
+      "type": "qa",
+      "question": "为什么函数式编程强调纯函数、不可变性和函数是一等公民",
+      "answer": "函数式编程强调纯函数、不可变性和函数是一等公民。",
+      "explanation": "文档列出了 FP 的三大基本准则。",
+      "source_lines": [
+        137,
+        138,
+        139
+      ]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_js_20260423_functional_programming:1",
+      "type": "qa",
+      "question": "为什么高阶函数、函数组合和柯里化是函数式编程的常用技术手段",
+      "answer": "高阶函数、函数组合和柯里化是函数式编程的常用技术手段。",
+      "explanation": "文档把 HOF、Compose、Currying 归纳为 FP 工具。",
+      "source_lines": [
+        143,
+        144,
+        145
+      ]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_js_20260423_functional_programming:2",
+      "type": "qa",
+      "question": "为什么Vue Composition API、计算属性和单向数据流体现了函数式编程思想",
+      "answer": "Vue Composition API、计算属性和单向数据流体现了函数式编程思想。",
+      "explanation": "文档介绍了 Vue 中 FP 体现的实践场景。",
+      "source_lines": [
+        158,
+        159,
+        160
+      ]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_js_20260423_functional_programming:3",
+      "type": "qa",
+      "question": "为什么函数式编程提高了代码可测试性和可预测性，但对过程式惯性开发者有学习成本",
+      "answer": "函数式编程提高了代码可测试性和可预测性，但对过程式惯性开发者有学习成本。",
+      "explanation": "文档评估了 FP 的优势与挑战。",
+      "source_lines": [
+        164,
+        165
+      ]
+    }
+  ]
+}

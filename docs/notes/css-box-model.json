@@ -1,0 +1,77 @@
+{
+  "id": "note_css_20260423_box_model",
+  "title": "CSS 盒模型：内容、内边距、边框与外边距",
+  "source": {
+    "input_path": "docs/raw/css.md",
+    "line_range": [
+      12,
+      32
+    ]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "CSS 盒模型由内容区、内边距、边框和外边距四个区域构成。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档列出盒模型的四个区域并说明它们的布局角色。"
+        },
+        "source_lines": [
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      {
+        "claim": "标准盒模型（content-box）将 width 仅应用于内容区，padding 和 border 会增加元素总宽度。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明 content-box 计算公式，以及 padding 和 border 如何影响最终尺寸。"
+        },
+        "source_lines": [
+          27,
+          28,
+          29
+        ]
+      },
+      {
+        "claim": "怪异盒模型（border-box）将 padding 与 border 包含在 width 内，保持元素总尺寸不变。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档说明 border-box 的计算方式和对内容区的挤压效果。"
+        },
+        "source_lines": [
+          30,
+          31,
+          32
+        ]
+      },
+      {
+        "claim": "`box-sizing` 是切换盒模型计算逻辑的关键属性。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档通过 box-sizing 的两个值对比说明不同布局计算方式。"
+        },
+        "source_lines": [
+          27,
+          31
+        ]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "忽略 padding 和 border 对元素总尺寸的影响。",
+        "在需要固定布局时错误使用 content-box 导致宽度溢出。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "dependency",
+        "target_concept": "BFC",
+        "context": "盒模型决定元素尺寸计算，BFC 进一步决定布局空间如何隔离和重叠。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}
