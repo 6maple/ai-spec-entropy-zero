@@ -8,7 +8,8 @@
 **项目位置：** `codes/notes/`  
 **数据来源：** `../../docs/notes/` (笔记JSON) 和 `../../docs/note-cards/` (复习卡JSON)  
 **启动命令：** `cd codes/notes && npm run dev`  
-**访问地址：** http://localhost:3000/
+**访问地址：** http://localhost:3000/  
+**最后更新：** 2026-04-22 - UI重构完成（双栏布局 + 语义图谱）
 
 ## 项目结构一句话
 
@@ -16,10 +17,13 @@
 src/
 ├── pages/        # 路由页面（NotesPage、NoteDetailPage、CardsPage）
 ├── components/   # UI组件（NoteViewer、CardPlayer、HookItem）
+│   └── NoteViewer.jsx    # ✨ 双栏布局（左：核心逻辑+复习卡；右：反模式+语义图谱）
+│   └── CardPlayer.jsx    # ✨ 紧凑样式 + 语义关联节点展示
+│   └── HookItem.jsx      # ✨ 带彩色图标的知识钩子组件
 ├── layouts/      # MainLayout（导航栏+暗黑模式）
 ├── services/     # dataService.js（统一JSON加载）
 ├── contexts/     # AppContext（全局状态）
-└── utils/        # constants.js（关系图标配置）
+└── utils/        # constants.js（关系图标配置 - 重要：存储组件类而非JSX）
 ```
 
 ## 核心功能
@@ -134,6 +138,8 @@ src/
 2. **数据服务单一职责**：所有 fetch 操作必须在 `dataService.js`
 3. **不要升级 Tailwind 到 v4**：当前代码基于 v3 语法
 4. **暗黑模式**：通过 Context 管理，切换 `<html>` 的 `dark` class
+5. **⚠️ constants.js 陷阱**：图标必须存储为组件类（`Icon: GitBranch`），不能存储 JSX 元素（`icon: <GitBranch />`），否则会导致应用白屏
+6. **🔄 持续演进规范**：每次功能修改后，必须更新 `AI-HANDOFF.md` 和 `PROJECT.md`，记录变更内容和新增陷阱
 
 ## 快速定位问题
 
@@ -152,6 +158,14 @@ src/
 ### 路由跳转后白屏
 
 → 检查浏览器控制台错误，通常是组件渲染错误或数据格式不匹配
+
+### 应用完全白屏，控制台无报错
+
+→ 检查 `constants.js`，图标配置必须是 `Icon: GitBranch`（组件类），不能是 `icon: <GitBranch />`（JSX元素）
+
+### 知识钩子图标不显示
+
+→ 检查 `HookItem.jsx` 是否正确使用 `const Icon = config.Icon; <Icon size={config.iconSize} />`
 
 ## 扩展方向建议
 
@@ -183,9 +197,67 @@ npm run dev
 
 **验证功能：**
 
-1. 访问 http://localhost:3000/
-2. 点击任意笔记卡片查看详情
-3. 切换到"闭卷复习"模式测试复习卡
-4. 点击顶部"复习卡库"查看所有复习卡
+<important>你需要自己通过playwright工具验证修改后的功能和界面</important>
+
+**验证清单（必须全部通过）：**
+
+1. ✅ 访问 http://localhost:3000/，确认笔记库正常显示
+2. ✅ 点击任意笔记卡片查看详情，验证双栏布局
+3. ✅ 检查知识语义图谱的图标和颜色是否正确显示
+4. ✅ 切换到"闭卷复习"模式，验证复习卡样式
+5. ✅ 点击"显示答案与语义关联"，确认语义节点显示
+6. ✅ 切换暗黑模式，验证所有组件颜色适配
+7. ✅ 点击顶部"复习卡库"查看所有复习卡
+
+**验证工具使用：**
+
+```javascript
+// 打开页面
+await open_browser_page({ url: 'http://localhost:3000/' });
+
+// 截图验证
+await screenshot_page({ pageId });
+
+// 点击测试
+await click_element({ pageId, element: '描述', ref: 'xxx' });
+```
+
+---
+
+## 🔄 持续演进规范
+
+**每次修改后必须执行：**
+
+1. **功能验证**：使用 Playwright 工具验证所有功能正常
+2. **更新文档**：
+   - 在 `AI-HANDOFF.md` 的"核心信息速览"更新最后修改日期和内容
+   - 在 `PROJECT.md` 的"技术债务与注意事项"记录新增限制
+   - 如有新的常见问题，添加到"快速定位问题"章节
+3. **提交记录**：
+   ```bash
+   git add .
+   git commit -m "feat: [简述修改内容]"
+   ```
+4. **传承知识**：
+   - 如发现新的陷阱/最佳实践，必须记录到文档
+   - 原型文件（如 `工作台/*.jsx`）保留作为参考
+
+**文档更新模板：**
+
+```markdown
+## 核心信息速览
+
+**最后更新：** YYYY-MM-DD - [修改简述]
+
+## 重要约定
+
+[新增约定序号]. **[约定标题]**：[详细说明]
+
+## 快速定位问题
+
+### [问题描述]
+
+→ [解决方案]
+```
 
 **准备就绪！开始你的工作吧！** 🚀

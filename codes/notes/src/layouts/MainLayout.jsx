@@ -19,14 +19,14 @@ export default function MainLayout({ children }) {
       <nav className='sticky top-0 z-50 border-b shadow-sm backdrop-blur-md border-slate-200 dark:border-[#163033] bg-white/90 dark:bg-[#0F1A1A]/90 px-4'>
         <div className='max-w-[1400px] mx-auto flex items-center justify-between h-14'>
           <div className='flex items-center gap-6'>
-            <Link to='/' className='flex items-center gap-2'>
+            <div className='flex items-center gap-2'>
               <div className='p-1.5 bg-[#2B8F80] rounded text-white'>
                 <Zap size={16} fill='currentColor' />
               </div>
               <h1 className='text-xs font-bold hidden md:block tracking-tight'>
-                Entropy Zero
+                Cognitive Hub
               </h1>
-            </Link>
+            </div>
             <div className='flex bg-slate-100 dark:bg-[#163033] p-1 rounded-lg'>
               <Link
                 to='/'
@@ -35,7 +35,7 @@ export default function MainLayout({ children }) {
                     ? 'bg-white dark:bg-[#2B8F80] shadow-sm text-[#2B8F80] dark:text-white'
                     : 'text-slate-400'
                 }`}>
-                <Layout size={14} /> 笔记库
+                <Layout size={14} /> 开卷笔记
               </Link>
               <Link
                 to='/cards'
@@ -44,14 +44,18 @@ export default function MainLayout({ children }) {
                     ? 'bg-white dark:bg-[#2B8F80] shadow-sm text-[#2B8F80] dark:text-white'
                     : 'text-slate-400'
                 }`}>
-                <BrainCircuit size={14} /> 复习卡库
+                <BrainCircuit size={14} /> 闭卷复习
               </Link>
             </div>
           </div>
           <button
             onClick={toggleDarkMode}
-            className='p-2 rounded-lg bg-slate-100 dark:bg-[#163033] hover:bg-slate-200 dark:hover:bg-[#2A4144] transition-colors'>
-            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+            className='p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800'>
+            {darkMode ? (
+              <Sun size={16} className='text-[#F4B84A]' />
+            ) : (
+              <Moon size={16} className='text-[#5A5FB5]' />
+            )}
           </button>
         </div>
       </nav>

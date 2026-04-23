@@ -4,7 +4,8 @@ import { GitBranch, ArrowRight, Repeat, Lock, MinusCircle } from 'lucide-react';
 export const RELATION_MAP = {
   补充: {
     label: '补充',
-    icon: GitBranch,
+    Icon: GitBranch,
+    iconSize: 14,
     color: 'text-emerald-600 dark:text-emerald-400',
     bg: 'bg-emerald-50 dark:bg-emerald-900/20',
     border: 'border-emerald-200 dark:border-emerald-800/40',
@@ -12,7 +13,8 @@ export const RELATION_MAP = {
   },
   对立: {
     label: '对立',
-    icon: MinusCircle,
+    Icon: MinusCircle,
+    iconSize: 14,
     color: 'text-rose-600 dark:text-rose-400',
     bg: 'bg-rose-50 dark:bg-rose-900/20',
     border: 'border-rose-200 dark:border-rose-800/40',
@@ -20,7 +22,8 @@ export const RELATION_MAP = {
   },
   因果: {
     label: '因果',
-    icon: ArrowRight,
+    Icon: ArrowRight,
+    iconSize: 14,
     color: 'text-blue-600 dark:text-blue-400',
     bg: 'bg-blue-50 dark:bg-blue-900/20',
     border: 'border-blue-200 dark:border-blue-800/40',
@@ -28,7 +31,8 @@ export const RELATION_MAP = {
   },
   相似: {
     label: '相似',
-    icon: Repeat,
+    Icon: Repeat,
+    iconSize: 14,
     color: 'text-amber-600 dark:text-amber-400',
     bg: 'bg-amber-50 dark:bg-amber-900/20',
     border: 'border-amber-200 dark:border-amber-800/40',
@@ -36,7 +40,8 @@ export const RELATION_MAP = {
   },
   前提: {
     label: '前提',
-    icon: Lock,
+    Icon: Lock,
+    iconSize: 14,
     color: 'text-indigo-600 dark:text-indigo-400',
     bg: 'bg-indigo-50 dark:bg-indigo-900/20',
     border: 'border-indigo-200 dark:border-indigo-800/40',
@@ -44,7 +49,8 @@ export const RELATION_MAP = {
   },
   延伸: {
     label: '延伸',
-    icon: GitBranch,
+    Icon: GitBranch,
+    iconSize: 14,
     color: 'text-teal-600 dark:text-teal-400',
     bg: 'bg-teal-50 dark:bg-teal-900/20',
     border: 'border-teal-200 dark:border-teal-800/40',

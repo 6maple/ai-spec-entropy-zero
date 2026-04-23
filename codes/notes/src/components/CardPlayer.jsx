@@ -6,8 +6,9 @@ import {
   ChevronRight,
   CheckCircle2,
 } from 'lucide-react';
+import HookItem from './HookItem';
 
-export default function CardPlayer({ cardsData }) {
+export default function CardPlayer({ cardsData, noteData }) {
   const [activeCard, setActiveCard] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
 
@@ -16,7 +17,7 @@ export default function CardPlayer({ cardsData }) {
 
   if (!currentCard) {
     return (
-      <div className='max-w-[800px] mx-auto p-6 text-center'>
+      <div className='max-w-xl mx-auto p-6 text-center'>
         <p className='text-gray-500'>暂无复习卡</p>
       </div>
     );
@@ -27,158 +28,112 @@ export default function CardPlayer({ cardsData }) {
     setActiveCard((prev) => (prev + 1) % cards.length);
   };
 
-  const handleReset = () => {
-    setActiveCard(0);
-    setShowAnswer(false);
-  };
-
-  const renderCardContent = () => {
-    switch (currentCard.type) {
-      case 'qa':
-      case '问答题':
-        return (
-          <div>
-            <div className='mb-4'>
-              <div className='text-xs font-bold text-blue-600 dark:text-blue-400 mb-2 uppercase'>
-                Question
-              </div>
-              <p className='text-base leading-relaxed'>
-                {currentCard.question}
-              </p>
-            </div>
-            {showAnswer && (
-              <div className='bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40 rounded-lg p-4'>
-                <div className='text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-2 uppercase'>
-                  Answer
-                </div>
-                <p className='text-sm mb-3 font-medium'>{currentCard.answer}</p>
-                {currentCard.explanation && (
-                  <p className='text-xs opacity-70 leading-relaxed'>
-                    <span className='font-bold'>解析：</span>
-                    {currentCard.explanation}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        );
-
-      case 'fill_in_blank':
-      case '填空题':
-        return (
-          <div>
-            <div className='mb-4'>
-              <div className='text-xs font-bold text-amber-600 dark:text-amber-400 mb-2 uppercase'>
-                Fill in the Blank
-              </div>
-              <pre className='text-sm leading-relaxed whitespace-pre-wrap font-mono bg-slate-100 dark:bg-slate-800 p-3 rounded'>
-                {currentCard.template}
-              </pre>
-            </div>
-            {showAnswer && (
-              <div className='bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40 rounded-lg p-4'>
-                <div className='text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-2 uppercase'>
-                  Answer
-                </div>
-                <p className='text-sm mb-3 font-bold font-mono'>
-                  {currentCard.answer}
-                </p>
-                {currentCard.explanation && (
-                  <p className='text-xs opacity-70 leading-relaxed'>
-                    <span className='font-bold'>解析：</span>
-                    {currentCard.explanation}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        );
-
-      case 'error_correction':
-      case '找错题':
-        return (
-          <div>
-            <div className='mb-4'>
-              <div className='text-xs font-bold text-rose-600 dark:text-rose-400 mb-2 uppercase'>
-                Find the Error
-              </div>
-              <pre className='text-sm leading-relaxed whitespace-pre-wrap font-mono bg-slate-100 dark:bg-slate-800 p-3 rounded mb-3'>
-                {currentCard.code_snippet}
-              </pre>
-              <p className='text-sm'>{currentCard.question}</p>
-            </div>
-            {showAnswer && (
-              <div className='bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40 rounded-lg p-4'>
-                <div className='text-xs font-bold text-emerald-700 dark:text-emerald-300 mb-2 uppercase'>
-                  Answer
-                </div>
-                <p className='text-sm mb-3 font-medium'>{currentCard.answer}</p>
-                {currentCard.explanation && (
-                  <p className='text-xs opacity-70 leading-relaxed'>
-                    <span className='font-bold'>解析：</span>
-                    {currentCard.explanation}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        );
-
-      default:
-        return <p>未知卡片类型</p>;
-    }
-  };
-
   return (
-    <div className='max-w-[800px] mx-auto p-6'>
+    <div className='max-w-xl mx-auto py-2 animate-in zoom-in-95 duration-300'>
       {/* 进度指示 */}
-      <div className='mb-4 flex items-center justify-between'>
-        <div className='text-sm opacity-60'>
-          卡片 {activeCard + 1} / {cards.length}
-        </div>
-        <div className='flex gap-2'>
-          <button
-            onClick={handleReset}
-            className='p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors'>
-            <RotateCcw size={16} />
-          </button>
+      <div className='flex items-center justify-between mb-3 px-2'>
+        <span className='text-[9px] font-bold opacity-30 uppercase tracking-[0.2em]'>
+          Self-Testing Mode
+        </span>
+        <div className='flex items-center gap-1'>
+          {cards.map((_, i) => (
+            <div
+              key={i}
+              className={`w-5 h-0.5 rounded-full ${
+                i === activeCard
+                  ? 'bg-[#2B8F80]'
+                  : 'bg-slate-200 dark:bg-[#163033]'
+              }`}
+            />
+          ))}
         </div>
       </div>
 
-      {/* 卡片内容 */}
-      <div className='bg-white dark:bg-[#163033] border border-slate-200 dark:border-[#2A4144] rounded-xl p-6 shadow-lg mb-4'>
-        {renderCardContent()}
+      {/* 卡片容器 */}
+      <div className='bg-white dark:bg-[#0F1A1A] rounded-2xl border border-slate-200 dark:border-[#163033] shadow-lg flex flex-col overflow-hidden'>
+        {/* 卡片头部 */}
+        <div className='px-4 py-2 border-b border-slate-50 dark:border-[#163033] flex justify-between items-center bg-slate-50/40 dark:bg-[#163033]/20'>
+          <span className='text-[9px] font-bold px-2 py-0.5 rounded bg-[#5A5FB5] text-white uppercase'>
+            {currentCard.type}
+          </span>
+          <span className='text-[9px] opacity-30'>
+            {activeCard + 1} / {cards.length}
+          </span>
+        </div>
+
+        {/* 卡片内容 */}
+        <div className='px-6 py-8 flex flex-col justify-center text-center'>
+          <h3 className='text-lg font-bold leading-tight mb-4 text-slate-800 dark:text-[#E6F0EE]'>
+            {currentCard.question || '补全代码：'}
+          </h3>
+
+          {(currentCard.template || currentCard.code_snippet) && (
+            <div className='bg-slate-900 text-slate-300 p-4 rounded-xl text-[12px] font-mono text-left mb-4 border border-white/5 leading-relaxed'>
+              {currentCard.template || currentCard.code_snippet}
+            </div>
+          )}
+
+          {showAnswer && (
+            <div className='space-y-4 animate-in slide-in-from-bottom-2 duration-400'>
+              <div className='inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2 rounded-lg border border-emerald-100 dark:border-emerald-800/30'>
+                <CheckCircle2 size={16} />
+                <span className='text-sm font-bold'>{currentCard.answer}</span>
+              </div>
+              <p className='text-[10px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed italic'>
+                {currentCard.explanation}
+              </p>
+
+              {/* 关联语义节点 */}
+              {noteData &&
+                noteData.content.hooks &&
+                currentCard.hook_index !== undefined &&
+                noteData.content.hooks[currentCard.hook_index] && (
+                  <div className='pt-4 border-t border-slate-100 dark:border-[#163033]'>
+                    <p className='text-[9px] font-black uppercase tracking-widest opacity-20 mb-2'>
+                      关联语义节点 (Memory Link)
+                    </p>
+                    <div className='text-left'>
+                      <HookItem
+                        hook={noteData.content.hooks[currentCard.hook_index]}
+                        compact
+                      />
+                    </div>
+                  </div>
+                )}
+            </div>
+          )}
+        </div>
+
+        {/* 操作按钮 */}
+        <div className='p-3 bg-slate-50/50 dark:bg-[#163033]/20 border-t border-slate-100 dark:border-[#163033]'>
+          {!showAnswer ? (
+            <button
+              onClick={() => setShowAnswer(true)}
+              className='w-full py-2.5 bg-[#2B8F80] hover:bg-[#196B5E] text-white rounded-lg font-bold shadow-sm transition-all active:scale-95 flex items-center justify-center gap-2 text-xs'>
+              <Eye size={14} /> 显示答案与语义关联
+            </button>
+          ) : (
+            <div className='flex gap-2'>
+              <button
+                onClick={handleNext}
+                className='flex-1 py-2.5 bg-slate-900 dark:bg-[#2B8F80] text-white rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-transform'>
+                下一步 <ChevronRight size={14} />
+              </button>
+              <button
+                onClick={() => setShowAnswer(false)}
+                className='px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-lg text-slate-400'>
+                <RotateCcw size={14} />
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* 操作按钮 */}
-      <div className='flex gap-3'>
-        <button
-          onClick={() => setShowAnswer(!showAnswer)}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-bold text-sm transition-all ${
-            showAnswer
-              ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
-              : 'bg-[#2B8F80] text-white hover:bg-[#247567] shadow-md'
-          }`}>
-          {showAnswer ? <EyeOff size={18} /> : <Eye size={18} />}
-          {showAnswer ? '隐藏答案' : '显示答案'}
-        </button>
-        {showAnswer && (
-          <button
-            onClick={handleNext}
-            className='flex items-center justify-center gap-2 py-3 px-6 rounded-lg font-bold text-sm bg-blue-500 text-white hover:bg-blue-600 transition-all shadow-md'>
-            {activeCard === cards.length - 1 ? (
-              <>
-                <CheckCircle2 size={18} />
-                完成
-              </>
-            ) : (
-              <>
-                下一张
-                <ChevronRight size={18} />
-              </>
-            )}
-          </button>
-        )}
+      {/* 底部提示 */}
+      <div className='mt-4 text-center'>
+        <p className='text-[10px] uppercase font-bold tracking-[0.2em] opacity-10 flex items-center justify-center gap-2'>
+          <EyeOff size={10} /> Active Recall with Semantic Anchors
+        </p>
       </div>
     </div>
   );

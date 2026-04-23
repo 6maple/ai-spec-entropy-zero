@@ -95,9 +95,9 @@ export default function NoteDetailPage() {
 
       {/* 内容区域 */}
       {viewMode === 'note' ? (
-        <NoteViewer noteData={noteData} />
+        <NoteViewer noteData={noteData} cardsData={cardsData} />
       ) : cardsData ? (
-        <CardPlayer cardsData={cardsData} />
+        <CardPlayer cardsData={cardsData} noteData={noteData} />
       ) : (
         <div className='max-w-[800px] mx-auto p-6 text-center opacity-60'>
           <p>该笔记暂无复习卡</p>
