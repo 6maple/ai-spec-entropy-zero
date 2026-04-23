@@ -1,0 +1,75 @@
+{
+  "id": "note_devsearch_20260423",
+  "title": "搜索建议框工程化实现：交互状态、性能控制与输入边界",
+  "source": {
+    "input_path": "docs/raw/development.md",
+    "line_range": [60, 112]
+  },
+  "content": {
+    "core_claims": [
+      {
+        "claim": "搜索建议框需要完整状态模型（keyword、suggestions、activeIndex、loading）支撑交互闭环。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档将状态管理与键盘导航并列为核心交互逻辑。"
+        },
+        "source_lines": [62, 64, 65, 66]
+      },
+      {
+        "claim": "防抖是搜索请求的基础控制，避免逐字符请求造成接口压力。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档明确建议约 300ms 防抖窗口，仅在输入停顿后请求。"
+        },
+        "source_lines": [68, 70]
+      },
+      {
+        "claim": "请求竞态必须通过取消旧请求或中止控制处理，确保结果与最后输入一致。",
+        "evidence": {
+          "type": "api",
+          "description": "文档给出 CancelToken/AbortController 思路与组合式函数示例。"
+        },
+        "source_lines": [71, 89, 92]
+      },
+      {
+        "claim": "关键词缓存可以显著减少重复查询的后端开销。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档建议基于 Map 做内存缓存以减少重复请求。"
+        },
+        "source_lines": [72]
+      },
+      {
+        "claim": "中文输入法场景需处理 composition 事件，避免拼音中间态触发误检索。",
+        "evidence": {
+          "type": "api",
+          "description": "文档要求在 compositionstart/compositionend 之间抑制搜索触发。"
+        },
+        "source_lines": [100, 104]
+      },
+      {
+        "claim": "关键词高亮与回显属于输入面渲染路径，必须做 XSS 过滤。",
+        "evidence": {
+          "type": "reasoning",
+          "description": "文档在搜索模块直接提出关键词回显渲染时的 XSS 风险。"
+        },
+        "source_lines": [105, 107]
+      }
+    ],
+    "refinement": {
+      "anti_patterns": [
+        "每次输入字符都直接发请求，导致接口压力和响应抖动。",
+        "忽略请求竞态，页面展示落后于用户最终输入。",
+        "在关键词高亮路径不做过滤，造成 XSS 注入风险。"
+      ]
+    },
+    "hooks": [
+      {
+        "relation": "supplement",
+        "target_concept": "大文件上传并发与重试",
+        "context": "两者都属于前端网络请求稳定性与节流治理。"
+      }
+    ],
+    "hooks_meta": {}
+  }
+}

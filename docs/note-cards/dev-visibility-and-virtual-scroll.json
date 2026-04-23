@@ -1,0 +1,50 @@
+{
+  "note_id": "note_devviewvirt_20260423",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_devviewvirt_20260423:0",
+      "type": "qa",
+      "question": "为什么可视区判断优先选 Intersection Observer？",
+      "answer": "因为它异步且不依赖高频滚动监听，性能与实现复杂度更优。",
+      "explanation": "文档把它定义为现代推荐方案并强调不会阻塞主线程。",
+      "source_lines": [116, 118, 176]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_devviewvirt_20260423:1",
+      "type": "error_correction",
+      "question": "如果采用 getBoundingClientRect 方案但不做节流，会出现什么后果？",
+      "answer": "滚动事件高频触发下计算开销升高，容易引发卡顿。",
+      "explanation": "该方案可用，但前提是配套频率控制。",
+      "source_lines": [144, 149]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_devviewvirt_20260423:2",
+      "type": "qa",
+      "question": "虚拟滚动为何能在大数据下保持可滚动体验？",
+      "answer": "它只渲染可视区节点，并用占位层维持滚动条与整体高度感知。",
+      "explanation": "这是“渲染量减少”与“视觉连续”并行达成的机制。",
+      "source_lines": [183, 187, 190]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_devviewvirt_20260423:3",
+      "type": "fill_in_blank",
+      "question": "虚拟滚动中用于计算起始位置的关键索引是__________，常由 scrollTop/itemHeight 得到。",
+      "answer": "startIndex",
+      "explanation": "startIndex、endIndex、offset 构成核心计算三元组。",
+      "source_lines": [197, 198, 199]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_devviewvirt_20260423:4",
+      "type": "qa",
+      "question": "为什么虚拟滚动还需要 Buffer、ResizeObserver 与 rAF？",
+      "answer": "用于减少快速滚动白屏、处理不定高项并提升帧率稳定性。",
+      "explanation": "这些优化解决的是体验层抖动，而不仅是算法正确性。",
+      "source_lines": [217, 218, 219]
+    }
+  ]
+}

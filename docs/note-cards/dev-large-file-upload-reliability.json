@@ -1,0 +1,50 @@
+{
+  "note_id": "note_devup_20260423",
+  "cards": [
+    {
+      "card_id": "card_01_20260423",
+      "claim_ref": "note_devup_20260423:0",
+      "type": "qa",
+      "question": "为什么大文件上传通常先做切片，而不是直接整文件上传？",
+      "answer": "切片可以降低单请求失败成本，并支持并行上传以提升稳定性和效率。",
+      "explanation": "文档把切片定义为第一步，并配合并行传输处理网络波动。",
+      "source_lines": [14, 18, 27]
+    },
+    {
+      "card_id": "card_02_20260423",
+      "claim_ref": "note_devup_20260423:1",
+      "type": "qa",
+      "question": "大文件哈希为什么不仅要算，还要优化计算方式？",
+      "answer": "哈希是切片归属和去重的基础，但全量计算耗时大，需要 Worker 或抽样哈希降低阻塞。",
+      "explanation": "文档明确提出 spark-md5 与 Worker/抽样方案的性能权衡。",
+      "source_lines": [34, 38, 39]
+    },
+    {
+      "card_id": "card_03_20260423",
+      "claim_ref": "note_devup_20260423:2",
+      "type": "fill_in_blank",
+      "question": "断点续传场景下，前端应根据后端返回的__________仅上传缺失片段。",
+      "answer": "已收到的切片索引列表",
+      "explanation": "断点续传的关键是“已上传清单差集上传”，不是全量重传。",
+      "source_lines": [45, 46]
+    },
+    {
+      "card_id": "card_04_20260423",
+      "claim_ref": "note_devup_20260423:3",
+      "type": "qa",
+      "question": "为什么上传完成后还需要单独的合并和清理步骤？",
+      "answer": "需要按顺序合并并校验完整性，同时清理临时切片避免存储膨胀。",
+      "explanation": "这是从“切片传输”回到“完整文件”的必要收尾链路。",
+      "source_lines": [48, 50, 51]
+    },
+    {
+      "card_id": "card_05_20260423",
+      "claim_ref": "note_devup_20260423:4",
+      "type": "error_correction",
+      "question": "某实现只做进度条，不限制并发且不重试失败切片。主要风险是什么？",
+      "answer": "连接超限、页面卡顿、弱网下上传失败率高，用户体验显著下降。",
+      "explanation": "文档强调进度、并发上限、重试三者需要组合治理。",
+      "source_lines": [56, 57, 58]
+    }
+  ]
+}

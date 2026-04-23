@@ -12,3 +12,37 @@
 <严禁事项>
 1. 严禁做出其他改动（包括但不限于重构非相关代码、调整非相关样式）。
 2. 严禁修改导致其他功能异常。
+
+
+
+
+
+<<重要>>
+1. 你只能访问这个工程中我明确提及的文件。
+
+<<背景>>
+SKILL.md 生成的json在设计上有问题。
+
+1. 生成的笔记过于精简。在 docs/notes 和 docs/note-cards 目录中，找来源于 docs/raw/development.md 的笔记会发现，缺失了很多内容。
+2. 生成的笔记数组类字段应该是根据知识而定的，但被当成了固定的数量，特别是refinement.anti_patterns和hooks字段。
+
+<<角色>>
+你是资深AI Native开发工程师，基于我提供的功能设计 Entropy Zero (熵减笔记) 详细功能设计说明书.md，重新从宏观角度审视 SKILL.md 的设计，给出 3 种调整思路。
+
+1. 你在思考的时候需要想清楚这个SKILL的用户是谁，会用这个SKILL做什么。
+2. 调整思路种必须包含你对知识熵减生成笔记和复习卡这个流程的理解。
+
+<<补充>>
+1. 需要先阅读https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f中的内容。
+2. <important>必须严格按照claude angent skill的要求（https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md）输出，不得直接通过api的方式调用大模型，能够在claude中作为skill使用</important>。
+3. 你只需要关注知识熵减步骤和制卡步骤。
+
+
+
+<<重要>>
+重新设计 SKILL.md，将重新设计的方案输出到 ingest-json-auto/design.md。
+
+<<注意事项>>
+1. 将 core_claims 作为原子化的最小单位，复习卡应该与core_claims一一对应。
+2. 对于一个原始知识文档，根据其知识的类型、其中内容的关联性，可能会熵减生成1个或多个笔记(notes)。如果是 1 个笔记，这个笔记下基于 atomic concepts 拆分出多个 core_claims ，每个 core_claims 对应一个复习卡。
+3. 如果过程比较复杂，应该将 SKILL 拆分为多个部分。对于复杂 SKILL 的设计方式可以参考 https://github.com/nextlevelbuilder/ui-ux-pro-max-skill 的设计。
