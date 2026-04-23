@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getNoteBySlug, getCardsBySlug } from '@/services/dataService';
 import NoteViewer from '@/components/NoteViewer';
 import CardPlayer from '@/components/CardPlayer';
-import { ArrowLeft, Layout, BrainCircuit } from 'lucide-react';
+import { ArrowLeft, Layout, BrainCircuit, PlayCircle } from 'lucide-react';
 
 export default function NoteDetailPage() {
   const { slug } = useParams();
@@ -97,7 +97,18 @@ export default function NoteDetailPage() {
       {viewMode === 'note' ? (
         <NoteViewer noteData={noteData} cardsData={cardsData} />
       ) : cardsData ? (
-        <CardPlayer cardsData={cardsData} noteData={noteData} />
+        <div>
+          <CardPlayer cardsData={cardsData} noteData={noteData} />
+          {/* 跳转到全部复习 */}
+          <div className='max-w-xl mx-auto mt-4 px-2'>
+            <Link
+              to='/cards'
+              className='flex items-center justify-center gap-2 text-xs opacity-40 hover:opacity-100 transition-opacity'>
+              <PlayCircle size={14} />
+              去全部复习（跨主题）
+            </Link>
+          </div>
+        </div>
       ) : (
         <div className='max-w-[800px] mx-auto p-6 text-center opacity-60'>
           <p>该笔记暂无复习卡</p>

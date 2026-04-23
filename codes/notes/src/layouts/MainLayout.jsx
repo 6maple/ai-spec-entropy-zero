@@ -44,7 +44,7 @@ export default function MainLayout({ children }) {
                     ? 'bg-white dark:bg-[#2B8F80] shadow-sm text-[#2B8F80] dark:text-white'
                     : 'text-slate-400'
                 }`}>
-                <BrainCircuit size={14} /> 闭卷复习
+                <BrainCircuit size={14} /> 全部复习
               </Link>
             </div>
           </div>
@@ -59,7 +59,9 @@ export default function MainLayout({ children }) {
           </button>
         </div>
       </nav>
-      <main className='flex-1 overflow-y-auto'>{children}</main>
+      <main className='flex-1 overflow-y-auto [scrollbar-gutter:stable]'>
+        {children}
+      </main>
     </div>
   );
 }
