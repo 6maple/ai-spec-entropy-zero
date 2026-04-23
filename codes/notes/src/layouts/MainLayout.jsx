@@ -13,10 +13,10 @@ export default function MainLayout({ children }) {
 
   return (
     <div
-      className={`min-h-screen transition-colors duration-300 font-sans ${
+      className={`h-screen flex flex-col transition-colors duration-300 font-sans ${
         darkMode ? 'bg-[#0B1213] text-[#E6F0EE]' : 'bg-[#F6F8F4] text-[#0F2A26]'
       }`}>
-      <nav className='sticky top-0 z-50 border-b shadow-sm backdrop-blur-md border-slate-200 dark:border-[#163033] bg-white/90 dark:bg-[#0F1A1A]/90 px-4'>
+      <nav className='flex-shrink-0 z-50 border-b shadow-sm backdrop-blur-md border-slate-200 dark:border-[#163033] bg-white/90 dark:bg-[#0F1A1A]/90 px-4'>
         <div className='max-w-[1400px] mx-auto flex items-center justify-between h-14'>
           <div className='flex items-center gap-6'>
             <div className='flex items-center gap-2'>
@@ -59,7 +59,7 @@ export default function MainLayout({ children }) {
           </button>
         </div>
       </nav>
-      <main>{children}</main>
+      <main className='flex-1 overflow-y-auto'>{children}</main>
     </div>
   );
 }

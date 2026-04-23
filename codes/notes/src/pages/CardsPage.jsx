@@ -64,13 +64,10 @@ export default function CardsPage() {
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
         {cardsGroups.map((group) => {
-          // 从 source_trace.input_path 提取 slug
-          const slug = group.note_id?.split('_')[1] || 'unknown';
-
           return (
             <Link
               key={group.note_id}
-              to={`/notes/${slug}?view=review`}
+              to={`/notes/${group.slug}?view=review`}
               className='block bg-white dark:bg-[#163033] border border-slate-200 dark:border-[#2A4144] rounded-xl p-5 hover:shadow-lg hover:border-[#2B8F80] dark:hover:border-[#2B8F80] transition-all group'>
               <div className='flex items-start gap-3 mb-3'>
                 <div className='p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors'>

@@ -39,9 +39,14 @@ export async function getCardsBySlug(slug) {
 export async function getAllCards() {
   try {
     const index = await getNoteIndex();
-    const cardsPromises = index.map((note) =>
-      getCardsBySlug(note.slug).catch(() => null),
-    );
+    const cardsPromises = index.map(async (note) => {
+      try {
+        const cards = await getCardsBySlug(note.slug);
+        return { ...cards, slug: note.slug };
+      } catch {
+        return null;
+      }
+    });
     const cardsData = await Promise.all(cardsPromises);
     return cardsData.filter(Boolean);
   } catch (error) {
