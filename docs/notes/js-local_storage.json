@@ -1,93 +1,69 @@
 {
-  "id": "note_js_20260423_local_storage",
-  "title": "浏览器本地存储对比：Cookie、LocalStorage、SessionStorage 与 IndexedDB",
+  "id": "note_js_local_storage",
+  "title": "本地存储方式比较",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "source": {
     "input_path": "docs/raw/js.md",
-    "line_range": [
-      167,
-      222
-    ]
+    "line_range": [167, 223]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "Cookie 适合小数据且会随请求自动发送，通常用于身份凭证而非大容量缓存。",
+        "claim": "Web 端常用存储方式包括 Cookie、LocalStorage、SessionStorage 和 IndexedDB，它们在容量、生命周期、与服务端通信方式上各不相同。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档对 Cookie 的作用和限制进行了说明。"
+          "description": "本地存储方式的核心对比是存储大小、生命周期、是否随 HTTP 请求携带以及数据格式支持。"
+        },
+        "source_lines": [169, 170, 171, 172, 173, 174, 175, 176, 177, 178]
+      },
+      {
+        "claim": "Cookie 适合少量标识数据，约 4KB，且会随每次 HTTP 请求自动携带，常用于身份验证类信息。",
+        "evidence": {
+          "description": "Cookie 的设计初衷是身份标识，因为它会随请求发送。过多 Cookie 会影响请求性能，因此应限制存储量。"
         },
         "source_lines": [
-          181
+          179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192
         ]
       },
       {
-        "claim": "LocalStorage 提供持久化存储，适合保存主题偏好等长期配置。",
+        "claim": "LocalStorage 永久存储，SessionStorage 仅在标签页会话内有效，两者都以字符串存储且不会参与 HTTP 请求。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档指出 LocalStorage 的持久性和应用场景。"
+          "description": "LocalStorage 适合持久配置和缓存数据，SessionStorage 适合单标签页临时状态。它们都不随请求发送。"
         },
         "source_lines": [
-          184
+          193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
+          207, 208, 209, 210, 211, 212, 213, 214, 215
         ]
       },
       {
-        "claim": "SessionStorage 生命周期与标签页绑定，适合存储临时会话数据。",
+        "claim": "IndexedDB 适合大容量和结构化数据，支持异步 API 和索引搜索，是离线应用和复杂缓存的首选。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档将 SessionStorage 的失效规则与使用场景联系起来。"
+          "description": "IndexedDB 可以存储更大数据量并提供索引查询，适用于离线应用、草稿缓存或大文件元数据。"
         },
-        "source_lines": [
-          187
-        ]
+        "source_lines": [215, 216, 217, 218, 219, 220, 221, 222, 223]
       },
       {
-        "claim": "IndexedDB 支持大量结构化数据，适用于离线应用和大数据缓存。",
+        "claim": "在应用中对 LocalStorage 的读写应封装工具类，自动处理 JSON 序列化和异常，以避免直接读写字符串造成错误。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档描述了 IndexedDB 的容量与结构化数据优势。"
+          "description": "应用层应封装 LocalStorage 读写逻辑，自动序列化对象并处理解析异常，保证数据稳定性。\n\n```javascript\nconst storage = {\n  set(key, value) {\n    window.localStorage.setItem(key, JSON.stringify(value));\n  },\n  get(key) {\n    const val = window.localStorage.getItem(key);\n    try {\n      return JSON.parse(val);\n    } catch (e) {\n      return val;\n    }\n  },\n  remove(key) {\n    window.localStorage.removeItem(key);\n  },\n};\n```"
         },
         "source_lines": [
-          190
-        ]
-      },
-      {
-        "claim": "访问浏览器存储应封装 JSON 序列化/反序列化，并处理异常。",
-        "evidence": {
-          "type": "code_example",
-          "description": "文档提供了封装 localStorage 读写的实用工具示例。"
-        },
-        "source_lines": [
-          197,
-          215
-        ]
-      },
-      {
-        "claim": "不同存储方式应根据用途选型：Cookie for auth, LocalStorage for persistence, SessionStorage for session, IndexedDB for offline/large-data。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档给出了针对不同数据类型的存储选型建议。"
-        },
-        "source_lines": [
-          219,
-          220,
-          221,
-          222
+          193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
+          207, 208, 209, 210, 211, 212, 213, 214, 215
         ]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "将大数据直接放入 Cookie，造成请求体膨胀。",
-        "把所有临时状态都存入 LocalStorage，导致持久化污染。"
+        "把敏感 token 存在 localStorage 中，忽略它不受 HttpOnly 保护。",
+        "用 localStorage 存储超大对象，而不考虑同步操作对主线程的影响。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "comparison",
-        "target_concept": "网络首屏优化",
-        "context": "浏览器存储策略与首屏优化的缓存层设计互为补充。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

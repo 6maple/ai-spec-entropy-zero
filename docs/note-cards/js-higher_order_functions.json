@@ -1,67 +1,53 @@
 {
-  "note_id": "note_js_20260423_higher_order_functions",
+  "note_id": "note_js_higher_order_functions",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_js_20260423_higher_order_functions:0",
+      "card_id": "card_0",
+      "claim_ref": "note_js_higher_order_functions:0",
       "type": "qa",
-      "question": "为什么柯里化将多参数函数转换为一系列单参数函数，便于预设参数和延迟执行",
-      "answer": "柯里化将多参数函数转换为一系列单参数函数，便于预设参数和延迟执行。",
-      "explanation": "文档给出了 curry 函数实现并说明其参数复用价值。",
+      "question": "What is currying in JavaScript?",
+      "answer": "柯里化将一个接受多个参数的函数转化为一系列接收单个参数的函数，并利用闭包保存已传递参数。",
+      "explanation": "这种转换能让函数参数复用，并通过分步调用实现延迟执行和更灵活的函数组合。",
       "source_lines": [
-        51,
-        57,
-        71
+        51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68,
+        69, 70, 71, 72, 73, 74
       ]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_js_20260423_higher_order_functions:1",
+      "card_id": "card_1",
+      "claim_ref": "note_js_higher_order_functions:1",
       "type": "qa",
-      "question": "为什么函数组合将多个纯函数从右向左嵌套执行，使数据流更声明式",
-      "answer": "函数组合将多个纯函数从右向左嵌套执行，使数据流更声明式。",
-      "explanation": "文档以 compose 示例说明将多个函数链式连接的思想。",
+      "question": "How does function composition combine functions?",
+      "answer": "函数组合把多个单一职责函数按从右向左的顺序嵌套执行，前一个函数的输出作为后一个函数的输入。\\n\\n```javascript\\nconst compose =\\n  (...fns) =>\\n  (x) =>\\n    fns.reduceRight((v, f) => f(v), x);\\n```",
+      "explanation": "组合让数据流经过多个纯函数处理，适合把小函数拼成更复杂的转换逻辑。",
       "source_lines": [
-        75,
-        81,
-        92
+        75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92,
+        93, 94, 95, 96, 97, 98, 99
       ]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_js_20260423_higher_order_functions:2",
+      "card_id": "card_2",
+      "claim_ref": "note_js_higher_order_functions:2",
       "type": "qa",
-      "question": "为什么管道与组合类似，但执行顺序改为从左向右，更符合线性思维",
-      "answer": "管道与组合类似，但执行顺序改为从左向右，更符合线性思维。",
-      "explanation": "文档演示 pipe 的实现和数据处理的可读性提升。",
+      "question": "What is piping and how does it differ from composition?",
+      "answer": "管道把多个函数按从左向右的顺序连接，前一个函数的输出作为下一个函数的输入。相比组合，管道更符合线性思维方式。\\n\\n```javascript\\nconst pipe =\\n  (...fns) =>\\n  (x) =>\\n    fns.reduce((v, f) => f(v), x);\\n```",
+      "explanation": "管道强调数据流向，与人类阅读顺序一致，适合描述多步转换过程。",
       "source_lines": [
-        100,
-        106,
-        112
+        100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112
       ]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_js_20260423_higher_order_functions:3",
+      "card_id": "card_3",
+      "claim_ref": "note_js_higher_order_functions:3",
       "type": "qa",
-      "question": "为什么高阶函数、组合和管道都鼓励编写单一职责的纯函数，提升可维护性",
-      "answer": "高阶函数、组合和管道都鼓励编写单一职责的纯函数，提升可维护性。",
-      "explanation": "文档总结这些技术的工程价值和声明式好处。",
-      "source_lines": [
-        96,
-        98
-      ]
-    },
-    {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_js_20260423_higher_order_functions:4",
-      "type": "qa",
-      "question": "为什么在复杂数据预处理场景下，函数管道可以让数据处理链条更清晰",
-      "answer": "在复杂数据预处理场景下，函数管道可以让数据处理链条更清晰。",
-      "explanation": "文档提到管道在表单数据清洗等场景中的优势。",
-      "source_lines": [
-        116
-      ]
+      "question": "Why are higher-order functions useful in Vue development?",
+      "answer": "在 Vue 场景中，函数式编程技巧可以把逻辑拆成可组合的小函数，让数据处理链更声明式，提升代码可读性和复用性。",
+      "explanation": "这种方式有助于把组件行为抽象为可复用单元，减少嵌套和状态耦合。",
+      "source_lines": [118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
     }
   ]
 }

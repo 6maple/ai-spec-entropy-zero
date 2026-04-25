@@ -1,50 +1,48 @@
 {
-  "note_id": "note_dev_md_20260423_virtual_scroll",
+  "note_id": "note_development_virtual_scroll",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_dev_md_20260423_virtual_scroll:0",
+      "card_id": "card_0",
+      "claim_ref": "note_development_virtual_scroll:0",
       "type": "qa",
-      "question": "虚拟滚动通过什么方式实现长列表的按需渲染？",
-      "answer": "只渲染可视区内的节点，并使用占位背景撑高来保持原生滚动行为。",
-      "explanation": "文档描述了 Phantom Layer 和绝对定位渲染列表的核心思想。",
-      "source_lines": [181, 183, 189, 191]
+      "question": "What is the core idea behind virtual scrolling?",
+      "answer": "虚拟滚动的核心是按需渲染，只将可视区域内的列表项渲染为真实 DOM，其余项由一个撑高容器模拟总高度。",
+      "explanation": "这种策略减少了渲染节点数量，显著降低了 DOM 开销和页面卡顿风险。",
+      "source_lines": [181, 182, 183, 184]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_dev_md_20260423_virtual_scroll:1",
+      "card_id": "card_1",
+      "claim_ref": "note_development_virtual_scroll:1",
       "type": "qa",
-      "question": "虚拟滚动的关键计算逻辑包括哪些变量？",
-      "answer": "包括 startIndex、endIndex 和 offset，由 scrollTop 和 itemHeight 计算得出。",
-      "explanation": "文档明确列出这三个变量是滚动事件中的核心计算。",
-      "source_lines": [195, 197, 198, 199]
+      "question": "What are the three structural layers of a standard virtual scroll implementation?",
+      "answer": "标准虚拟滚动结构包含：固定高度的外层滚动容器、用来撑高的 Phantom/Spacer 占位层，以及绝对定位的实际渲染列表层。",
+      "explanation": "这三层协作模拟原生滚动效果，同时只渲染可见项，兼顾体验和性能。",
+      "source_lines": [185, 186, 187, 188, 189]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_dev_md_20260423_virtual_scroll:2",
+      "card_id": "card_2",
+      "claim_ref": "note_development_virtual_scroll:2",
       "type": "qa",
-      "question": "Vue 3 中虚拟滚动如何计算可见数据和偏移？",
-      "answer": "用 visibleData.slice(...) 获取当前可视项，并用 listOffset = startIndex * itemHeight 计算偏移。",
-      "explanation": "文档给出了 visibleData 和 listOffset 的计算示例。",
-      "source_lines": [205, 206, 210, 211, 212]
+      "question": "How are visible list indices calculated in virtual scrolling?",
+      "answer": "通过 `startIndex = Math.floor(scrollTop / itemHeight)` 计算起始位置，`endIndex = startIndex + Math.floor(containerHeight / itemHeight)` 计算结束位置，`offset = startIndex * itemHeight` 用于位移实际列表。",
+      "explanation": "这种计算方式把滚动坐标转成当前可见项范围，使渲染只集中在视口附近的元素。",
+      "source_lines": [190, 191, 192, 193, 194, 195, 196, 197, 198]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_dev_md_20260423_virtual_scroll:3",
+      "card_id": "card_3",
+      "claim_ref": "note_development_virtual_scroll:3",
       "type": "qa",
-      "question": "为什么虚拟滚动需要缓冲区和 ResizeObserver？",
-      "answer": "缓冲区防止快速滚动白屏，ResizeObserver 解决高度变化导致的位置误差。",
-      "explanation": "文档建议 buffer 与高度观察来保持体验稳定。",
-      "source_lines": [217, 218, 219]
-    },
-    {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_dev_md_20260423_virtual_scroll:4",
-      "type": "qa",
-      "question": "虚拟滚动适合什么时候使用？",
-      "answer": "适用于海量列表场景，复杂业务中优先考虑成熟库如 vue-virtual-scroller。",
-      "explanation": "文档指出在后台管理、商品列表等大数据场景中更适合使用成熟方案。",
-      "source_lines": [223, 224]
+      "question": "What optimizations are needed to make virtual scrolling smooth?",
+      "answer": "需要设置上下缓冲区、处理可变高度项、使用 requestAnimationFrame 优化渲染，并动态回收不再可见的组件实例。",
+      "explanation": "这些优化帮助避免快速滚动时白屏和抖动，并使虚拟列表在复杂数据下保持流畅。",
+      "source_lines": [
+        199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212,
+        213, 214, 215, 216, 217, 218
+      ]
     }
   ]
 }

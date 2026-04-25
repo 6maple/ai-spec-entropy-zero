@@ -1,77 +1,65 @@
 {
-  "note_id": "note_vue_20260423_keepalive",
+  "note_id": "note_vue_keepalive",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "vue"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_vue_20260423_keepalive:0",
+      "card_id": "card_0",
+      "claim_ref": "note_vue_keepalive:0",
       "type": "qa",
-      "question": "为什么Keep-alive 缓存组件实例，使被包裹组件切换时不被销毁，保留渲染状态",
-      "answer": "Keep-alive 缓存组件实例，使被包裹组件切换时不被销毁，保留渲染状态。",
-      "explanation": "文档说明了 Keep-alive 的缓存作用与状态保留效果。",
+      "question": "What is the main purpose of Vue's Keep-alive component?",
+      "answer": "Keep-alive 用于缓存动态组件实例，使组件切换时不会被销毁和重新挂载，从而保留状态并减少渲染开销。",
+      "explanation": "它适合频繁切换的页面或组件，可以显著提升切换性能并减少初始化成本。",
+      "source_lines": [134, 135, 136, 137]
+    },
+    {
+      "card_id": "card_1",
+      "claim_ref": "note_vue_keepalive:1",
+      "type": "qa",
+      "question": "Which lifecycle hooks are specific to cached components?",
+      "answer": "被缓存组件新增 `activated` 和 `deactivated` 钩子，而 mounted 和 unmounted 只在首次加载和最终销毁时触发一次。",
+      "explanation": "这意味着缓存组件只在真正进入或离开活动状态时执行特定逻辑，而不会重复创建或销毁。",
+      "source_lines": [138, 139, 140, 141, 142, 143, 144, 145]
+    },
+    {
+      "card_id": "card_2",
+      "claim_ref": "note_vue_keepalive:2",
+      "type": "qa",
+      "question": "How do include, exclude, and max attributes affect Keep-alive?",
+      "answer": "include/exclude 可指定要缓存或排除的组件，max 指定最大缓存实例数，超过上限时会按 LRU 策略销毁最久未访问的实例。",
+      "explanation": "这些属性让缓存更可控，避免无差别缓存造成内存浪费。",
+      "source_lines": [146, 147, 148, 149, 150, 151, 152, 153]
+    },
+    {
+      "card_id": "card_3",
+      "claim_ref": "note_vue_keepalive:3",
+      "type": "qa",
+      "question": "How is Keep-alive typically used with Vue Router?",
+      "answer": "在 router-view 外层包裹 Keep-alive，可以缓存频繁切换的页面组件，例如：\n\n```html\n<router-view v-slot=\"{ Component }\">\n  <keep-alive :include=\"['Home', 'List']\" :max=\"10\">\n    <component :is=\"Component\" />\n  </keep-alive>\n</router-view>\n```",
+      "explanation": "这种组合缓存页面组件，避免用户在切换后丢失组件状态，同时控制缓存数量。",
       "source_lines": [
-        134
+        154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165
       ]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_vue_20260423_keepalive:1",
+      "card_id": "card_4",
+      "claim_ref": "note_vue_keepalive:4",
       "type": "qa",
-      "question": "为什么被缓存组件会触发 activated 和 deactivated 钩子，而 mounted/unmounted 仅在首次加载和最终销毁时触发",
-      "answer": "被缓存组件会触发 activated 和 deactivated 钩子，而 mounted/unmounted 仅在首次加载和最终销毁时触发。",
-      "explanation": "文档总结了 Keep-alive 下新增生命周期。",
-      "source_lines": [
-        142,
-        143
-      ]
+      "question": "What is the memory tradeoff when using Keep-alive?",
+      "answer": "Keep-alive 是空间换时间的方案，它会缓存组件实例，因此应只对频繁切换的页面开启缓存，否则可能造成内存占用过高。",
+      "explanation": "过度缓存会占用内存，应该在性能收益明显时再使用 Keep-alive。",
+      "source_lines": [166, 167, 168, 169, 170, 171]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_vue_20260423_keepalive:2",
+      "card_id": "card_5",
+      "claim_ref": "note_vue_keepalive:5",
       "type": "qa",
-      "question": "为什么include/exclude/max 可精准控制缓存组件范围和最大缓存数，避免内存占用过高",
-      "answer": "include/exclude/max 可精准控制缓存组件范围和最大缓存数，避免内存占用过高。",
-      "explanation": "文档说明了 Keep-alive 的三个核心属性及 LRU 缓存行为。",
-      "source_lines": [
-        150,
-        151,
-        152
-      ]
-    },
-    {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_vue_20260423_keepalive:3",
-      "type": "qa",
-      "question": "为什么在路由视图中使用 Keep-alive 可以缓存搜索页、详情页等频繁切换页面，提高体验",
-      "answer": "在路由视图中使用 Keep-alive 可以缓存搜索页、详情页等频繁切换页面，提高体验。",
-      "explanation": "文档给出了 router-view 与 keep-alive 结合的使用场景。",
-      "source_lines": [
-        158,
-        164
-      ]
-    },
-    {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_vue_20260423_keepalive:4",
-      "type": "qa",
-      "question": "为什么Keep-alive 是空间换时间策略，应仅缓存交互复杂或频繁返回的页面，避免无差别缓存",
-      "answer": "Keep-alive 是空间换时间策略，应仅缓存交互复杂或频繁返回的页面，避免无差别缓存。",
-      "explanation": "文档提醒要权衡内存成本与缓存收益。",
-      "source_lines": [
-        168,
-        169
-      ]
-    },
-    {
-      "card_id": "card_06_20260423",
-      "claim_ref": "note_vue_20260423_keepalive:5",
-      "type": "qa",
-      "question": "为什么确保被缓存组件含有 name 属性，并在 activated 中恢复滚动位置，否则可能出现缓存失效或页面滚动重置",
-      "answer": "确保被缓存组件含有 name 属性，并在 activated 中恢复滚动位置，否则可能出现缓存失效或页面滚动重置。",
-      "explanation": "文档列出了常见 Keep-alive 问题及解决措施。",
-      "source_lines": [
-        174,
-        175
-      ]
+      "question": "What common issues occur with Keep-alive and how are they solved?",
+      "answer": "常见问题包括未设置组件 name 导致 include/exclude 失效，以及缓存组件的滚动位置需要在 activated 钩子中手动恢复。",
+      "explanation": "确保组件具备 name 并在激活时恢复状态，可以避免缓存失效和用户体验异常。",
+      "source_lines": [172, 173, 174, 175]
     }
   ]
 }

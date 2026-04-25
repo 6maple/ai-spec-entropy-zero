@@ -1,6 +1,10 @@
 {
-  "id": "note_dev_md_20260423_searchbox",
-  "title": "类似谷歌搜索框：防抖、竞态与中文输入",
+  "id": "note_development_search_box",
+  "title": "搜索输入框",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "source": {
     "input_path": "docs/raw/development.md",
     "line_range": [60, 113]
@@ -8,59 +12,50 @@
   "content": {
     "core_claims": [
       {
-        "claim": "搜索框应维护关键词、候选列表、选中索引和加载状态，支持键盘导航提升效率。",
+        "claim": "实现类似谷歌搜索框时，关键交互包括输入绑定、候选列表状态、选中项索引，以及上下箭头和回车键的键盘导航。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档说明了 v-model、watch、suggestions、activeIndex 和 loading 的必要状态。"
+          "description": "搜索框需要维护搜索词、候选结果、激活索引和加载状态，并通过输入事件或 watch 监听搜索词变化，以支持键盘导航与搜索确认。"
         },
-        "source_lines": [64, 65, 66]
+        "source_lines": [62, 63, 64, 65, 66, 67]
       },
       {
-        "claim": "防抖是搜索框的必要策略，只有在输入停顿后才发送请求，避免每个字符都触发网络调用。",
+        "claim": "性能优化必须防抖处理输入，通常设置 300ms 延迟，并用中止控制器或 Axios CancelToken 取消过期请求，防止返回竞态结果覆盖最新输入。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档建议将搜索触发延迟到约 300ms 之后，以避免请求风暴。"
+          "description": "防抖可以避免每次输入都发送请求；同时通过取消前一个请求或 AbortController，确保页面展示的是最后一次输入对应的结果。"
         },
-        "source_lines": [68, 70]
+        "source_lines": [68, 69, 70, 71, 72, 73]
       },
       {
-        "claim": "应取消重复请求以避免竞态问题，确保最终展示的是最后一次输入对应的结果。",
+        "claim": "对于相同关键词可以在内存中使用 Map 做缓存，减少重复请求并提升搜索响应速度。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档推荐使用 Axios CancelToken 或 AbortController 来处理请求竞态。"
+          "description": "简单缓存机制可以在内存中保存相同关键词的结果，避免相同关键词重复调用后端接口。"
         },
-        "source_lines": [71, 72]
+        "source_lines": [109, 110, 111, 112, 113]
       },
       {
-        "claim": "对相同关键词做内存缓存，能减少重复请求并降低后端压力。",
+        "claim": "在边界处理上，应显示 loading 状态、空结果提示，中文输入期间通过 `compositionstart` / `compositionend` 避免过早触发搜索。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档提到通过 Map 缓存关键词结果来避免不必要的请求。"
+          "description": "搜索框需要在请求期间显式 loading，搜索无结果时显示明确提示。中文拼音输入时用组合输入事件避免在汉字上屏前触发搜索。"
         },
-        "source_lines": [72]
+        "source_lines": [100, 101, 102, 103, 104, 105, 106, 107, 108]
       },
       {
-        "claim": "中文输入需要使用 compositionstart/compositionend，避免拼音输入阶段提前触发搜索。",
+        "claim": "Vue 3 中推荐将搜索逻辑封装为组合式函数，使用 `watch` 监听关键字变化并将防抖搜索函数抽离为可复用的 composable。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档明确指出在汉字真正上屏后才触发检索，避免输入过程中频繁搜索。"
+          "description": "在 Vue 3 中，搜索逻辑应封装为组合式函数，通过 `ref`、`watch` 和防抖函数实现可复用的检索行为。"
         },
-        "source_lines": [103]
+        "source_lines": [74, 75, 76, 77, 78, 79]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "没有防抖就每次输入都发送请求，导致接口压力和卡顿。",
-        "不取消过期请求，最终展示了旧的搜索结果。"
+        "没有处理中英文输入组合事件，导致中文输入时搜索请求频繁触发。",
+        "不缓存相同关键词，导致相同搜索词在短时间内重复请求后端。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "comparison",
-        "target_concept": "网络请求竞态处理",
-        "context": "搜索框和大文件上传都需处理网络重复请求与结果一致性。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

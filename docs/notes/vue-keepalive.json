@@ -1,95 +1,70 @@
 {
-  "id": "note_vue_20260423_keepalive",
-  "title": "Vue Keep-alive：组件缓存、生命周期与限额控制",
+  "id": "note_vue_keepalive",
+  "title": "Keep-alive 缓存",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "vue"
+  },
   "source": {
     "input_path": "docs/raw/vue.md",
-    "line_range": [
-      132,
-      175
-    ]
+    "line_range": [132, 175]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "Keep-alive 缓存组件实例，使被包裹组件切换时不被销毁，保留渲染状态。",
+        "claim": "Keep-alive 是 Vue 的抽象组件，用于缓存动态组件实例，使组件切换时不会被销毁和重新挂载。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档说明了 Keep-alive 的缓存作用与状态保留效果。"
+          "description": "Keep-alive 缓存内部组件实例，以避免重复销毁和重新渲染，从而提高切换性能。"
+        },
+        "source_lines": [134, 135, 136, 137]
+      },
+      {
+        "claim": "被缓存组件会新增 `activated` 和 `deactivated` 生命周期钩子，首次加载的 mounted/unmounted 只发生一次。",
+        "evidence": {
+          "description": "缓存组件的激活与停用会触发专有钩子，而 mounted 和 unmounted 仅在首次加载与最终销毁时触发一次。"
+        },
+        "source_lines": [138, 139, 140, 141, 142, 143, 144, 145]
+      },
+      {
+        "claim": "Keep-alive 的 `include`、`exclude` 和 `max` 属性用于精细控制缓存对象集，达到精确缓存与 LRU 淘汰的效果。",
+        "evidence": {
+          "description": "通过 include/exclude 可以指定要缓存或排除的组件，max 可以限制最大缓存实例数，超出后按 LRU 策略销毁最久未访问实例。"
+        },
+        "source_lines": [146, 147, 148, 149, 150, 151, 152, 153]
+      },
+      {
+        "claim": "在路由中配合 router-view 使用 Keep-alive 可以缓存频繁切换的页面组件，避免重复初始化。",
+        "evidence": {
+          "description": "在路由视图中包裹 Keep-alive 可以让切换页面时保留组件实例，避免重复加载和渲染。\n\n```html\n<router-view v-slot=\"{ Component }\">\n  <keep-alive :include=\"['Home', 'List']\" :max=\"10\">\n    <component :is=\"Component\" />\n  </keep-alive>\n</router-view>\n```"
         },
         "source_lines": [
-          134
+          154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165
         ]
       },
       {
-        "claim": "被缓存组件会触发 activated 和 deactivated 钩子，而 mounted/unmounted 仅在首次加载和最终销毁时触发。",
+        "claim": "Keep-alive 是空间换时间的方案，应仅缓存交互复杂、切换频繁的页面，避免对所有路由都缓存导致内存占用过高。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档总结了 Keep-alive 下新增生命周期。"
+          "description": "由于 Keep-alive 会占用内存，应该只缓存频繁切换且初始化成本高的页面，避免无差别缓存导致内存压力。"
         },
-        "source_lines": [
-          142,
-          143
-        ]
+        "source_lines": [166, 167, 168, 169, 170, 171]
       },
       {
-        "claim": "include/exclude/max 可精准控制缓存组件范围和最大缓存数，避免内存占用过高。",
+        "claim": "常见问题包括未给组件设定 name 导致 include/exclude 失效，以及缓存时滚动位置需要在 activated 时手动恢复。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档说明了 Keep-alive 的三个核心属性及 LRU 缓存行为。"
+          "description": "Keep-alive 需要组件 name 才能使用 include/exclude。缓存组件虽能保留状态，但滚动位置等全局状态可能需要手动在 activated 时恢复。"
         },
-        "source_lines": [
-          150,
-          151,
-          152
-        ]
-      },
-      {
-        "claim": "在路由视图中使用 Keep-alive 可以缓存搜索页、详情页等频繁切换页面，提高体验。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档给出了 router-view 与 keep-alive 结合的使用场景。"
-        },
-        "source_lines": [
-          158,
-          164
-        ]
-      },
-      {
-        "claim": "Keep-alive 是空间换时间策略，应仅缓存交互复杂或频繁返回的页面，避免无差别缓存。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档提醒要权衡内存成本与缓存收益。"
-        },
-        "source_lines": [
-          168,
-          169
-        ]
-      },
-      {
-        "claim": "确保被缓存组件含有 name 属性，并在 activated 中恢复滚动位置，否则可能出现缓存失效或页面滚动重置。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档列出了常见 Keep-alive 问题及解决措施。"
-        },
-        "source_lines": [
-          174,
-          175
-        ]
+        "source_lines": [172, 173, 174, 175]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "对所有页面都包裹 Keep-alive，导致内存压力过大。",
-        "缓存组件未设置 name，造成 include/exclude 匹配失效。"
+        "没有为 keep-alive 缓存的组件设置 name，使 include/exclude 失效。",
+        "对所有路由都使用 keep-alive，最终造成内存占用过高。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "comparison",
-        "target_concept": "内存管理",
-        "context": "Keep-alive 的缓存策略需要与内存释放机制共同权衡。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

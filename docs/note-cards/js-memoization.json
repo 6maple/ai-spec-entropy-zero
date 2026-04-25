@@ -1,80 +1,39 @@
 {
-  "note_id": "note_js_20260423_memoization",
+  "note_id": "note_js_memoization",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_js_20260423_memoization:0",
+      "card_id": "card_0",
+      "claim_ref": "note_js_memoization:0",
       "type": "qa",
-      "question": "为什么函数缓存通过将输入参数映射到执行结果，避免重复计算并以空间换时间",
-      "answer": "函数缓存通过将输入参数映射到执行结果，避免重复计算并以空间换时间。",
-      "explanation": "文档定义函数缓存的核心原理和空间换时间策略。",
+      "question": "What does function memoization store to speed up repeated calls?",
+      "answer": "函数缓存把函数输入作为 key、执行结果作为 value 存储在闭包内。相同参数的后续调用直接返回缓存值，而不重新执行复杂逻辑。",
+      "explanation": "这种空间换时间的优化适合纯函数。它能减少重复计算，但会引入额外内存开销。",
+      "source_lines": [14, 15, 16, 17]
+    },
+    {
+      "card_id": "card_1",
+      "claim_ref": "note_js_memoization:1",
+      "type": "qa",
+      "question": "How is a generic memoize function usually implemented in JavaScript?",
+      "answer": "通用 memoize 函数通常用 Map 存储缓存，并把参数通过 `JSON.stringify` 序列化为唯一 key。若命中缓存，则返回存储结果，否则执行原函数并写入缓存。\\n\\n```javascript\\nfunction memoize(fn) {\\n  const cache = new Map();\\n  return function (...args) {\\n    const key = JSON.stringify(args);\\n    if (cache.has(key)) {\\n      return cache.get(key);\\n    }\\n    const result = fn.apply(this, args);\\n    cache.set(key, result);\\n    return result;\\n  };\\n}\\n```",
+      "explanation": "这是一种简单实现，适合参数可序列化的纯函数。对于复杂参数或大量缓存，需注意序列化成本和内存占用。",
       "source_lines": [
-        14,
-        18
+        18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+        36
       ]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_js_20260423_memoization:1",
+      "card_id": "card_2",
+      "claim_ref": "note_js_memoization:2",
       "type": "qa",
-      "question": "为什么通用 memoize 实现通常用 Map 存储缓存，并用 JSON.stringify 将参数序列化为键",
-      "answer": "通用 memoize 实现通常用 Map 存储缓存，并用 JSON.stringify 将参数序列化为键。",
-      "explanation": "文档给出了 memoize 函数的核心实现代码。",
-      "source_lines": [
-        18,
-        19,
-        20,
-        21,
-        22,
-        23,
-        24
-      ]
-    },
-    {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_js_20260423_memoization:2",
-      "type": "qa",
-      "question": "为什么Vue 计算属性是函数缓存的典型场景，只有依赖变化时才重新计算",
-      "answer": "Vue 计算属性是函数缓存的典型场景，只有依赖变化时才重新计算。",
-      "explanation": "文档把 Vue 计算属性列为函数缓存的代表应用。",
-      "source_lines": [
-        39
-      ]
-    },
-    {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_js_20260423_memoization:3",
-      "type": "qa",
-      "question": "为什么昂贵递归计算和相同参数的 API 请求过滤，都是函数缓存的典型应用场景",
-      "answer": "昂贵递归计算和相同参数的 API 请求过滤，都是函数缓存的典型应用场景。",
-      "explanation": "文档列举了递归计算和 API 请求过滤的实际应用。",
-      "source_lines": [
-        40,
-        41
-      ]
-    },
-    {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_js_20260423_memoization:4",
-      "type": "qa",
-      "question": "为什么函数缓存仅适用于纯函数，依赖外部状态或随机值的函数不应缓存",
-      "answer": "函数缓存仅适用于纯函数，依赖外部状态或随机值的函数不应缓存。",
-      "explanation": "文档强调缓存前提是纯函数，避免副作用影响结果一致性。",
-      "source_lines": [
-        45
-      ]
-    },
-    {
-      "card_id": "card_06_20260423",
-      "claim_ref": "note_js_20260423_memoization:5",
-      "type": "qa",
-      "question": "为什么缓存带来的内存占用和参数序列化成本，也需要在工程中加以权衡",
-      "answer": "缓存带来的内存占用和参数序列化成本，也需要在工程中加以权衡。",
-      "explanation": "文档提醒缓存可能导致内存膨胀和序列化成本问题。",
-      "source_lines": [
-        46,
-        47
-      ]
+      "question": "What conditions make memoization appropriate or inappropriate?",
+      "answer": "函数缓存适用于纯函数，否则副作用会导致不可预测行为。参数多样性极高时还应考虑内存管理，比如使用 LRU 策略或限制缓存大小，以防缓存对象无限增长。",
+      "explanation": "合适的缓存对象必须是可重复计算且无副作用的值，内存边界也必须被控制，否则缓存会成为新的性能问题。",
+      "source_lines": [43, 44, 45, 46, 47, 48]
     }
   ]
 }

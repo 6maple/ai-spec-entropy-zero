@@ -1,71 +1,64 @@
 {
-  "id": "note_js_20260423_tail_recursion",
-  "title": "JavaScript 尾递归：结构、优化与支持现状",
+  "id": "note_js_tail_recursion",
+  "title": "尾递归",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "source": {
     "input_path": "docs/raw/js.md",
-    "line_range": [
-      348,
-      387
-    ]
+    "line_range": [350, 389]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "普通递归在返回语句中包含表达式运算，必须等待下层返回后才能完成调用。",
+        "claim": "尾递归是指函数的最后一步操作是调用自身，且不再对递归调用返回值进行额外计算。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档对比了普通递归和尾递归的控制流结构。"
+          "description": "尾递归的关键是递归调用位于函数体的末尾，且返回值不再被进一步处理。"
+        },
+        "source_lines": [350, 351, 352, 353]
+      },
+      {
+        "claim": "普通递归在 return 语句中包含额外运算，必须等待下层返回；尾递归则通过累加器把中间结果传递下去，使调用成为最后一步。",
+        "evidence": {
+          "description": "普通递归需要在递归返回后继续计算，例如乘法；尾递归通过额外参数传递结果，使递归调用成为最后一个动作。\n\n```javascript\nfunction factorial(n) {\n  if (n === 1) return 1;\n  return n * factorial(n - 1); // 存在乘法，不是尾递归\n}\n```\n\n```javascript\nfunction factorial(n, total = 1) {\n  if (n === 1) return total;\n  return factorial(n - 1, n * total); // 最后一步仅调用自身，是尾递归\n}\n```"
         },
         "source_lines": [
-          358
+          354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367,
+          368, 369, 370, 371, 372, 373, 374
         ]
       },
       {
-        "claim": "尾递归通过将中间结果传递给累加器，使函数调用成为最后一步，从而有利于优化。",
+        "claim": "尾调用优化能让递归函数复用当前栈帧或覆盖栈帧，使深度递归的内存开销从 O(n) 降到 O(1)，避免栈溢出。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档说明尾递归结构的核心特性。"
+          "description": "尾递归优化允许引擎复用当前调用帧，不再为每层递归分配新的栈帧，从而将栈空间保持在常数级别。"
         },
-        "source_lines": [
-          367,
-          369
-        ]
+        "source_lines": [376, 377, 378, 379, 380]
       },
       {
-        "claim": "JavaScript 的尾调用优化支持度有限，Safari 的 JavaScriptCore 实现较完整，而 V8 默认未启用。",
+        "claim": "尽管 ES6 规范在严格模式下要求支持尾调用优化，但实际引擎实现有限，只有 Safari 的 JavaScriptCore 完整支持，而 V8 默认并不启用。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档评估了不同引擎对 TCO 的支持现状。"
+          "description": "标准规定了尾调用优化，但多数引擎由于调试和堆栈追踪问题未启用。因此在 JavaScript 中仍要谨慎依赖尾递归优化。"
         },
-        "source_lines": [
-          383,
-          384
-        ]
+        "source_lines": [381, 382, 383, 384, 385, 386]
       },
       {
-        "claim": "即使引擎支持不足，编写尾递归风格代码仍有助于逻辑清晰，并可在必要时重构为迭代循环。",
+        "claim": "即便引擎支持有限，编写尾递归风格代码依然是一个良好实践，它有助于逻辑清晰，并在需要时更容易重构成迭代形式。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档建议将尾递归作为结构清晰的实践，并在条件不满足时改用迭代。"
+          "description": "尾递归是一种重要思维工具，即使不能完全依赖引擎优化，也可以作为将递归逻辑转成迭代实现的中间形式。"
         },
-        "source_lines": [
-          385
-        ]
+        "source_lines": [387, 388, 389]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "盲目依赖 JS 引擎进行 TCO，而不考虑实际运行时兼容性。",
-        "将深度递归写成普通递归，导致调用栈溢出。"
+        "认为只要写递归就能自动节省内存，而不关注尾调用是否为函数的最后一步。",
+        "把尾递归当成跨浏览器都可依赖的优化，忽略了 V8 等大多数引擎未默认启用 TCO。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "causation",
-        "target_concept": "内存管理",
-        "context": "尾递归和迭代风格是避免深递归调用栈压力的通用内存与性能策略。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

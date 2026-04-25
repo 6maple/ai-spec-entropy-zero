@@ -1,93 +1,54 @@
 {
-  "id": "note_vue_20260423_component_performance",
-  "title": "Vue 组件性能优化：拆分、虚拟列表与模板策略",
+  "id": "note_vue_component_performance",
+  "title": "组件性能优化",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "vue"
+  },
   "source": {
     "input_path": "docs/raw/vue.md",
-    "line_range": [
-      12,
-      42
-    ]
+    "line_range": [12, 43]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "组件细粒度拆分可以让局部状态变化仅触发相关子组件重渲染，避免整树对比开销。",
+        "claim": "细粒度拆分复杂页面可以使局部状态变化只触发相关子组件重新渲染，避免整个页面的虚拟 DOM 全量对比。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档强调拆分复杂页面组件以降低虚拟 DOM 更新成本。"
+          "description": "将复杂页面拆成小组件后，局部更新只影响相关子组件，从而降低渲染和 diff 计算开销。"
         },
-        "source_lines": [
-          16
-        ]
+        "source_lines": [14, 15, 16, 17, 18, 19, 20]
       },
       {
-        "claim": "路由懒加载通过动态 import 将页面资源按需加载，显著减少首屏体积。",
+        "claim": "路由懒加载通过动态导入页面组件，仅在首次访问时加载该路由资源，显著减少初始包体积。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档推荐将路由组件按需加载以减小首页 JS。"
+          "description": "使用动态 import 配合路由配置，只把首页代码打包到初始加载，其他页面按需加载。"
         },
-        "source_lines": [
-          17
-        ]
+        "source_lines": [21, 22, 23, 24, 25, 26, 27, 28]
       },
       {
-        "claim": "虚拟滚动只渲染可视区 DOM 节点，从根本上解决海量列表的卡顿问题。",
+        "claim": "对于海量数据展示，采用虚拟滚动只渲染可视区域 DOM，可从根本上解决大量节点导致的卡顿问题。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档把虚拟列表列为长列表优化的核心技术。"
+          "description": "虚拟滚动通过只渲染视口内元素，避免大量 DOM 节点占用内存和导致渲染性能下降。"
         },
-        "source_lines": [
-          18
-        ]
+        "source_lines": [29, 30, 31, 32, 33, 34, 35, 36, 37]
       },
       {
-        "claim": "shallowRef/shallowReactive 和非响应式数据可避免不必要的深层依赖追踪。",
+        "claim": "对频繁切换的路由或组件使用 `<Keep-alive>` 缓存实例，可以避免重复渲染和初始化开销。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档指出应将无需响应的数据从 Vue 响应式系统中隔离。"
+          "description": "Keep-alive 允许组件实例被缓存而不是销毁，从而保留状态并减少切换时的重新渲染成本。"
         },
-        "source_lines": [
-          23,
-          24
-        ]
-      },
-      {
-        "claim": "v-show 与 v-if 应根据切换频率选择，避免错误使用导致渲染性能下降。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档比较了 v-show 和 v-if 的使用时机。"
-        },
-        "source_lines": [
-          31,
-          32
-        ]
-      },
-      {
-        "claim": "Tree Shaking 和按需引入插件帮助减少构建包体和页面首次加载成本。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档建议使用 ES 模块和插件按需引入来优化构建体积。"
-        },
-        "source_lines": [
-          40,
-          41,
-          42
-        ]
+        "source_lines": [38, 39, 40, 41, 42, 43]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把需频繁切换的元素用 v-if 而不是 v-show。",
-        "将整个 UI 库一次性导入到首屏包。"
+        "把所有复杂页面写成一个大组件，导致局部更新时全树重渲。",
+        "把长列表渲染成普通 DOM，而不考虑虚拟滚动的性能优势。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "dependency",
-        "target_concept": "网络首屏优化",
-        "context": "Vue 组件懒加载与首屏优化策略共同决定页面初次加载性能。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

@@ -1,50 +1,54 @@
 {
-  "note_id": "note_dev_md_20260423_searchbox",
+  "note_id": "note_development_search_box",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_dev_md_20260423_searchbox:0",
+      "card_id": "card_0",
+      "claim_ref": "note_development_search_box:0",
       "type": "qa",
-      "question": "搜索框需要维护哪些核心状态？",
-      "answer": "需要维护关键词、候选列表、选中索引和加载状态，支持键盘导航。",
-      "explanation": "文档提到 v-model、watch、suggestions、activeIndex 和 loading。",
-      "source_lines": [64, 65, 66]
+      "question": "What are the key interactive states for a search input component?",
+      "answer": "搜索输入框需要维护搜索词、候选列表、选中项索引和加载状态，并通过输入事件或 watch 监听搜索词变化来更新结果。",
+      "explanation": "这些状态构成了搜索框的核心交互逻辑。只要状态管理清晰，就能支持候选词上下键导航和搜索确认。",
+      "source_lines": [62, 63, 64, 65, 66, 67]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_dev_md_20260423_searchbox:1",
+      "card_id": "card_1",
+      "claim_ref": "note_development_search_box:1",
       "type": "qa",
-      "question": "为什么搜索框要做防抖处理？",
-      "answer": "防抖可以避免每输入一个字符都发送请求，减少接口压力和卡顿。",
-      "explanation": "文档建议把搜索触发延迟到约 300ms 后再调用接口。",
-      "source_lines": [68, 70]
+      "question": "How should you handle frequent input changes when implementing a search box?",
+      "answer": "应使用防抖处理输入，通常设置 300ms 延迟，并用 AbortController 或 CancelToken 取消过期请求以避免竞态返回覆盖最新结果。",
+      "explanation": "防抖减少无效请求，取消竞态请求则保证最终结果与当前输入一致，避免出现错误提示或旧结果。",
+      "source_lines": [68, 69, 70, 71, 72, 73]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_dev_md_20260423_searchbox:2",
+      "card_id": "card_2",
+      "claim_ref": "note_development_search_box:2",
       "type": "qa",
-      "question": "如何避免搜索结果被旧请求覆盖？",
-      "answer": "应取消重复请求，确保页面最终展示最后一次输入对应的结果。",
-      "explanation": "文档推荐使用 AbortController 或 CancelToken 处理竞态。",
-      "source_lines": [71, 72]
+      "question": "How can caching improve search box performance?",
+      "answer": "可以在内存中使用 Map 缓存相同关键词的结果，避免对相同查询重复发送后端请求，从而提升响应速度。",
+      "explanation": "缓存对于用户输入重复关键词非常有效，能减少后端负担并让搜索体验更加流畅。",
+      "source_lines": [109, 110, 111, 112, 113]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_dev_md_20260423_searchbox:3",
+      "card_id": "card_3",
+      "claim_ref": "note_development_search_box:3",
       "type": "qa",
-      "question": "相同关键词的搜索结果为什么可以缓存？",
-      "answer": "缓存可以减少重复请求，降低后端压力并提高响应速度。",
-      "explanation": "文档提到使用 Map 做简单缓存。",
-      "source_lines": [72]
+      "question": "What boundary handling is required for a robust search box?",
+      "answer": "需要显示 loading 状态、提供空结果提示，并在中文输入时用 `compositionstart` / `compositionend` 避免在汉字上屏前触发搜索。",
+      "explanation": "这能避免用户在输入过程中看到错误结果或频繁触发请求，同时让搜索状态对用户更友好。",
+      "source_lines": [100, 101, 102, 103, 104, 105, 106, 107, 108]
     },
     {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_dev_md_20260423_searchbox:4",
+      "card_id": "card_4",
+      "claim_ref": "note_development_search_box:4",
       "type": "qa",
-      "question": "中文输入时为什么要监听 compositionstart/compositionend？",
-      "answer": "避免拼音输入阶段提前触发搜索，只有汉字真正上屏后再检索。",
-      "explanation": "文档指出中文输入需要在上屏后再触发检索，防止中间态误触。",
-      "source_lines": [103]
+      "question": "What architectural pattern is recommended in Vue 3 for search logic?",
+      "answer": "推荐将搜索逻辑封装为组合式函数（composable），在 watch 中调用防抖搜索函数，使逻辑可复用且更容易测试。",
+      "explanation": "组合式函数提高了可维护性和复用性，适合把搜索行为从组件中抽离出来，减少模板与逻辑耦合。",
+      "source_lines": [74, 75, 76, 77, 78, 79]
     }
   ]
 }

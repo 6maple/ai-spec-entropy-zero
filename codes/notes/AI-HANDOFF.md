@@ -9,9 +9,27 @@
 **数据来源：** `../../docs/notes/` (笔记JSON) 和 `../../docs/note-cards/` (复习卡JSON)  
 **启动命令：** `cd codes/notes && npm run dev`  
 **访问地址：** http://localhost:3000/  
-**最后更新：** 2026-04-23 - 重构复习体系（全部复习页 + 单篇闭卷）
+**最后更新：** 2026-04-25 - 重构"核心逻辑拆解"展示（外部同级 + Markdown 支持 + 代码高亮）
 
 ## 项目结构一句话
+
+... 10. **Markdown 渲染**：`NoteViewer.jsx` 使用 `markdown-it` 和 `highlight.js` 渲染核心逻辑。支持 `prose` 类名（Tailwind Typography 风格）进行排版渲染。
+
+## 常见任务快速指南
+
+...
+
+### 修改 Markdown 渲染配置
+
+→ 编辑 `src/components/NoteViewer.jsx` 中的 `md` 实例配置。
+
+## 快速定位问题
+
+...
+
+### 代码块没有高亮或样式异常
+
+→ 检查 `NoteViewer.jsx` 是否导入了 `highlight.js` 的 CSS 文件（当前使用 `github-dark.css`）。确保 `dangerouslySetInnerHTML` 渲染的容器具有 `markdown-body` 或 `prose` 类。
 
 ```
 src/

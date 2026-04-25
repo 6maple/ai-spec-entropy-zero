@@ -1,79 +1,57 @@
 {
-  "note_id": "note_vue_20260423_permission_management",
+  "note_id": "note_vue_permission_management",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "vue"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_vue_20260423_permission_management:0",
+      "card_id": "card_0",
+      "claim_ref": "note_vue_permission_management:0",
       "type": "qa",
-      "question": "为什么页面级权限应通过路由守卫在 beforeEach 中校验 token 和角色，未授权则重定向",
-      "answer": "页面级权限应通过路由守卫在 beforeEach 中校验 token 和角色，未授权则重定向。",
-      "explanation": "文档将路由守卫作为最核心的权限防线。",
+      "question": "What is the primary method for page-level permission control in Vue?",
+      "answer": "页面级权限控制应通过路由守卫在跳转前验证用户 token 和角色，若未授权，则重定向到登录页或 404。",
+      "explanation": "这能在路由层面阻止未授权访问，是前端权限管理的第一道防线。",
+      "source_lines": [86, 87, 88, 89, 90, 91, 92, 93]
+    },
+    {
+      "card_id": "card_1",
+      "claim_ref": "note_vue_permission_management:1",
+      "type": "qa",
+      "question": "How can directive-based permission control be implemented in Vue?",
+      "answer": "可通过自定义指令 `v-permission` 判断用户权限，若无权限则把目标元素从 DOM 中移除。",
+      "explanation": "这种方式让视图级权限控制更直接，避免无权限元素被渲染到页面上。",
       "source_lines": [
-        90,
-        91,
-        92
+        94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108,
+        109, 110, 111, 112, 113, 114
       ]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_vue_20260423_permission_management:1",
+      "card_id": "card_2",
+      "claim_ref": "note_vue_permission_management:2",
       "type": "qa",
-      "question": "为什么动态路由可根据用户角色动态注入，确保菜单与路由实时同步",
-      "answer": "动态路由可根据用户角色动态注入，确保菜单与路由实时同步。",
-      "explanation": "文档说明了动态添加路由的实现价值。",
-      "source_lines": [
-        90,
-        92
-      ]
+      "question": "What should request interceptors handle in permission management?",
+      "answer": "请求拦截器应统一注入 Authorization Token，并在响应拦截器中处理 401/403，触发退出登录或重定向逻辑。",
+      "explanation": "这让接口级权限控制更集中，避免每个请求重复写 token 注入和错误处理。",
+      "source_lines": [115, 116, 117, 118, 119, 120, 121]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_vue_20260423_permission_management:2",
+      "card_id": "card_3",
+      "claim_ref": "note_vue_permission_management:3",
       "type": "qa",
-      "question": "为什么视图级权限可通过自定义指令 v-permission 控制按钮或元素的渲染",
-      "answer": "视图级权限可通过自定义指令 v-permission 控制按钮或元素的渲染。",
-      "explanation": "文档提供了 permissionDirective 的指令实现思路。",
-      "source_lines": [
-        98,
-        100,
-        111
-      ]
+      "question": "How should permission identifiers be managed across the frontend?",
+      "answer": "权限标识应在菜单过滤、路由表和状态存储中统一使用，避免不同层之间因为权限描述不一致而出现漏判。",
+      "explanation": "一套统一的权限标识可以降低前端权限逻辑错误，保证页面显示与访问控制一致。",
+      "source_lines": [122, 123, 124, 125, 126]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_vue_20260423_permission_management:3",
+      "card_id": "card_4",
+      "claim_ref": "note_vue_permission_management:4",
       "type": "qa",
-      "question": "为什么接口级权限应在请求拦截器中统一注入 Authorization Token，并处理 401/403 响应",
-      "answer": "接口级权限应在请求拦截器中统一注入 Authorization Token，并处理 401/403 响应。",
-      "explanation": "文档把请求拦截和响应拦截作为接口级权限保障手段。",
-      "source_lines": [
-        120
-      ]
-    },
-    {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_vue_20260423_permission_management:4",
-      "type": "qa",
-      "question": "为什么权限数据应持久化存储，菜单过滤和路由生成应使用统一权限标识符",
-      "answer": "权限数据应持久化存储，菜单过滤和路由生成应使用统一权限标识符。",
-      "explanation": "文档强调权限标识符一致性和持久化的必要性。",
-      "source_lines": [
-        124,
-        125,
-        126
-      ]
-    },
-    {
-      "card_id": "card_06_20260423",
-      "claim_ref": "note_vue_20260423_permission_management:5",
-      "type": "qa",
-      "question": "为什么角色切换或登出时应 resetRouter 清空动态路由，避免权限残留",
-      "answer": "角色切换或登出时应 resetRouter 清空动态路由，避免权限残留。",
-      "explanation": "文档指出动态替换路由与数据闭环的重要性。",
-      "source_lines": [
-        129,
-        130
-      ]
+      "question": "What must be done when a user switches role or logs out?",
+      "answer": "用户切换权限或登出时应重置路由和状态，通常通过 resetRouter 替换 router 实例，防止旧权限残留。",
+      "explanation": "否则旧的动态路由可能仍然存在，导致用户仍然能访问不应拥有的页面。",
+      "source_lines": [127, 128, 129, 130, 131]
     }
   ]
 }

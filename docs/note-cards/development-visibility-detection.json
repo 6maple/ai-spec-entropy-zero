@@ -1,50 +1,60 @@
 {
-  "note_id": "note_dev_md_20260423_visibility",
+  "note_id": "note_development_visibility_detection",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_dev_md_20260423_visibility:0",
+      "card_id": "card_0",
+      "claim_ref": "note_development_visibility_detection:0",
       "type": "qa",
-      "question": "为什么 Intersection Observer 是现代可视区域判断的首选？",
-      "answer": "它性能高、不依赖滚动事件，并且异步检测目标与视口的交叉状态。",
-      "explanation": "文档把 Intersection Observer 描述为最优雅且性能最优的方案。",
-      "source_lines": [116, 120, 123, 133, 134]
+      "question": "Why is Intersection Observer recommended for visibility detection?",
+      "answer": "Intersection Observer 是现代推荐方案，因为它通过异步回调检测元素与视口或祖先容器的交叉状态，不依赖 scroll 事件，且可通过 threshold 调整触发比例。\\n\\n```javascript\\nconst observer = new IntersectionObserver(\\n  (entries) => {\\n    entries.forEach((entry) => {\\n      if (entry.isIntersecting) {\\n        console.log('Element is visible');\\n      }\\n    });\\n  },\\n  { threshold: 0.1 },\\n);\\nobserver.observe(targetElement);\\n```",
+      "explanation": "异步回调避免了 scroll 事件的高频执行，使可见性检测更高效且更适合长列表或懒加载场景。",
+      "source_lines": [
+        116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+        130, 131, 132, 133, 134, 135, 136, 137, 138
+      ]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_dev_md_20260423_visibility:1",
+      "card_id": "card_1",
+      "claim_ref": "note_development_visibility_detection:1",
       "type": "qa",
-      "question": "getBoundingClientRect 方案需要额外注意什么？",
-      "answer": "它需要配合滚动事件和防抖/节流，否则频繁计算会影响性能。",
-      "explanation": "文档说明 getBoundingClientRect 的判定逻辑与节流依赖。",
-      "source_lines": [141, 143, 144, 147, 155]
+      "question": "How does getBoundingClientRect help determine element visibility?",
+      "answer": "getBoundingClientRect 可以获取元素相对于视口的位置坐标。通过判断 top/bottom/left/right 与视口边界的关系，并结合 scroll 事件节流，可以实现可视检测。",
+      "explanation": "这个方案是经典降级方式，但它依赖同步布局计算，若不节流会导致性能问题。",
+      "source_lines": [
+        139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
+        153, 154, 155, 156, 157, 158
+      ]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_dev_md_20260423_visibility:2",
+      "card_id": "card_2",
+      "claim_ref": "note_development_visibility_detection:2",
       "type": "qa",
-      "question": "offsetTop/scrollTop 方案有哪些局限？",
-      "answer": "在多层嵌套或 CSS 变换场景下容易出错，计算逻辑较复杂。",
-      "explanation": "文档指出传统方案在复杂布局下更容易产生错误。",
-      "source_lines": [161, 163, 164]
+      "question": "What are the limitations of using offsetTop and scrollTop for visibility checks?",
+      "answer": "offsetTop / scrollTop 方案通过计算绝对偏移与滚动位置来判断可见性，但在多层嵌套滚动、变换布局或复杂容器中容易出现误判。",
+      "explanation": "这种传统方案在简单容器中可行，但在现代复杂页面中维护成本高，容易因为布局变化而失效。",
+      "source_lines": [159, 160, 161, 162, 163, 164, 165]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_dev_md_20260423_visibility:3",
+      "card_id": "card_3",
+      "claim_ref": "note_development_visibility_detection:3",
       "type": "qa",
-      "question": "在 Vue 中如何工程化可视区域判断？",
-      "answer": "应封装为指令或组合式函数，并在 mounted/unmounted 中正确初始化和销毁。",
-      "explanation": "文档建议用自定义指令或 useIntersectionObserver 进行封装。",
-      "source_lines": [168, 170, 171, 172]
+      "question": "How should visibility logic be organized in a Vue project?",
+      "answer": "可把可视检测逻辑封装为自定义指令或组合式函数，并在组件挂载时初始化观察，在卸载时销毁。还可以使用现成库如 vue-observe-visibility 提高复用。",
+      "explanation": "这种封装方式使业务组件保持简洁，同时保证可视检测逻辑统一管理，便于维护。",
+      "source_lines": [166, 167, 168, 169, 170, 171, 172, 173]
     },
     {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_dev_md_20260423_visibility:4",
+      "card_id": "card_4",
+      "claim_ref": "note_development_visibility_detection:4",
       "type": "qa",
-      "question": "如果兼容低版本浏览器，可视判断方案应如何选？",
-      "answer": "优先使用 Intersection Observer，低版本兼容时退回 getBoundingClientRect+节流。",
-      "explanation": "文档总结了首选与备选策略。",
-      "source_lines": [176, 177]
+      "question": "What is the modern default strategy for visibility detection?",
+      "answer": "现代默认使用 Intersection Observer，低版本浏览器需要退回到手动计算和 scroll 事件的降级方案。",
+      "explanation": "优先使用浏览器原生 API 可以获得更好的性能，兼容性要求高时再提供手动降级。",
+      "source_lines": [174, 175, 176, 177, 178]
     }
   ]
 }

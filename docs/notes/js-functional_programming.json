@@ -1,76 +1,64 @@
 {
-  "id": "note_js_20260423_functional_programming",
-  "title": "JavaScript 函数式编程：纯函数、不变性与 Vue 实践",
+  "id": "note_js_functional_programming",
+  "title": "函数式编程",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "source": {
     "input_path": "docs/raw/js.md",
-    "line_range": [
-      129,
-      165
-    ]
+    "line_range": [129, 166]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "函数式编程强调纯函数、不可变性和函数是一等公民。",
+        "claim": "函数式编程把计算视为数学函数运算，强调声明式而不是命令式，关注“做什么”而非“怎么做”。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档列出了 FP 的三大基本准则。"
+          "description": "函数式编程是一种范式，强调把逻辑拆解为纯函数，并用组合的方式构建复杂行为。"
+        },
+        "source_lines": [131, 132, 133, 134]
+      },
+      {
+        "claim": "函数式编程的三大准则是纯函数、不可变性和函数是一等公民，这使得代码更可预测、易测试并减少共享状态错误。",
+        "evidence": {
+          "description": "纯函数保证相同输入输出，不可变性避免意外修改，函数作为一等公民使其可以传递、返回和组合。"
+        },
+        "source_lines": [135, 136, 137, 138, 139, 140]
+      },
+      {
+        "claim": "常用的函数式技术包括高阶函数、函数组合和柯里化，它们帮助构建可复用、可组合的业务逻辑。",
+        "evidence": {
+          "description": "高阶函数、compose、currying 等技术是函数式编程的核心手段，用于抽象控制流和数据转换。"
         },
         "source_lines": [
-          137,
-          138,
-          139
+          141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154,
+          155
         ]
       },
       {
-        "claim": "高阶函数、函数组合和柯里化是函数式编程的常用技术手段。",
+        "claim": "在 Vue 中，Composition API 和 computed 体现了函数式编程思想，通过纯函数封装逻辑并利用依赖缓存提高性能。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档把 HOF、Compose、Currying 归纳为 FP 工具。"
+          "description": "Vue 的 Composition API 鼓励把逻辑抽象为可复用函数，计算属性则是典型的纯函数缓存案例。"
         },
-        "source_lines": [
-          143,
-          144,
-          145
-        ]
+        "source_lines": [156, 157, 158, 159, 160, 161]
       },
       {
-        "claim": "Vue Composition API、计算属性和单向数据流体现了函数式编程思想。",
+        "claim": "函数式编程的优势是逻辑解耦和测试友好，但过度使用可能增加理解成本，尤其在对过程式思维习惯的团队中。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档介绍了 Vue 中 FP 体现的实践场景。"
+          "description": "函数式编程易于单元测试且减少错误，但对不熟悉此范式的开发者有学习门槛，过度使用可能导致代码可读性下降。"
         },
-        "source_lines": [
-          158,
-          159,
-          160
-        ]
-      },
-      {
-        "claim": "函数式编程提高了代码可测试性和可预测性，但对过程式惯性开发者有学习成本。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档评估了 FP 的优势与挑战。"
-        },
-        "source_lines": [
-          164,
-          165
-        ]
+        "source_lines": [162, 163, 164, 165, 166]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把不适合的副作用逻辑强行写成纯函数。",
-        "在不必要的场景下过度抽象，导致理解成本升高。"
+        "把所有程序都写成纯函数，而忽略了可读性和性能边界。",
+        "把可变状态当成纯函数输入，导致函数依赖外部环境而失去可预测性。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "comparison",
-        "target_concept": "Vue 组件性能优化",
-        "context": "Vue 的 Composition API 在实践上与函数式编程思想高度契合。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

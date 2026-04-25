@@ -1,41 +1,53 @@
 {
-  "note_id": "note_dev_md_20260423_pull_refresh",
+  "note_id": "note_development_pull_refresh",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_dev_md_20260423_pull_refresh:0",
+      "card_id": "card_0",
+      "claim_ref": "note_development_pull_refresh:0",
       "type": "qa",
-      "question": "下拉刷新通常依赖哪些触摸事件？",
-      "answer": "依赖 touchstart、touchmove 和 touchend，并且只有在页面顶部才触发刷新。",
-      "explanation": "文档说明基于 touch 事件计算位移并判断 scrollTop 是否为 0。",
-      "source_lines": [232, 234, 235]
+      "question": "How does pull-to-refresh detect a refresh gesture?",
+      "answer": "下拉刷新监听 touchstart、touchmove 和 touchend，记录初始触摸位置，仅在页面顶部且下拉距离超过阈值时进入刷新状态，否则回弹到初始位置。",
+      "explanation": "这能区分普通滚动与刷新手势，避免用户在页面中段下拉时误触。",
+      "source_lines": [
+        220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232
+      ]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_dev_md_20260423_pull_refresh:1",
+      "card_id": "card_1",
+      "claim_ref": "note_development_pull_refresh:1",
       "type": "qa",
-      "question": "如何判断上拉加载应触发？",
-      "answer": "当 scrollTop + clientHeight >= scrollHeight - threshold，或底部哨兵进入可视区时触发。",
-      "explanation": "文档给出基于阈值和 Intersection Observer 哨兵的触发策略。",
-      "source_lines": [245, 247, 248, 251]
+      "question": "What is the typical condition for triggering infinite scroll?",
+      "answer": "上拉加载通常在 `scrollTop + clientHeight >= scrollHeight - threshold` 时触发。更现代的做法是使用 Intersection Observer 监听底部哨兵元素。",
+      "explanation": "提前预留阈值可以让内容在用户看不到底部之前开始加载，避免出现加载延迟。",
+      "source_lines": [
+        233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245
+      ]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_dev_md_20260423_pull_refresh:2",
+      "card_id": "card_2",
+      "claim_ref": "note_development_pull_refresh:2",
       "type": "qa",
-      "question": "上拉/下拉交互中应管理哪几种状态？",
-      "answer": "必须管理 Loading、Finished、Error 和 Pulling 四种状态。",
-      "explanation": "文档列出这四种关键状态，强调它们对界面和重试逻辑的重要性。",
-      "source_lines": [276, 277, 278, 279]
+      "question": "Which states must be managed for robust pull/push loading?",
+      "answer": "必须维护 loading、finished、error 和 pulling 四个状态，防止重复触发，并为用户提供加载中、结束或错误的明确反馈。",
+      "explanation": "状态控制让加载逻辑严密，避免用户连续触发重复请求或在加载失败时陷入不确定状态。",
+      "source_lines": [246, 247, 248, 249, 250, 251, 252, 253]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_dev_md_20260423_pull_refresh:3",
+      "card_id": "card_3",
+      "claim_ref": "note_development_pull_refresh:3",
       "type": "qa",
-      "question": "为什么上拉加载需要配合节流和虚拟列表？",
-      "answer": "节流减少 scroll 事件频率，虚拟列表降低大数据量下的渲染压力。",
-      "explanation": "文档建议 scroll 监听时使用 throttle，并在大量数据时结合虚拟列表。",
-      "source_lines": [283, 284, 285]
+      "question": "What performance improvements should accompany pull-to-refresh and infinite scroll?",
+      "answer": "应配合节流、虚拟列表和离线提示，避免滚动事件过于频繁、数据量过大或网络断开时造成体验不佳。",
+      "explanation": "这些优化能保护主线程性能，并在网络异常时向用户提供明确状态，避免出现卡顿或一直等待的体验。",
+      "source_lines": [
+        254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267,
+        268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281,
+        282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295
+      ]
     }
   ]
 }

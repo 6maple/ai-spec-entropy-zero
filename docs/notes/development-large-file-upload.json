@@ -1,66 +1,64 @@
 {
-  "id": "note_dev_md_20260423_upload",
-  "title": "大文件上传可靠性：切片、哈希、续传与并发控制",
+  "id": "note_development_large_file_upload",
+  "title": "大文件上传",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "source": {
     "input_path": "docs/raw/development.md",
-    "line_range": [12, 58]
+    "line_range": [12, 59]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "大文件上传应先进行固定大小切片，以降低单请求失败成本并支持并行传输。",
+        "claim": "大文件上传的第一步是将文件切片为固定大小的 Blob 片段，并通过并发控制队列或 Promise.all 逐个上传这些切片。",
         "evidence": {
-          "type": "code_example",
-          "description": "文档通过 File.slice 和并行发送的示例，说明切片是上传流程第一步。"
+          "description": "处理大文件上传时，应该把文件分成固定大小（如 5MB）的切片，再并发发送这些切片以避免内存和网络压力。\n\n```javascript\n// 核心切片逻辑\nconst createFileChunks = (file, size = 5 * 1024 * 1024) => {\n  const chunks = [];\n  let cur = 0;\n  while (cur < file.size) {\n    chunks.push({ file: file.slice(cur, cur + size) });\n    cur += size;\n  }\n  return chunks;\n};\n```"
         },
-        "source_lines": [16, 18, 19, 20]
+        "source_lines": [
+          14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+          31, 32, 33
+        ]
       },
       {
-        "claim": "文件哈希是后端识别切片归属和去重判断的关键标识，哈希计算应通过 Worker 或抽样策略优化耗时。",
+        "claim": "为让后端识别切片归属，需要计算文件唯一哈希，通常使用 MD5，并可在 Web Worker 中并行计算或通过抽样哈希取首中尾字节以兼顾速度与准确性。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档提出 spark-md5、Web Worker 和抽样哈希方案的性能权衡。"
+          "description": "计算文件哈希是大文件上传的关键。可以使用 spark-md5 库并借助 Web Worker，或者采用抽样哈希算法来减少全量计算的耗时。"
         },
-        "source_lines": [36, 38, 39]
+        "source_lines": [34, 35, 36, 37, 38, 39, 40]
       },
       {
-        "claim": "上传前的校验接口使秒传可用，并在断点续传时只补传缺失切片。",
+        "claim": "秒传先让后端检查文件 Hash 是否存在，若已存在则无需上传；断点续传则让后端返回已收切片索引，前端仅上传缺失部分。",
         "evidence": {
-          "type": "api",
-          "description": "文档定义了验证接口如何判断 Hash 是否存在以及返回已收到切片索引列表。"
+          "description": "上传前先调用验证接口：如果后端认定此 Hash 已存在，则直接返回成功；否则获取已接收切片索引列表，过滤掉已上传切片，只传缺失片段。"
         },
-        "source_lines": [43, 45, 46]
+        "source_lines": [41, 42, 43, 44, 45, 46, 47]
       },
       {
-        "claim": "所有切片上传完成后，必须发起合并请求，按 Hash 顺序还原原始文件并校验完整性，然后清理临时切片。",
+        "claim": "所有切片上传完成后，前端要发送合并请求，让后端按照 Hash 识别顺序合并切片并校验完整性，随后清理临时切片存储。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档将合并、完整性校验和清理视为上传完成后的收尾步骤。"
+          "description": "切片上传结束后需要发送合并请求，后端根据 Hash 顺序合并切片并校验完整性，合并完成后清理临时文件夹。"
         },
-        "source_lines": [50, 51, 52]
+        "source_lines": [48, 49, 50, 51, 52, 53]
       },
       {
-        "claim": "前端稳定体验依赖进度聚合、并发上限和失败重试策略的组合，而不是单一机制。",
+        "claim": "用户体验关键在于上传进度、并发限制和失败重试：使用 onUploadProgress 展示总进度，限制同时上传请求为 3-6 个，失败后自动重试 2-3 次。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档强调 onUploadProgress、3-6 个并发上限和 2-3 次重试的可靠性组合。"
+          "description": "进度条应展示所有切片的总上传进度，上传时要限制并发请求数量以避免浏览器超限，并在某个切片失败时自动重试数次，失败后可等待用户手动恢复。"
         },
-        "source_lines": [56, 57, 58]
+        "source_lines": [54, 55, 56, 57, 58, 59]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "不对并发上传做上限控制，导致浏览器连接数超限和页面卡顿。",
-        "失败切片不重试，最终导致弱网下整文件上传失败。"
+        "直接把大文件一次性上传，导致网络中断时必须重传整个文件。",
+        "在并发上传时不限制请求数量，结果触发浏览器连接数上限或导致页面卡顿。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "causation",
-        "target_concept": "文件哈希",
-        "context": "文件哈希是后端识别切片归属并支持秒传和断点续传的基础。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

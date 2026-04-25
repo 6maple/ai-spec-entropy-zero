@@ -18,6 +18,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import HookItem from '@/components/HookItem';
+import MarkdownContent from '@/components/MarkdownContent';
 
 export default function CardsPage() {
   // 数据状态
@@ -388,9 +389,12 @@ export default function CardsPage() {
 
           {/* 卡片内容 */}
           <div className='px-6 py-8 flex flex-col justify-center text-center'>
-            <h3 className='text-lg font-bold leading-tight mb-4 text-slate-800 dark:text-[#E6F0EE]'>
-              {currentCard.question || '补全代码：'}
-            </h3>
+            <div className='text-left mb-4'>
+              <MarkdownContent
+                content={currentCard.question || '补全代码：'}
+                className='text-lg font-bold leading-tight text-slate-800 dark:text-[#E6F0EE] prose prose-sm dark:prose-invert max-w-none'
+              />
+            </div>
 
             {(currentCard.template || currentCard.code_snippet) && (
               <div className='bg-slate-900 text-slate-300 p-4 rounded-xl text-[12px] font-mono text-left mb-4 border border-white/5 leading-relaxed'>
@@ -402,9 +406,10 @@ export default function CardsPage() {
               <div className='space-y-4 animate-in slide-in-from-bottom-2 duration-400'>
                 <div className='inline-flex items-center gap-2 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2 rounded-lg border border-emerald-100 dark:border-emerald-800/30'>
                   <CheckCircle2 size={16} />
-                  <span className='text-sm font-bold'>
-                    {currentCard.answer}
-                  </span>
+                  <MarkdownContent
+                    content={currentCard.answer || ''}
+                    className='text-sm font-bold prose prose-sm dark:prose-invert max-w-none'
+                  />
                 </div>
                 <p className='text-[10px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed italic'>
                   {currentCard.explanation}

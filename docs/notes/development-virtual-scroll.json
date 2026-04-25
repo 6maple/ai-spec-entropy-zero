@@ -1,66 +1,57 @@
 {
-  "id": "note_dev_md_20260423_virtual_scroll",
-  "title": "虚拟滚动：按需渲染与性能稳定",
+  "id": "note_development_virtual_scroll",
+  "title": "虚拟滚动",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "source": {
     "input_path": "docs/raw/development.md",
-    "line_range": [179, 224]
+    "line_range": [179, 218]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "虚拟滚动通过只渲染可视区节点并使用占位背景撑高，来实现长列表的按需渲染。",
+        "claim": "虚拟滚动的核心原理是按需渲染，只将可视区域内的列表项渲染为真实 DOM，其余区域由一个撑高容器模拟总高度。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档将按需渲染、Phantom Layer 和绝对定位列表作为虚拟滚动核心。"
+          "description": "虚拟滚动通过只渲染当前可见元素，并利用一个巨大的占位容器或偏移来模拟完整列表高度，避免全量 DOM 导致的性能下降。"
         },
-        "source_lines": [181, 183, 189, 191]
+        "source_lines": [181, 182, 183, 184]
       },
       {
-        "claim": "关键计算逻辑是根据 scrollTop 和 itemHeight 计算 startIndex、endIndex 和 offset。",
+        "claim": "虚拟滚动通常由外层固定高度容器、总高度占位背景和实际渲染列表三层结构组成。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档明确列出滚动事件中的索引与偏移量计算公式。"
+          "description": "标准虚拟滚动结构包括：固定高度的滚动容器；用于撑高的 Phantom/Spacer 占位层；以及绝对定位的实际列表层，动态渲染当前可见项。"
         },
-        "source_lines": [195, 197, 198, 199]
+        "source_lines": [185, 186, 187, 188, 189]
       },
       {
-        "claim": "在 Vue 3 中，可通过计算属性 slice 当前可见数据，并使用 translateY 进行列表偏移。",
+        "claim": "滚动时需要计算起始索引、结束索引和偏移量：`startIndex = Math.floor(scrollTop / itemHeight)`，`endIndex = startIndex + Math.floor(containerHeight / itemHeight)`，`offset = startIndex * itemHeight`。",
         "evidence": {
-          "type": "code_example",
-          "description": "文档给出了 visibleData 与 listOffset 的计算公式。"
+          "description": "核心计算逻辑基于滚动位置和单项高度，动态决定可见项范围并通过偏移量移动实际列表，使其与虚拟滚动位置保持一致。"
         },
-        "source_lines": [205, 206, 210, 211, 212]
+        "source_lines": [190, 191, 192, 193, 194, 195, 196, 197, 198]
       },
       {
-        "claim": "为了避免白屏和高度变化问题，虚拟滚动应使用缓冲区、ResizeObserver 及 requestAnimationFrame 优化。",
+        "claim": "为避免快速滚动时白屏，需要设置上下缓冲区、处理可变高度项、使用 requestAnimationFrame 并动态回收不再可见的组件实例。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档建议使用 buffer、预估高度、ResizeObserver 和 rAF 来保持体验稳定。"
+          "description": "优化措施包括缓存额外行数、防止高度不固定导致错位、使用 rAF 优化渲染，以及销毁不可见项以释放内存。"
         },
-        "source_lines": [217, 218, 219]
-      },
-      {
-        "claim": "虚拟滚动适合海量列表场景，必要时优先考虑成熟库如 vue-virtual-scroller。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档指出虚拟滚动在复杂业务中更适合使用成熟方案。"
-        },
-        "source_lines": [223, 224]
+        "source_lines": [
+          199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212,
+          213, 214, 215, 216, 217, 218
+        ]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "直接渲染整个长列表，导致内存占用高和性能下降。",
-        "不考虑动态高度变化，从而造成滚动位置错位。"
+        "把虚拟滚动仅理解为隐藏不可见元素，却忽略了必须保留撑高占位层来模拟原生滚动。",
+        "在 scroll 回调中直接更新 DOM，没有用 requestAnimationFrame 或节流，导致滑动掉帧。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "dependency",
-        "target_concept": "可视区域判断",
-        "context": "虚拟滚动依赖可视区域检测来决定哪部分数据需要渲染。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

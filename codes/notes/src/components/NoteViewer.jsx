@@ -7,23 +7,24 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import HookItem from './HookItem';
+import MarkdownContent from './MarkdownContent';
 
 export default function NoteViewer({ noteData, cardsData }) {
   const renderEvidence = (evidence) => {
-    const styles = {
-      reasoning:
-        'bg-amber-100/40 dark:bg-amber-900/10 text-amber-800 dark:text-amber-200 border-amber-200/30',
-      api: 'bg-blue-100/40 dark:bg-blue-900/10 text-blue-800 dark:text-blue-200 border-blue-200/30',
-      code_example:
-        'bg-emerald-100/40 dark:bg-emerald-900/10 text-emerald-800 dark:text-emerald-200 border-emerald-200/30',
-    };
+    // 支持单对象或数组
+    const evidenceList = Array.isArray(evidence) ? evidence : [evidence];
     return (
-      <div
-        className={`mt-1.5 p-2 rounded-lg border text-[11px] leading-relaxed ${styles[evidence.type] || styles.reasoning}`}>
-        <span className='font-bold opacity-60 mr-1.5 uppercase'>
-          {evidence.type.replace('_', ' ')}
-        </span>
-        {evidence.description}
+      <div className='mt-2 space-y-2'>
+        {evidenceList.map((ev, index) => (
+          <div
+            key={index}
+            className='p-3 rounded-lg border text-[11px] leading-relaxed bg-slate-50 dark:bg-slate-900/10 border-slate-200 dark:border-slate-700'>
+            <MarkdownContent
+              content={ev.description}
+              className='prose prose-sm dark:prose-invert max-w-none opacity-90'
+            />
+          </div>
+        ))}
       </div>
     );
   };
@@ -36,34 +37,37 @@ export default function NoteViewer({ noteData, cardsData }) {
           <div className='bg-white dark:bg-[#0F1A1A] p-6 rounded-2xl border border-slate-200 dark:border-[#163033] shadow-sm relative overflow-hidden'>
             <div className='absolute top-0 left-0 w-1.5 h-full bg-[#2B8F80]'></div>
             <h2 className='text-xl font-bold mb-4'>{noteData.title}</h2>
-            <p className='text-sm opacity-70 leading-relaxed italic border-l-2 border-slate-100 dark:border-[#163033] pl-4 mb-6'>
+            <p className='text-sm opacity-70 leading-relaxed italic border-l-2 border-slate-100 dark:border-[#163033] pl-4'>
               {noteData.abstract}
             </p>
+          </div>
 
-            {/* 核心逻辑拆解 */}
-            <div className='space-y-4'>
-              <h3 className='text-xs font-bold uppercase tracking-widest text-[#2B8F80] flex items-center gap-2'>
-                <Hash size={14} /> 核心逻辑拆解
-              </h3>
-              <div className='grid grid-cols-1 gap-3'>
-                {noteData.content.core_claims.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className='bg-white dark:bg-[#0F1A1A] p-4 rounded-xl border border-slate-200 dark:border-[#163033] hover:shadow-md transition-all'>
-                    <div className='flex gap-3'>
-                      <span className='text-xs font-black text-[#2B8F80]/30'>
-                        {idx + 1}
-                      </span>
-                      <div className='flex-1'>
-                        <p className='text-sm font-bold mb-1 leading-snug'>
-                          {item.claim}
-                        </p>
-                        {renderEvidence(item.evidence)}
+          {/* 核心逻辑拆解 - 移出到卡片外部，与其同级 */}
+          <div className='space-y-4'>
+            <h3 className='text-xs font-bold uppercase tracking-widest text-[#2B8F80] flex items-center gap-2 ml-2'>
+              <Hash size={14} /> 核心逻辑拆解
+            </h3>
+            <div className='grid grid-cols-1 gap-4'>
+              {noteData.content.core_claims.map((item, idx) => (
+                <div
+                  key={idx}
+                  className='bg-white dark:bg-[#0F1A1A] p-5 rounded-2xl border border-slate-200 dark:border-[#163033] hover:shadow-md transition-all relative overflow-hidden'>
+                  <div className='flex gap-4'>
+                    <span className='text-lg font-black text-[#2B8F80]/20 select-none'>
+                      {(idx + 1).toString().padStart(2, '0')}
+                    </span>
+                    <div className='flex-1 min-w-0'>
+                      <div className='mb-2'>
+                        <MarkdownContent
+                          content={item.claim}
+                          className='text-sm font-bold leading-snug prose prose-sm dark:prose-invert max-w-none'
+                        />
                       </div>
+                      {renderEvidence(item.evidence)}
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -83,8 +87,14 @@ export default function NoteViewer({ noteData, cardsData }) {
                       <span>#{card.card_id.slice(-4)}</span>
                     </div>
                     <div className='text-xs font-bold mb-3 leading-relaxed'>
-                      {card.question ||
-                        card.template?.replace('__________', '____')}
+                      <MarkdownContent
+                        content={
+                          card.question ||
+                          card.template?.replace('__________', '____') ||
+                          ''
+                        }
+                        className='prose prose-sm dark:prose-invert max-w-none'
+                      />
                     </div>
                     <div className='bg-white dark:bg-[#0F1A1A] p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-900/30'>
                       <div className='text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-1 flex items-center gap-1'>
@@ -92,7 +102,10 @@ export default function NoteViewer({ noteData, cardsData }) {
                         参考答案
                       </div>
                       <div className='text-xs font-bold text-emerald-700 dark:text-emerald-300'>
-                        {card.answer}
+                        <MarkdownContent
+                          content={card.answer || ''}
+                          className='prose prose-sm dark:prose-invert max-w-none'
+                        />
                       </div>
                     </div>
                   </div>

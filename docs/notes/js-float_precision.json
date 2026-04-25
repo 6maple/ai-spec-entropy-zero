@@ -1,74 +1,58 @@
 {
-  "id": "note_js_20260423_float_precision",
-  "title": "JavaScript 浮点数精度丢失：二进制表示与精度库",
+  "id": "note_js_float_precision",
+  "title": "JS 浮点精度丢失",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "source": {
     "input_path": "docs/raw/js.md",
-    "line_range": [
-      296,
-      344
-    ]
+    "line_range": [296, 347]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "JavaScript 使用 IEEE 754 双精度浮点数表示数字，十进制小数在二进制中通常无法精确表示。",
+        "claim": "JavaScript 中 0.1 + 0.2 不等于 0.3，是因为底层采用 IEEE 754 双精度浮点表示，十进制小数在二进制中通常是无限循环小数。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档解释了浮点数存储标准和二进制转换问题。"
+          "description": "JavaScript 遵循 IEEE 754 标准，使用 64 位双精度浮点数。十进制小数如 0.1 无法精确表示为二进制，从而产生舍入误差。"
+        },
+        "source_lines": [298, 299, 300, 301]
+      },
+      {
+        "claim": "浮点精度丢失的根因是二进制转换和有限尾数位，JavaScript 只能用 52 位保存尾数，无法完整存储无限循环的二进制小数。",
+        "evidence": {
+          "description": "数字在计算机底层以二进制存储。由于 52 位尾数有限，必须将无限循环二进制截断或舍入，导致精度损失。"
+        },
+        "source_lines": [302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312]
+      },
+      {
+        "claim": "常用解决方案是将小数放大为整数再运算，最后再缩小；这一方法适用于金额计算等对精度敏感的场景。",
+        "evidence": {
+          "description": "整数运算是最常用的处理方式。把数值放大为整数，计算完成后再除以倍率，从而避免浮点误差。\n\n```javascript\n// 计算 0.1 + 0.2\nconst add = (num1, num2) => {\n  const m = Math.pow(10, 2); // 假设精度到小数点后两位\n  return (num1 * m + num2 * m) / m;\n};\n```"
         },
         "source_lines": [
-          304,
-          305,
-          306
+          313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326,
+          327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340,
+          341, 342, 343
         ]
       },
       {
-        "claim": "0.1 与 0.2 等十进制数在二进制中是无限循环，会因舍入导致计算结果出现偏差。",
+        "claim": "对于展示结果可使用 `toFixed()`，对等价比较可用 `Number.EPSILON`，而要求高精度的金融场景应引入 Big.js/Decimal.js 等专用库。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档指出精度丢失的根因在于二进制截断和舍入误差。"
+          "description": "toFixed 适合格式化展示，Number.EPSILON 用于误差范围内判断，相对精度要求更高的场景应使用成熟的大数库。"
         },
-        "source_lines": [
-          305,
-          306
-        ]
-      },
-      {
-        "claim": "toFixed 返回字符串，并且在某些场景下可能出现不稳定的四舍五入行为，适合用于 UI 渲染而非计算逻辑。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档提醒 toFixed 的字符串类型结果和边缘 rounding 风险。"
-        },
-        "source_lines": [
-          332
-        ]
-      },
-      {
-        "claim": "对于精度要求高的计算，应使用 Big.js、Decimal.js 或 Math.js 等精度库。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档列出了常用的精度计算库。"
-        },
-        "source_lines": [
-          337,
-          338,
-          339
-        ]
+        "source_lines": [344, 345, 346, 347]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "直接使用浮点运算判断金额或精度关键值。",
-        "混用 toFixed 结果和数值比较逻辑。"
+        "直接用 `===` 比较浮点数结果，忽略了 IEEE 754 的舍入误差。",
+        "把 `toFixed()` 当成业务计算手段，而不是仅用于 UI 格式化。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "extension",
-        "target_concept": "函数式编程",
-        "context": "精确数值计算常与纯函数式逻辑结合，避免副作用和隐式类型转换。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

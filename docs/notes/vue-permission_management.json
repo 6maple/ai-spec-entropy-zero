@@ -1,97 +1,64 @@
 {
-  "id": "note_vue_20260423_permission_management",
-  "title": "Vue 权限管理：路由守卫、指令与动态路由",
+  "id": "note_vue_permission_management",
+  "title": "权限管理",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "vue"
+  },
   "source": {
     "input_path": "docs/raw/vue.md",
-    "line_range": [
-      84,
-      130
-    ]
+    "line_range": [84, 131]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "页面级权限应通过路由守卫在 beforeEach 中校验 token 和角色，未授权则重定向。",
+        "claim": "页面级权限应通过路由守卫在跳转前验证 token 和角色，未授权时重定向到登录页或 404。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档将路由守卫作为最核心的权限防线。"
+          "description": "路由守卫是前端权限控制的第一道防线，应在 beforeEach 钩子中检查用户身份和角色。"
+        },
+        "source_lines": [86, 87, 88, 89, 90, 91, 92, 93]
+      },
+      {
+        "claim": "视图级权限可以通过自定义指令 `v-permission` 控制按钮或功能项的显示，若无权限通常直接从 DOM 中移除元素。",
+        "evidence": {
+          "description": "指令可以根据用户权限判断是否渲染 DOM，常见做法是把不允许的节点从父元素中移除。"
         },
         "source_lines": [
-          90,
-          91,
-          92
+          94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108,
+          109, 110, 111, 112, 113, 114
         ]
       },
       {
-        "claim": "动态路由可根据用户角色动态注入，确保菜单与路由实时同步。",
+        "claim": "接口级权限应在 Axios 拦截器中统一注入 Authorization Token，并处理 401/403 响应以触发登出或重定向。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档说明了动态添加路由的实现价值。"
+          "description": "请求拦截器统一带上 token，响应拦截器处理未授权或禁止访问，保证 API 调用的权限控制有效。"
         },
-        "source_lines": [
-          90,
-          92
-        ]
+        "source_lines": [115, 116, 117, 118, 119, 120, 121]
       },
       {
-        "claim": "视图级权限可通过自定义指令 v-permission 控制按钮或元素的渲染。",
+        "claim": "数据级权限应在菜单过滤、状态存储和后端接口层面统一使用一套权限标识符，避免前端与后端权限描述不一致。",
         "evidence": {
-          "type": "code_example",
-          "description": "文档提供了 permissionDirective 的指令实现思路。"
+          "description": "前端菜单与路由应基于同一套权限标识计算，确保用户看不到或访问不到无权页面。"
         },
-        "source_lines": [
-          98,
-          100,
-          111
-        ]
+        "source_lines": [122, 123, 124, 125, 126]
       },
       {
-        "claim": "接口级权限应在请求拦截器中统一注入 Authorization Token，并处理 401/403 响应。",
+        "claim": "用户切换权限或登出时必须重置路由和状态，通常通过 resetRouter 替换 router 实例，以防止旧权限残留。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档把请求拦截和响应拦截作为接口级权限保障手段。"
+          "description": "权限切换后需要清除旧路由和状态，否则用户可能仍能访问之前注入的页面。"
         },
-        "source_lines": [
-          120
-        ]
-      },
-      {
-        "claim": "权限数据应持久化存储，菜单过滤和路由生成应使用统一权限标识符。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档强调权限标识符一致性和持久化的必要性。"
-        },
-        "source_lines": [
-          124,
-          125,
-          126
-        ]
-      },
-      {
-        "claim": "角色切换或登出时应 resetRouter 清空动态路由，避免权限残留。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档指出动态替换路由与数据闭环的重要性。"
-        },
-        "source_lines": [
-          129,
-          130
-        ]
+        "source_lines": [127, 128, 129, 130, 131]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "前端直接信任路由权限，而不对后端接口权限做二次校验。",
-        "角色切换后不重置路由，导致旧权限逻辑残留。"
+        "把前端权限管理当成安全边界，而忽略后端必须做权限校验。",
+        "动态添加路由后不重置旧路由，导致用户权限切换后仍能访问遗留页面。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "dependency",
-        "target_concept": "全局状态管理",
-        "context": "权限管理依赖全局状态存储，确保页面刷新后权限信息一致。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

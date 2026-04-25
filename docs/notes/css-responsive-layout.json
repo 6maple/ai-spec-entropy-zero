@@ -1,100 +1,75 @@
 {
-  "id": "note_css_20260423_responsive_layout",
-  "title": "CSS 响应式布局：媒体查询、Flex、Grid 与视口单位",
+  "id": "note_css_responsive_layout",
+  "title": "响应式布局",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "css"
+  },
   "source": {
     "input_path": "docs/raw/css.md",
-    "line_range": [
-      67,
-      98
-    ]
+    "line_range": [67, 98]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "响应式布局的基础是媒体查询，通常采用移动端优先策略，在小屏基础上逐步适配大屏。",
+        "claim": "响应式布局的基石是 Media Queries，通常采用移动端优先策略，先定义基础样式，再通过 `min-width` 针对更大屏幕补充差异样式。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档指出 media queries 是响应式的基石，并推荐移动端优先。"
+          "description": "Media Queries 是响应式布局的基础。移动端优先的写法先定义通用样式，再在 `min-width` 条件下添加大屏适配规则。"
         },
-        "source_lines": [
-          71,
-          72
-        ]
+        "source_lines": [69, 70, 71, 72, 73, 74, 75]
       },
       {
-        "claim": "百分比布局适合流式尺寸，但基于父级计算的高度关系复杂，难以处理高度适配。",
+        "claim": "百分比布局通过把宽度和内边距设为父元素的百分比来实现流式适配，但高度关系复杂，难以处理高度自适应。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档分析了百分比布局的优缺点。"
+          "description": "百分比布局是最原始的流式方案。它的优点是适配平滑，缺点是高度依赖父元素，导致高度计算关系复杂。"
         },
-        "source_lines": [
-          72
-        ]
+        "source_lines": [69, 70, 71, 72, 73, 74, 75]
       },
       {
-        "claim": "Flexbox 是现代布局首选，用于局部组件排列、自动换行与剩余空间分配。",
+        "claim": "Flexbox 适合局部组件排列，`flex-wrap: wrap` 可以自动换行，`flex-grow` 和 `flex-shrink` 可动态分配剩余空间。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档描述了 flex-wrap 和 flex-grow/shrink 的设计价值。"
+          "description": "Flexbox 是现代布局首选，适用于组件内的排列与对齐。通过自动换行和伸缩属性，子元素可以在容器内灵活占用空间。"
         },
-        "source_lines": [
-          73
-        ]
+        "source_lines": [69, 70, 71, 72, 73, 74, 75]
       },
       {
-        "claim": "Grid 是二维布局利器，特别适合后台管理等大框架场景。",
+        "claim": "Grid 是二维布局利器，它可以同时控制行和列，在复杂页面大框架（如后台侧边栏与内容区）时效率更高。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档强调 Grid 在控制行列方面优于 Flex。"
+          "description": "Grid 相比 Flexbox 更适合同时管理行和列的布局。对于大框架结构，Grid 能一次性描述整体网格，简化复杂布局的实现。"
         },
-        "source_lines": [
-          73,
-          74
-        ]
+        "source_lines": [69, 70, 71, 72, 73, 74, 75]
       },
       {
-        "claim": "现代响应式单位包括 rem 和 vw/vh，rem 依赖根字号，vw/vh 直接基于视口尺寸。",
+        "claim": "现代单位方案包括 rem 和视口单位，rem 依赖根元素字体大小实现等比缩放，vw/vh 直接基于视口尺寸，无需 JS 计算。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档比较了 rem 和 vw/vh 的原理与实践方式。"
+          "description": "rem 以 HTML 根字体大小为基准，实现整体等比缩放；vw/vh 则直接等于视口宽高的百分比，是无 JS 的响应式方案。"
         },
-        "source_lines": [
-          78,
-          79,
-          81,
-          82,
-          83
-        ]
+        "source_lines": [76, 77, 78, 79, 80, 81, 82, 83, 84]
       },
       {
-        "claim": "组件化响应式方案通过断点组件、栅格系统、Tailwind 类名和响应式图片，提升工程效率。",
+        "claim": "组件化与工程化方案通过封装断点组件、栅格系统或 Tailwind 类前缀，结合 `srcset` / `picture` 实现更高效的响应式开发。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档把响应式 UI 框架、组件化方案与图片响应式整合为工程实践。"
+          "description": "在 Vue 中可以通过断点组件或自定义指令封装响应式逻辑。UI 框架的栅格系统与原子化 CSS 也能快速配置不同尺寸下的布局。图片响应式则使用 `srcset` 或 `picture` 按分辨率加载。"
         },
-        "source_lines": [
-          87,
-          88,
-          89,
-          90,
-          91,
-          92
-        ]
+        "source_lines": [85, 86, 87, 88, 89, 90, 91, 92, 93]
+      },
+      {
+        "claim": "响应式选型应优先移动端体验、组合使用 Grid/Flex/vw，并根据内容实际“变丑”时再新增断点，避免死板的固定像素阈值。",
+        "evidence": {
+          "description": "实践思维强调不要死守固定断点，而是根据内容何时出现布局问题来决定是否添加媒体查询。"
+        },
+        "source_lines": [94, 95, 96, 97, 98]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "固定断点写死样式，忽视内容何时真正变丑。",
-        "过度依赖百分比布局而忽略高度计算复杂性。"
+        "只依赖固定像素断点（如 768px）来写响应式样式，忽略了内容在不同屏幕下的实际变化。",
+        "把所有响应式计算交给 JavaScript，而不优先利用 Media Queries 和 CSS 原生单位。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "extension",
-        "target_concept": "BFC",
-        "context": "响应式布局中的自适应容器常与 BFC 结合，避免浮动和外边距问题影响适配。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

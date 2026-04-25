@@ -1,69 +1,49 @@
 {
-  "note_id": "note_js_20260423_memory_management",
+  "note_id": "note_js_memory_management",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_js_20260423_memory_management:0",
+      "card_id": "card_0",
+      "claim_ref": "note_js_memory_management:0",
       "type": "qa",
-      "question": "为什么JavaScript 内存生命周期包括分配、使用和释放",
-      "answer": "JavaScript 内存生命周期包括分配、使用和释放。",
-      "explanation": "文档概述了内存生命周期的三个阶段。",
-      "source_lines": [
-        230,
-        231,
-        232
-      ]
+      "question": "What are the three stages of JavaScript memory lifecycle?",
+      "answer": "JavaScript 内存生命周期包含分配、使用和释放三个阶段。变量声明时分配内存，使用后由垃圾回收器在不再引用时释放。",
+      "explanation": "理解生命周期有助于识别何时手动释放引用，以便垃圾回收器能够及时回收对象。",
+      "source_lines": [226, 227, 228, 229, 230, 231, 232, 233]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_js_20260423_memory_management:1",
+      "card_id": "card_1",
+      "claim_ref": "note_js_memory_management:1",
       "type": "qa",
-      "question": "为什么现代浏览器 GC 采用可达性分析，从根对象出发判断对象是否可达，而不是仅靠引用计数",
-      "answer": "现代浏览器 GC 采用可达性分析，从根对象出发判断对象是否可达，而不是仅靠引用计数。",
-      "explanation": "文档解释了 GC 的可达性原则并说明引用计数的局限。",
-      "source_lines": [
-        238,
-        239
-      ]
+      "question": "How does modern GC determine whether an object can be collected?",
+      "answer": "现代 GC 主要用可达性分析算法，从根对象遍历引用链。如果对象不可通过任何引用链访问，则被视为不可达并回收。",
+      "explanation": "这意味着只有真正与程序状态脱离的对象才会被清理，而不是依赖引用计数规则。",
+      "source_lines": [234, 235, 236, 237, 238, 239, 240]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_js_20260423_memory_management:2",
+      "card_id": "card_2",
+      "claim_ref": "note_js_memory_management:2",
       "type": "qa",
-      "question": "为什么常见内存泄漏来源包括全局变量、未清理定时器、DOM 引用、闭包监听和未移除事件",
-      "answer": "常见内存泄漏来源包括全局变量、未清理定时器、DOM 引用、闭包监听和未移除事件。",
-      "explanation": "文档列举了五类典型的 JS 内存泄漏场景。",
-      "source_lines": [
-        245,
-        246,
-        247,
-        248,
-        249
-      ]
+      "question": "What are common causes of memory leaks in JavaScript?",
+      "answer": "常见内存泄漏场景包括未声明的全局变量、卸载后未清理的定时器或事件监听、保留已删除 DOM 的引用，以及长生命周期闭包。",
+      "explanation": "这些模式都会让对象保持可达，阻止 GC 回收，尤其是组件卸载后仍然持有引用时。",
+      "source_lines": [241, 242, 243, 244, 245, 246, 247, 248, 249, 250]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_js_20260423_memory_management:3",
+      "card_id": "card_3",
+      "claim_ref": "note_js_memory_management:3",
       "type": "qa",
-      "question": "为什么防止泄漏应及时解除引用、使用 WeakMap/WeakSet，并在组件卸载时清理定时器和监听器",
-      "answer": "防止泄漏应及时解除引用、使用 WeakMap/WeakSet，并在组件卸载时清理定时器和监听器。",
-      "explanation": "文档提供了内存泄漏清理的代码层面实践。",
+      "question": "What practical steps reduce memory leaks in Vue components?",
+      "answer": "应及时置空无用引用、使用 WeakMap/WeakSet 存储对象关系，并在 onUnmounted 中清理定时器和事件监听。",
+      "explanation": "这些做法让不再需要的数据不再被持有，使垃圾回收器能够回收组件卸载后的资源。",
       "source_lines": [
-        253,
-        254,
-        255
-      ]
-    },
-    {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_js_20260423_memory_management:4",
-      "type": "qa",
-      "question": "为什么使用 Memory 和 Performance 面板对内存曲线进行监控，可帮助定位持续上升的内存泄漏",
-      "answer": "使用 Memory 和 Performance 面板对内存曲线进行监控，可帮助定位持续上升的内存泄漏。",
-      "explanation": "文档推荐使用浏览器开发者工具进行内存监控。",
-      "source_lines": [
-        293,
-        294
+        251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264,
+        265, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278,
+        279, 280, 281, 282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292,
+        293, 294, 295
       ]
     }
   ]

@@ -1,86 +1,62 @@
 {
-  "id": "note_js_20260423_higher_order_functions",
-  "title": "JavaScript 高阶函数：柯里化、组合与管道",
+  "id": "note_js_higher_order_functions",
+  "title": "高阶函数",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "source": {
     "input_path": "docs/raw/js.md",
-    "line_range": [
-      49,
-      116
-    ]
+    "line_range": [49, 128]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "柯里化将多参数函数转换为一系列单参数函数，便于预设参数和延迟执行。",
+        "claim": "柯里化将一个接收多个参数的函数转化为一系列接收单个参数的函数，并利用闭包保存已传递参数。",
         "evidence": {
-          "type": "code_example",
-          "description": "文档给出了 curry 函数实现并说明其参数复用价值。"
+          "description": "柯里化的本质是把多参数函数拆成多个单参数函数，并用闭包收集参数。\n\n```javascript\nconst curry = (fn) => {\n  return function curried(...args) {\n    if (args.length >= fn.length) {\n      return fn.apply(this, args);\n    }\n    return (...nextArgs) => curried.apply(this, [...args, ...nextArgs]);\n  };\n};\n```"
         },
         "source_lines": [
-          51,
-          57,
-          71
+          51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
+          68, 69, 70, 71, 72, 73, 74
         ]
       },
       {
-        "claim": "函数组合将多个纯函数从右向左嵌套执行，使数据流更声明式。",
+        "claim": "函数组合把多个单一职责函数按从右向左的顺序嵌套执行，前一个函数的输出作为后一个函数的输入。",
         "evidence": {
-          "type": "code_example",
-          "description": "文档以 compose 示例说明将多个函数链式连接的思想。"
+          "description": "组合函数将小函数串起来执行，形成一个复杂函数，数据从右向左传递。\n\n```javascript\nconst compose =\n  (...fns) =>\n  (x) =>\n    fns.reduceRight((v, f) => f(v), x);\n```"
         },
         "source_lines": [
-          75,
-          81,
-          92
+          75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91,
+          92, 93, 94, 95, 96, 97, 98, 99
         ]
       },
       {
-        "claim": "管道与组合类似，但执行顺序改为从左向右，更符合线性思维。",
+        "claim": "管道把多个函数按从左向右的顺序连接，前一个函数的输出作为下一个函数的输入，更符合人的线性思维。",
         "evidence": {
-          "type": "code_example",
-          "description": "文档演示 pipe 的实现和数据处理的可读性提升。"
+          "description": "管道与组合类似，但执行顺序改为从左向右，便于理解数据流。\n\n```javascript\nconst pipe =\n  (...fns) =>\n  (x) =>\n    fns.reduce((v, f) => f(v), x);\n```"
         },
         "source_lines": [
-          100,
-          106,
-          112
+          100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112
         ]
       },
       {
-        "claim": "高阶函数、组合和管道都鼓励编写单一职责的纯函数，提升可维护性。",
+        "claim": "在 Vue 场景中，函数式编程技巧有助于声明式表达逻辑、解耦职责，并在数据处理链中提高可读性。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档总结这些技术的工程价值和声明式好处。"
+          "description": "组合和管道能让数据转换流程清晰可读，适合在 Vue 的 Composable 中构建可复用逻辑。"
         },
-        "source_lines": [
-          96,
-          98
-        ]
-      },
-      {
-        "claim": "在复杂数据预处理场景下，函数管道可以让数据处理链条更清晰。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档提到管道在表单数据清洗等场景中的优势。"
-        },
-        "source_lines": [
-          116
-        ]
+        "source_lines": [118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "将复杂逻辑写成深度嵌套调用，降低可读性。",
-        "滥用柯里化而让函数签名变得难以理解。"
+        "把柯里化当成只是语法糖，而忽略它对参数复用和延迟执行的价值。",
+        "在流程清晰的场景中使用嵌套函数而非管道，导致逻辑变得难懂。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "extension",
-        "target_concept": "函数式编程",
-        "context": "高阶函数是函数式编程的重要工具之一。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

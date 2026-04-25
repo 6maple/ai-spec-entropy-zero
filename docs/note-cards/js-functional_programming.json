@@ -1,56 +1,57 @@
 {
-  "note_id": "note_js_20260423_functional_programming",
+  "note_id": "note_js_functional_programming",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "javascript"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_js_20260423_functional_programming:0",
+      "card_id": "card_0",
+      "claim_ref": "note_js_functional_programming:0",
       "type": "qa",
-      "question": "为什么函数式编程强调纯函数、不可变性和函数是一等公民",
-      "answer": "函数式编程强调纯函数、不可变性和函数是一等公民。",
-      "explanation": "文档列出了 FP 的三大基本准则。",
+      "question": "What is the core idea of functional programming?",
+      "answer": "函数式编程把计算视为数学函数运算，强调声明式而不是命令式，关注“做什么”而非“怎么做”。",
+      "explanation": "这种范式让代码更接近数学函数的性质，使逻辑更可预测，便于 reasoning。",
+      "source_lines": [131, 132, 133, 134]
+    },
+    {
+      "card_id": "card_1",
+      "claim_ref": "note_js_functional_programming:1",
+      "type": "qa",
+      "question": "What are the three core principles of functional programming?",
+      "answer": "函数式编程的三大原则是纯函数、不可变性和函数是一等公民。它们使代码更可预测、更易测试，并减少共享状态错误。",
+      "explanation": "这些原则避免了副作用和可变状态带来的不确定性，是函数式代码稳定性的基础。",
+      "source_lines": [135, 136, 137, 138, 139, 140]
+    },
+    {
+      "card_id": "card_2",
+      "claim_ref": "note_js_functional_programming:2",
+      "type": "qa",
+      "question": "Which techniques are commonly used in functional programming?",
+      "answer": "常用技术包括高阶函数、函数组合和柯里化，它们帮助构建可复用、可组合的业务逻辑。",
+      "explanation": "这些技术把复杂逻辑拆解成小函数，使代码更易维护并支持组合式开发。",
       "source_lines": [
-        137,
-        138,
-        139
+        141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154,
+        155
       ]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_js_20260423_functional_programming:1",
+      "card_id": "card_3",
+      "claim_ref": "note_js_functional_programming:3",
       "type": "qa",
-      "question": "为什么高阶函数、函数组合和柯里化是函数式编程的常用技术手段",
-      "answer": "高阶函数、函数组合和柯里化是函数式编程的常用技术手段。",
-      "explanation": "文档把 HOF、Compose、Currying 归纳为 FP 工具。",
-      "source_lines": [
-        143,
-        144,
-        145
-      ]
+      "question": "How does Vue reflect functional programming ideas?",
+      "answer": "Vue 的 Composition API 和计算属性体现了函数式编程思想，通过纯函数封装逻辑，并利用依赖缓存提高性能。",
+      "explanation": "这使组件逻辑更模块化，减少了状态耦合，提升了复用性。",
+      "source_lines": [156, 157, 158, 159, 160, 161]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_js_20260423_functional_programming:2",
+      "card_id": "card_4",
+      "claim_ref": "note_js_functional_programming:4",
       "type": "qa",
-      "question": "为什么Vue Composition API、计算属性和单向数据流体现了函数式编程思想",
-      "answer": "Vue Composition API、计算属性和单向数据流体现了函数式编程思想。",
-      "explanation": "文档介绍了 Vue 中 FP 体现的实践场景。",
-      "source_lines": [
-        158,
-        159,
-        160
-      ]
-    },
-    {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_js_20260423_functional_programming:3",
-      "type": "qa",
-      "question": "为什么函数式编程提高了代码可测试性和可预测性，但对过程式惯性开发者有学习成本",
-      "answer": "函数式编程提高了代码可测试性和可预测性，但对过程式惯性开发者有学习成本。",
-      "explanation": "文档评估了 FP 的优势与挑战。",
-      "source_lines": [
-        164,
-        165
-      ]
+      "question": "What is the tradeoff when applying functional programming widely?",
+      "answer": "函数式编程的优势是逻辑解耦和测试友好，但过度使用可能增加理解成本，尤其对习惯过程式思维的团队来说。",
+      "explanation": "过度函数式可能让代码难以阅读，需权衡可读性与纯函数带来的好处。",
+      "source_lines": [162, 163, 164, 165, 166]
     }
   ]
 }

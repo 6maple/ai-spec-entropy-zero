@@ -1,66 +1,53 @@
 {
-  "id": "note_dev_md_20260423_web_security",
-  "title": "Web 安全防御：XSS、CSRF、SQL 注入与点击劫持",
+  "id": "note_development_web_security",
+  "title": "Web 安全",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "development"
+  },
   "source": {
     "input_path": "docs/raw/development.md",
-    "line_range": [287, 336]
+    "line_range": [296, 336]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "防御 XSS 需要输入过滤、输出转义，使用 DOMPurify 消毒 v-html 数据，并通过 HttpOnly Cookie 和 CSP 限制风险。",
+        "claim": "XSS 防御需要对用户输入进行过滤，输出时转义 HTML，使用 HttpOnly Cookie 并配置 CSP，防止恶意脚本注入和执行。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档列出了 XSS 的输入过滤、输出转义、DOMPurify、HttpOnly 和 CSP 多层防御。"
+          "description": "XSS 意味着恶意脚本在浏览器中执行。防御措施包括输入过滤、输出转义、HttpOnly Cookie，以及通过 CSP 限制可加载资源域名。"
         },
-        "source_lines": [291, 294, 295, 296, 297]
+        "source_lines": [
+          296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309,
+          310, 311, 312, 313, 314, 315
+        ]
       },
       {
-        "claim": "防御 CSRF 应使用 SameSite Cookie、CSRF Token，并校验 Referer/Origin 来源。",
+        "claim": "CSRF 防御通过将 Cookie 的 SameSite 设为 Strict 或 Lax、使用 CSRF Token，以及验证 Referer/Origin，防止第三方站点盗用登录状态发起请求。",
         "evidence": {
-          "type": "reasoning",
-          "description": "文档介绍了 CSRF 的 SameSite、Token 和请求来源验证策略。"
+          "description": "CSRF 攻击依赖用户登录态。防御手段包括 SameSite Cookie、每次请求携带 CSRF Token，以及后端校验请求来源。"
         },
-        "source_lines": [299, 304, 305, 306]
+        "source_lines": [
+          316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
+          330, 331, 332
+        ]
       },
       {
-        "claim": "防御 SQL 注入的最有效方式是参数化查询，并遵循最小权限原则。",
+        "claim": "SQL 注入防御的最有效手段是使用参数化查询，并遵循最小权限原则，不把用户输入直接拼接进 SQL 语句。",
         "evidence": {
-          "type": "code_example",
-          "description": "文档对比了字符串拼接和参数化查询的正确与错误示例。"
-        },
-        "source_lines": [308, 313, 314, 316, 317, 318, 320, 321]
-      },
-      {
-        "claim": "防御点击劫持应通过 X-Frame-Options 或 CSP frame-ancestors 限制 iframe 嵌套。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档指出点击劫持本质是嵌入透明 iframe，防御策略为框架限制头。"
-        },
-        "source_lines": [324, 326, 329, 330]
-      },
-      {
-        "claim": "其他安全实践包括 HTTPS 全站加密、HSTS 强制 HTTPS 访问和依赖安全扫描。",
-        "evidence": {
-          "type": "reasoning",
-          "description": "文档强调 HTTPS、HSTS 和 npm audit 等安全实践。"
+          "description": "SQL 注入的核心是在查询中注入恶意语句。正确做法是使用参数化查询，不直接拼接字符串，并让数据库账号只拥有必要权限。"
         },
         "source_lines": [333, 334, 335, 336]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "直接渲染用户输入为 HTML，导致 XSS 漏洞。",
-        "使用字符串拼接构造 SQL 语句，导致 SQL 注入风险。"
+        "把前端 XSS 过滤当成唯一防线，而忽略了后端输出转义和 CSP 的必要性。",
+        "把 SQL 查询字符串拼接在前端或后端都不做参数化，导致注入风险。"
       ]
     },
-    "hooks": [
-      {
-        "relation": "parallel",
-        "target_concept": "搜索框输入过滤",
-        "context": "搜索框的输入过滤和高亮处理与 XSS 防御共享同一类安全原则。"
-      }
-    ],
-    "hooks_meta": {}
+    "hooks": [],
+    "hooks_meta": {
+      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+    }
   }
 }

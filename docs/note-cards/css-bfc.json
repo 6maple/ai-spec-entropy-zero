@@ -1,70 +1,54 @@
 {
-  "note_id": "note_css_20260423_bfc",
+  "note_id": "note_css_bfc",
+  "metadata": {
+    "created_at": "2026-04-25",
+    "domain": "css"
+  },
   "cards": [
     {
-      "card_id": "card_01_20260423",
-      "claim_ref": "note_css_20260423_bfc:0",
+      "card_id": "card_0",
+      "claim_ref": "note_css_bfc:0",
       "type": "qa",
-      "question": "为什么BFC 是一个独立的布局容器，其内部布局不影响外部，外部元素也不影响内部",
-      "answer": "BFC 是一个独立的布局容器，其内部布局不影响外部，外部元素也不影响内部。",
-      "explanation": "文档将 BFC 描述为独立容器，并说明其隔离特性。",
-      "source_lines": [
-        36,
-        39
-      ]
+      "question": "What is the isolation behavior of a BFC?",
+      "answer": "BFC 是一个独立的布局容器，内部子元素的布局不会影响外部，外部元素也不会影响其内部。它把内部布局隔离于外部文档流。",
+      "explanation": "这种隔离特性让 BFC 成为解决布局冲突的基础手段。外部浮动、边距等变化不会导致 BFC 内部元素发生意外位置偏移。",
+      "source_lines": [36, 37, 38, 39]
     },
     {
-      "card_id": "card_02_20260423",
-      "claim_ref": "note_css_20260423_bfc:1",
+      "card_id": "card_1",
+      "claim_ref": "note_css_bfc:1",
       "type": "qa",
-      "question": "为什么BFC 可以由浮动、定位、inline-block/flex/grid/table-cell、overflow 非 visible 或根元素触发",
-      "answer": "BFC 可以由浮动、定位、inline-block/flex/grid/table-cell、overflow 非 visible 或根元素触发。",
-      "explanation": "文档列出了常见的 BFC 触发条件。",
-      "source_lines": [
-        44,
-        45,
-        46,
-        47,
-        48
-      ]
+      "question": "List the conditions that can trigger a BFC.",
+      "answer": "BFC 可以由以下条件触发：\n\n- **根元素**：`<html>` 默认就是一个 BFC。\n- **浮动元素**：`float` 不为 `none`。\n- **绝对或固定定位**：`position: absolute` 或 `fixed`。\n- **特定显示模式**：`display: inline-block`、`flex`、`grid`、`table-cell` 等。\n- **overflow 非 visible**：`overflow: hidden`、`auto` 或 `scroll`。",
+      "explanation": "这些触发条件都是创建独立布局上下文的标准方式。掌握它们可以在需要隔离布局时灵活选用不同 CSS 属性。",
+      "source_lines": [40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
     },
     {
-      "card_id": "card_03_20260423",
-      "claim_ref": "note_css_20260423_bfc:2",
+      "card_id": "card_2",
+      "claim_ref": "note_css_bfc:2",
       "type": "qa",
-      "question": "为什么BFC 内部元素垂直排列，上下 margin 会发生重叠，左 margin 与包含块左边界接触",
-      "answer": "BFC 内部元素垂直排列，上下 margin 会发生重叠，左 margin 与包含块左边界接触。",
-      "explanation": "文档总结了 BFC 的渲染规则和外边距行为。",
-      "source_lines": [
-        52,
-        53,
-        54,
-        55,
-        56
-      ]
+      "question": "What layout rules apply inside a BFC?",
+      "answer": "在 BFC 内部，子元素按垂直方向依次排列，相邻上下 margin 会发生重叠，并且每个元素的左外边距会与包含块的左边界接触。",
+      "explanation": "这些规则决定了 BFC 区域内部元素的排列方式。理解它们有助于预测布局效果，避免 margin 重叠引起的 spacing 问题。",
+      "source_lines": [50, 51, 52, 53]
     },
     {
-      "card_id": "card_04_20260423",
-      "claim_ref": "note_css_20260423_bfc:3",
+      "card_id": "card_3",
+      "claim_ref": "note_css_bfc:3",
       "type": "qa",
-      "question": "为什么利用 BFC 可以防止外边距重叠、清除内部浮动并解决高度塌陷问题",
-      "answer": "利用 BFC 可以防止外边距重叠、清除内部浮动并解决高度塌陷问题。",
-      "explanation": "文档将 BFC 应用场景与布局异常修复联系起来。",
-      "source_lines": [
-        60,
-        62
-      ]
+      "question": "How does BFC interact with floats and height calculation?",
+      "answer": "BFC 区域不会与 float box 重叠，并且在计算自身高度时会包含浮动元素。正因为如此，BFC 可以用来清除浮动并避免父容器高度塌陷。",
+      "explanation": "Float 元素通常会脱离文档流，而 BFC 会把它们纳入高度计算，因此使用 BFC 是解决浮动高度塌陷的常见方案。",
+      "source_lines": [54, 55, 56, 57]
     },
     {
-      "card_id": "card_05_20260423",
-      "claim_ref": "note_css_20260423_bfc:4",
+      "card_id": "card_4",
+      "claim_ref": "note_css_bfc:4",
       "type": "qa",
-      "question": "为什么在两栏布局中，左侧浮动和右侧触发 BFC 的区域可以实现宽度自适应且不被浮动覆盖",
-      "answer": "在两栏布局中，左侧浮动和右侧触发 BFC 的区域可以实现宽度自适应且不被浮动覆盖。",
-      "explanation": "文档说明了 BFC 与 float 的协同布局方式。",
-      "source_lines": [
-        64
-      ]
+      "question": "What layout problems can be solved by triggering a BFC?",
+      "answer": "触发 BFC 可解决外边距重叠、清除内部浮动，以及让右侧主区域不环绕左侧浮动元素，从而实现更稳定的两栏自适应布局。",
+      "explanation": "这些都是 BFC 的实际应用场景。它通过隔离布局和包含浮动的高度计算，减少了常见的浮动布局异常。",
+      "source_lines": [58, 59, 60, 61, 62, 63, 64, 65, 66]
     }
   ]
 }
