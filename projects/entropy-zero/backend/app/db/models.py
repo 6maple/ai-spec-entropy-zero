@@ -1,0 +1,147 @@
+"""
+SQLAlchemy ORM Models for Entropy Zero
+
+Defines database tables that match the PostgreSQL schema in migrations/001_init.sql
+"""
+
+from sqlalchemy import (
+    Column,
+    String,
+    Text,
+    DateTime,
+    Integer,
+    SmallInteger,
+    ForeignKey,
+    Index,
+)
+from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql import func
+import uuid
+import json
+
+Base = declarative_base()
+
+
+class RawKnowledge(Base):
+    __tablename__ = "raw_knowledge"
+
+    raw_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, nullable=False, index=True)
+    file_name = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
+    status = Column(String(20), nullable=False, default="pending")
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index("idx_raw_knowledge_user_id", "user_id"),
+        Index("idx_raw_knowledge_status", "status"),
+        Index("idx_raw_knowledge_user_created", "user_id", "created_at"),
+    )
+
+
+class Note(Base):
+    __tablename__ = "notes"
+
+    note_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, nullable=False, index=True)
+    raw_id = Column(
+        String, ForeignKey("raw_knowledge.raw_id", ondelete="SET NULL"), nullable=True
+    )
+    title = Column(String(500), nullable=False)
+    abstract = Column(Text)
+    tags = Column(Text, default="[]")  # JSON string for SQLite compatibility
+    content_json = Column(Text, nullable=False)  # JSON string for SQLite compatibility
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        Index("idx_notes_user_id", "user_id"),
+        Index("idx_notes_raw_id", "raw_id"),
+        Index("idx_notes_user_created", "user_id", "created_at"),
+    )
+
+    def get_tags(self):
+        """Parse tags JSON string"""
+        return json.loads(self.tags) if self.tags else []
+
+    def set_tags(self, tags_list):
+        """Set tags from list"""
+        self.tags = json.dumps(tags_list)
+
+    def get_content_json(self):
+        """Parse content_json string"""
+        return json.loads(self.content_json)
+
+    def set_content_json(self, content_list):
+        """Set content_json from list"""
+        self.content_json = json.dumps(content_list)
+
+
+class Flashcard(Base):
+    __tablename__ = "flashcards"
+
+    card_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, nullable=False, index=True)
+    note_id = Column(
+        String, ForeignKey("notes.note_id", ondelete="CASCADE"), nullable=False
+    )
+    point_id = Column(String(100), nullable=False)
+    question = Column(Text, nullable=False)
+    answer = Column(Text, nullable=False)
+    fsrs_state = Column(
+        Text, nullable=False, default='{"stability": 0.0, "difficulty": 0.0, "reps": 0}'
+    )
+    next_review = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    last_review = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        Index("idx_flashcards_user_id", "user_id"),
+        Index("idx_flashcards_note_id", "note_id"),
+        Index("idx_flashcards_next_review", "next_review"),
+        Index("idx_flashcards_user_next_review", "user_id", "next_review"),
+    )
+
+    def get_fsrs_state(self):
+        """Parse FSRS state JSON string"""
+        return json.loads(self.fsrs_state)
+
+    def set_fsrs_state(self, state_dict):
+        """Set FSRS state from dict"""
+        self.fsrs_state = json.dumps(state_dict)
+
+
+class ReviewLog(Base):
+    __tablename__ = "review_logs"
+
+    log_id = Column(Integer, primary_key=True, autoincrement=True)
+    card_id = Column(
+        String, ForeignKey("flashcards.card_id", ondelete="CASCADE"), nullable=False
+    )
+    user_id = Column(String, nullable=False, index=True)
+    rating = Column(SmallInteger, nullable=False)
+    elapsed_days = Column(Integer, nullable=False)
+    scheduled_days = Column(Integer, nullable=False)
+    review_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+
+    __table_args__ = (
+        Index("idx_review_logs_card_id", "card_id"),
+        Index("idx_review_logs_user_id", "user_id"),
+        Index("idx_review_logs_review_at", "review_at"),
+    )
