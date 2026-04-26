@@ -1,8 +1,8 @@
 {
   "id": "note_js_higher_order_functions",
-  "title": "高阶函数",
+  "title": "高阶函数与函数组合",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "source": {
@@ -12,51 +12,47 @@
   "content": {
     "core_claims": [
       {
-        "claim": "柯里化将一个接收多个参数的函数转化为一系列接收单个参数的函数，并利用闭包保存已传递参数。",
+        "claim": "柯里化将一个多参数函数拆解为一系列单参数函数，利用闭包逐步收集参数直到满足原函数所需数量。",
         "evidence": {
-          "description": "柯里化的本质是把多参数函数拆成多个单参数函数，并用闭包收集参数。\n\n```javascript\nconst curry = (fn) => {\n  return function curried(...args) {\n    if (args.length >= fn.length) {\n      return fn.apply(this, args);\n    }\n    return (...nextArgs) => curried.apply(this, [...args, ...nextArgs]);\n  };\n};\n```"
+          "description": "柯里化 (Currying) 的本质是将一个接收多个参数的函数，转化为一系列接收单个参数的函数。其核心利用了闭包特性。\n\n```javascript\n// 基础：add(1, 2, 3) -> curryAdd(1)(2)(3)\nconst curry = (fn) => {\n  return function curried(...args) {\n    if (args.length >= fn.length) {\n      return fn.apply(this, args);\n    }\n    return (...nextArgs) => curried.apply(this, [...args, ...nextArgs]);\n  };\n};\n```"
         },
-        "source_lines": [
-          51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
-          68, 69, 70, 71, 72, 73, 74
-        ]
+        "source_lines": [51, 53, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66]
       },
       {
-        "claim": "函数组合把多个单一职责函数按从右向左的顺序嵌套执行，前一个函数的输出作为后一个函数的输入。",
+        "claim": "函数组合通过将多个小函数嵌套连接，形成一个函数链，结果从右向左依次传递。",
         "evidence": {
-          "description": "组合函数将小函数串起来执行，形成一个复杂函数，数据从右向左传递。\n\n```javascript\nconst compose =\n  (...fns) =>\n  (x) =>\n    fns.reduceRight((v, f) => f(v), x);\n```"
+          "description": "函数组合 (Composition) 将多个单一职责的小函数通过从右向左的方式嵌套执行，前一个函数的输出作为后一个函数的输入。\n\n```javascript\n// 逻辑：f(g(h(x)))\nconst compose =\n  (...fns) =>\n  (x) =>\n    fns.reduceRight((v, f) => f(v), x);\n```"
         },
-        "source_lines": [
-          75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91,
-          92, 93, 94, 95, 96, 97, 98, 99
-        ]
+        "source_lines": [75, 77, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]
       },
       {
-        "claim": "管道把多个函数按从左向右的顺序连接，前一个函数的输出作为下一个函数的输入，更符合人的线性思维。",
+        "claim": "函数管道将函数按执行顺序从左到右串联，适用于线性数据处理流程。",
         "evidence": {
-          "description": "管道与组合类似，但执行顺序改为从左向右，便于理解数据流。\n\n```javascript\nconst pipe =\n  (...fns) =>\n  (x) =>\n    fns.reduce((v, f) => f(v), x);\n```"
+          "description": "函数管道 (Piping) 的本质与组合一致，但执行顺序改为从左向右，更符合人类的线性思维习惯。\n\n```javascript\n// 逻辑：h(g(f(x)))\nconst pipe =\n  (...fns) =>\n  (x) =>\n    fns.reduce((v, f) => f(v), x);\n```"
         },
-        "source_lines": [
-          100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112
-        ]
+        "source_lines": [100, 106, 107, 108, 109, 110, 111, 112]
       },
       {
-        "claim": "在 Vue 场景中，函数式编程技巧有助于声明式表达逻辑、解耦职责，并在数据处理链中提高可读性。",
+        "claim": "柯里化适合参数复用，组合适合声明式嵌套逻辑，管道适合线性数据处理，三者各有最佳应用场景。",
         "evidence": {
-          "description": "组合和管道能让数据转换流程清晰可读，适合在 Vue 的 Composable 中构建可复用逻辑。"
+          "description": "实践总结与选型指出：\n\n- 柯里化：参数复用、延迟执行。\n- 组合：声明式编程、解耦逻辑。\n- 管道：线性数据加工流程。"
         },
-        "source_lines": [118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
+        "source_lines": [114, 115, 116, 117]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把柯里化当成只是语法糖，而忽略它对参数复用和延迟执行的价值。",
-        "在流程清晰的场景中使用嵌套函数而非管道，导致逻辑变得难懂。"
+        "把多个函数写成深度嵌套调用，而不使用 compose 让逻辑更清晰。",
+        "在数据流本应线性处理时，用 compose 反而使逻辑难以跟踪。"
       ]
     },
-    "hooks": [],
-    "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
-    }
+    "hooks": [
+      {
+        "type": "supplement",
+        "target_note_id": "note_js_functional_programming",
+        "claim_ref": "note_js_higher_order_functions:0",
+        "description": "高阶函数是函数式编程中组合逻辑与抽象控制流的核心手段。"
+      }
+    ]
   }
 }

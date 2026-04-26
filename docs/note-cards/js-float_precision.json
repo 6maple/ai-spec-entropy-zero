@@ -1,7 +1,7 @@
 {
   "note_id": "note_js_float_precision",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "cards": [
@@ -9,41 +9,23 @@
       "card_id": "card_0",
       "claim_ref": "note_js_float_precision:0",
       "type": "qa",
-      "question": "Why does 0.1 + 0.2 not equal 0.3 in JavaScript?",
-      "answer": "因为 JavaScript 使用 IEEE 754 双精度浮点数，十进制小数 0.1 和 0.2 在二进制中通常是无限循环小数，存储时会发生舍入误差。",
-      "explanation": "这个现象源于底层二进制表示，而不是语言本身的 bug，所以在精度敏感场景中必须采用其他策略。",
-      "source_lines": [298, 299, 300, 301]
+      "question": "为什么 JavaScript 中 0.1 + 0.2 不等于 0.3？",
+      "answer": "因为 JS 使用 IEEE 754 双精度浮点数，十进制小数在二进制中不能精确表示，导致舍入误差。",
+      "explanation": "0.1 和 0.2 在二进制中是无限循环小数，经过截断后再运算会产生可见的精度偏差。",
+      "source_lines": [298, 302, 303, 304, 305, 306, 307]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_js_float_precision:1",
-      "type": "qa",
-      "question": "What causes floating point precision loss in JavaScript?",
-      "answer": "浮点精度丢失由二进制转换和有限尾数位造成。JavaScript 只能用 52 位尾数存储小数，因此必须截断或舍入无限循环的二进制表示。",
-      "explanation": "这解释了为什么很多看似简单的小数运算会出现微小偏差，尤其是在财务或百分比计算中。",
-      "source_lines": [302, 303, 304, 305, 306, 307, 308, 309, 310, 311, 312]
-    },
-    {
-      "card_id": "card_2",
-      "claim_ref": "note_js_float_precision:2",
-      "type": "qa",
-      "question": "How can you avoid precision issues for simple decimal addition?",
-      "answer": "可以把小数放大为整数后运算，计算结果再缩小。这种方法适合金额等对精度敏感的场景。\\n\\n```javascript\\nconst add = (num1, num2) => {\\n  const m = Math.pow(10, 2);\\n  return (num1 * m + num2 * m) / m;\\n};\\n```",
-      "explanation": "整数运算避免了二进制小数的舍入误差，是前端处理简单精度计算的常见解决方案。",
+      "type": "fill_in_blank",
+      "question": "解决浮点精度问题的常用方法有哪些？",
+      "answer": "使用整数化运算、Number.EPSILON 近似比较、toFixed 仅用于展示，或引入精度库。",
+      "explanation": "对于核心计算推荐放大为整数或使用专用库，toFixed 仅适合呈现层面，避免业务逻辑依赖字符串格式化。",
       "source_lines": [
-        313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326,
-        327, 328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340,
-        341, 342, 343
+        308, 309, 310, 311, 312, 313, 314, 316, 317, 318, 319, 320, 321, 322,
+        323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 334, 335, 336,
+        337, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347
       ]
-    },
-    {
-      "card_id": "card_3",
-      "claim_ref": "note_js_float_precision:3",
-      "type": "qa",
-      "question": "What are the recommended strategies for high-precision numeric handling?",
-      "answer": "展示结果时可用 `toFixed()`，相等比较时可用 `Number.EPSILON`，对高精度金融计算应引入 Big.js、Decimal.js 等专用库。",
-      "explanation": "不同场景要用不同策略：展示用格式化，比较用容差判断，复杂计算用大数库，才能兼顾精度与性能。",
-      "source_lines": [344, 345, 346, 347]
     }
   ]
 }

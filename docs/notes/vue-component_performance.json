@@ -1,54 +1,54 @@
 {
   "id": "note_vue_component_performance",
-  "title": "组件性能优化",
+  "title": "Vue 组件性能优化",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "vue"
   },
   "source": {
     "input_path": "docs/raw/vue.md",
-    "line_range": [12, 43]
+    "line_range": [14, 43]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "细粒度拆分复杂页面可以使局部状态变化只触发相关子组件重新渲染，避免整个页面的虚拟 DOM 全量对比。",
+        "claim": "组件拆分、路由懒加载、虚拟滚动和 Keep-alive 缓存是提升 Vue 页面性能的关键布局策略。",
         "evidence": {
-          "description": "将复杂页面拆成小组件后，局部更新只影响相关子组件，从而降低渲染和 diff 计算开销。"
+          "description": "设计维度：\n\n- 组件细粒度拆分：将复杂页面拆分成独立小组件，局部状态变化时仅相关子组件重绘。\n- 路由懒加载：使用动态导入按需加载页面资源，减少首屏体积。\n- 长列表优化：采用虚拟滚动，仅渲染可视区域节点。\n- Keep-alive 缓存：对频繁切换的路由或组件使用缓存实例，避免重复渲染。"
         },
-        "source_lines": [14, 15, 16, 17, 18, 19, 20]
+        "source_lines": [14, 16, 17, 18, 19]
       },
       {
-        "claim": "路由懒加载通过动态导入页面组件，仅在首次访问时加载该路由资源，显著减少初始包体积。",
+        "claim": "Vue 资源优化应优先使用 shallowRef/shallowReactive、非响应式变量、计算属性代替 watcher、onUnmounted 清理和防抖节流。",
         "evidence": {
-          "description": "使用动态 import 配合路由配置，只把首页代码打包到初始加载，其他页面按需加载。"
+          "description": "Script 维度：\n\n- 浅层响应式处理：对纯展示对象使用 shallowRef 或 shallowReactive。\n- 非响应式数据脱离：普通变量或 Object.freeze() 避免不必要追踪。\n- 计算属性优于 watcher：利用缓存机制减少重复计算。\n- 副作用清理：onUnmounted 清除定时器、监听器和第三方实例。\n- 控制频繁操作：输入搜索或窗口缩放引入 debounce/throttle。"
         },
         "source_lines": [21, 22, 23, 24, 25, 26, 27, 28]
       },
       {
-        "claim": "对于海量数据展示，采用虚拟滚动只渲染可视区域 DOM，可从根本上解决大量节点导致的卡顿问题。",
+        "claim": "模板优化包括合理区分 v-show 与 v-if、禁止使用 index 作为 v-for key、避免在同一标签上同时使用 v-for 和 v-if，并利用 v-once/v-memo 缓存静态内容。",
         "evidence": {
-          "description": "虚拟滚动通过只渲染视口内元素，避免大量 DOM 节点占用内存和导致渲染性能下降。"
+          "description": "Template 维度：\n\n- 合理使用 v-show 与 v-if：频繁切换用 v-show，稀少改变用 v-if。\n- 严格规范 v-for 的 key 值：禁止使用 index。\n- v-for 与 v-if 互斥：建议用 template 包裹或计算属性预过滤。\n- v-once 与 v-memo：静态内容用 v-once，Vue 3.2+ 的 v-memo 在长列表中可跳过子树更新。"
         },
         "source_lines": [29, 30, 31, 32, 33, 34, 35, 36, 37]
       },
       {
-        "claim": "对频繁切换的路由或组件使用 `<Keep-alive>` 缓存实例，可以避免重复渲染和初始化开销。",
+        "claim": "构建层优化包括遵循 ES Modules 来支持 Tree Shaking、按需引入插件以及对组件内图片做懒加载或 Base64 处理。",
         "evidence": {
-          "description": "Keep-alive 允许组件实例被缓存而不是销毁，从而保留状态并减少切换时的重新渲染成本。"
+          "description": "其他维度：\n\n- Tree Shaking：采用 ES Modules 规范，剔除未使用代码。\n- 按需引入插件：避免将整个 UI 库打包进首屏。\n- 图片资源处理：组件内图片可采用懒加载或 Base64 小图标替代。"
         },
         "source_lines": [38, 39, 40, 41, 42, 43]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把所有复杂页面写成一个大组件，导致局部更新时全树重渲。",
-        "把长列表渲染成普通 DOM，而不考虑虚拟滚动的性能优势。"
+        "把整个页面作为一个大组件写，导致局部更新时虚拟 DOM 全量对比。",
+        "在 v-for 中使用 index 作为 key，破坏组件复用和 Diff 性能。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

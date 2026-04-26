@@ -1,60 +1,59 @@
 {
   "note_id": "note_development_visibility_detection",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "cards": [
     {
       "card_id": "card_0",
       "claim_ref": "note_development_visibility_detection:0",
-      "type": "qa",
-      "question": "Why is Intersection Observer recommended for visibility detection?",
-      "answer": "Intersection Observer 是现代推荐方案，因为它通过异步回调检测元素与视口或祖先容器的交叉状态，不依赖 scroll 事件，且可通过 threshold 调整触发比例。\n\n```javascript\nconst observer = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        console.log('Element is visible');\n      }\n    });\n  },\n  { threshold: 0.1 },\n);\nobserver.observe(targetElement);\n```",
-      "explanation": "异步回调避免了 scroll 事件的高频执行，使可见性检测更高效且更适合长列表或懒加载场景。",
+      "type": "fill_in_blank",
+      "question": "为什么 Intersection Observer 是现代可视区域检测的首选方案？",
+      "answer": "因为它性能高、异步执行并不需要监听滚动事件，适合现代浏览器。",
+      "explanation": "Intersection Observer 是浏览器原生观察者模式，实现了高效的可视性检测，不会阻塞主线程。",
       "source_lines": [
-        116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
-        130, 131, 132, 133, 134, 135, 136, 137, 138
+        118, 120, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134,
+        135, 136, 137
       ]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_development_visibility_detection:1",
-      "type": "qa",
-      "question": "How does getBoundingClientRect help determine element visibility?",
-      "answer": "getBoundingClientRect 可以获取元素相对于视口的位置坐标。通过判断 top/bottom/left/right 与视口边界的关系，并结合 scroll 事件节流，可以实现可视检测。",
-      "explanation": "这个方案是经典降级方式，但它依赖同步布局计算，若不节流会导致性能问题。",
+      "type": "fill_in_blank",
+      "question": "使用 getBoundingClientRect 检测可见性时需要注意什么？",
+      "answer": "必须配合 scroll 事件使用，并对计算执行防抖或节流，以避免频繁计算导致性能问题。",
+      "explanation": "getBoundingClientRect 是经典方案，但它依赖滚动事件，每次滚动都计算位置，若不做节流会影响性能。",
       "source_lines": [
-        139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
-        153, 154, 155, 156, 157, 158
+        141, 143, 144, 145, 147, 148, 149, 150, 151, 152, 153, 154, 156
       ]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_development_visibility_detection:2",
       "type": "qa",
-      "question": "What are the limitations of using offsetTop and scrollTop for visibility checks?",
-      "answer": "offsetTop / scrollTop 方案通过计算绝对偏移与滚动位置来判断可见性，但在多层嵌套滚动、变换布局或复杂容器中容易出现误判。",
-      "explanation": "这种传统方案在简单容器中可行，但在现代复杂页面中维护成本高，容易因为布局变化而失效。",
-      "source_lines": [159, 160, 161, 162, 163, 164, 165]
+      "question": "传统 offsetTop + scrollTop 判断可视性存在哪些局限？",
+      "answer": "在多层嵌套或带 transform 的场景下容易出错，因此已较少作为首选。",
+      "explanation": "这种方法依赖嵌套偏移和滚动位置，复杂布局或变换会让计算变得不可靠。",
+      "source_lines": [159, 161, 162, 163, 164, 165]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_development_visibility_detection:3",
       "type": "qa",
-      "question": "How should visibility logic be organized in a Vue project?",
-      "answer": "可把可视检测逻辑封装为自定义指令或组合式函数，并在组件挂载时初始化观察，在卸载时销毁。还可以使用现成库如 vue-observe-visibility 提高复用。",
-      "explanation": "这种封装方式使业务组件保持简洁，同时保证可视检测逻辑统一管理，便于维护。",
-      "source_lines": [166, 167, 168, 169, 170, 171, 172, 173]
+      "question": "在 Vue 中如何工程化实现可见性检测？",
+      "answer": "封装为自定义指令或 composable，也可以使用 vue-observe-visibility 这样的成熟库。",
+      "explanation": "Vue 生态把可见性检测抽象为可复用指令或组合式函数，降低了重复代码和复杂度。",
+      "source_lines": [168, 170, 171, 172]
     },
     {
       "card_id": "card_4",
       "claim_ref": "note_development_visibility_detection:4",
       "type": "qa",
-      "question": "What is the modern default strategy for visibility detection?",
-      "answer": "现代默认使用 Intersection Observer，低版本浏览器需要退回到手动计算和 scroll 事件的降级方案。",
-      "explanation": "优先使用浏览器原生 API 可以获得更好的性能，兼容性要求高时再提供手动降级。",
-      "source_lines": [174, 175, 176, 177, 178]
+      "question": "当需要兼容低版本浏览器时，可视检测应如何选型？",
+      "answer": "优先选择 Intersection Observer，只有在极低版本浏览器下再用 getBoundingClientRect 作为降级方案。",
+      "explanation": "现代浏览器支持 Intersection Observer，低版本兼容时才用旧方案，以兼顾性能和兼容性。",
+      "source_lines": [176, 177]
     }
   ]
 }

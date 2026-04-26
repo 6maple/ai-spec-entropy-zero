@@ -1,7 +1,7 @@
 {
   "note_id": "note_vue_component_performance",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "vue"
   },
   "cards": [
@@ -9,36 +9,36 @@
       "card_id": "card_0",
       "claim_ref": "note_vue_component_performance:0",
       "type": "qa",
-      "question": "Why split a complex page into smaller Vue components?",
-      "answer": "细粒度拆分可以使复杂页面的局部状态变化只触发相关子组件重新渲染，避免整个页面的虚拟 DOM 全量对比。",
-      "explanation": "这能显著降低渲染和 diff 计算开销，提高组件复用性。",
-      "source_lines": [14, 15, 16, 17, 18, 19, 20]
+      "question": "哪些布局策略有助于提升 Vue 页面性能？",
+      "answer": "组件细粒度拆分、路由懒加载、虚拟滚动和 Keep-alive 缓存。",
+      "explanation": "这些策略分别减少了无关组件渲染、降低了首屏加载体积、控制了长列表 DOM 量，并缓存频繁切换组件。",
+      "source_lines": [14, 16, 17, 18, 19]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_vue_component_performance:1",
       "type": "qa",
-      "question": "How does route lazy loading improve initial bundle size?",
-      "answer": "路由懒加载通过动态导入页面组件，只有访问该路由时才下载对应代码，从而减少初始加载包的体积。",
-      "explanation": "这让首屏加载只包含当前页面所需资源，其他页面资源延迟加载。",
+      "question": "在 Vue 中，有哪些 script 级别的性能优化措施？",
+      "answer": "使用 shallowRef/shallowReactive、非响应式变量、计算属性代替 watcher、onUnmounted 清理和防抖/节流。",
+      "explanation": "这些措施减少了响应式开销、避免了不必要的依赖追踪，并保证组件卸载后释放资源。",
       "source_lines": [21, 22, 23, 24, 25, 26, 27, 28]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_vue_component_performance:2",
       "type": "qa",
-      "question": "What is the value of virtual scrolling in Vue applications?",
-      "answer": "虚拟滚动只渲染可视区域的 DOM 节点，从根本上解决大量列表项导致的卡顿问题。",
-      "explanation": "它显著减少了渲染节点数和内存占用，是长列表性能优化的核心手段。",
+      "question": "模板层面上应如何避免性能问题？",
+      "answer": "合理使用 v-show/v-if、禁止 index 作为 v-for key、避免 v-for 和 v-if 同标签、使用 v-once/v-memo 缓存静态内容。",
+      "explanation": "模板层优化能减少无效 DOM 更新和重新渲染，尤其在列表和频繁切换场景下。",
       "source_lines": [29, 30, 31, 32, 33, 34, 35, 36, 37]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_vue_component_performance:3",
       "type": "qa",
-      "question": "When should you use Keep-alive in Vue?",
-      "answer": "对频繁切换的路由或组件使用 Keep-alive 可以缓存实例，避免重复渲染与初始化开销。",
-      "explanation": "适合搜索页、详情页等频繁切换场景，可以提升切换性能并保留组件状态。",
+      "question": "构建层面应该如何优化组件资源？",
+      "answer": "遵循 ES Modules 做 Tree Shaking、按需引入插件、图片采用懒加载或 Base64 处理。",
+      "explanation": "构建层优化能减少打包体积和平衡加载速度，提升整体页面性能。",
       "source_lines": [38, 39, 40, 41, 42, 43]
     }
   ]

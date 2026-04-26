@@ -1,0 +1,322 @@
+{
+  "notes": [
+    {
+      "id": "note_css_box_model",
+      "title": "CSS 盒模型",
+      "domain": "css",
+      "source_path": "docs/raw/css.md",
+      "file_path": "docs/notes/css-box-model.json",
+      "claim_count": 2,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_css_bfc",
+      "title": "CSS BFC 原理与应用",
+      "domain": "css",
+      "source_path": "docs/raw/css.md",
+      "file_path": "docs/notes/css-bfc.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_css_responsive_layout",
+      "title": "CSS 响应式布局",
+      "domain": "css",
+      "source_path": "docs/raw/css.md",
+      "file_path": "docs/notes/css-responsive-layout.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_development_large_file_upload",
+      "title": "大文件上传",
+      "domain": "development",
+      "source_path": "docs/raw/development.md",
+      "file_path": "docs/notes/development-large-file-upload.json",
+      "claim_count": 5,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_development_search_box",
+      "title": "搜索框交互与性能",
+      "domain": "development",
+      "source_path": "docs/raw/development.md",
+      "file_path": "docs/notes/development-search-box.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_development_visibility_detection",
+      "title": "可视区域检测",
+      "domain": "development",
+      "source_path": "docs/raw/development.md",
+      "file_path": "docs/notes/development-visibility-detection.json",
+      "claim_count": 5,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_development_virtual_scroll",
+      "title": "虚拟滚动",
+      "domain": "development",
+      "source_path": "docs/raw/development.md",
+      "file_path": "docs/notes/development-virtual-scroll.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_development_pull_refresh",
+      "title": "上拉加载与下拉刷新",
+      "domain": "development",
+      "source_path": "docs/raw/development.md",
+      "file_path": "docs/notes/development-pull-refresh.json",
+      "claim_count": 5,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_development_web_security",
+      "title": "Web 安全防御",
+      "domain": "development",
+      "source_path": "docs/raw/development.md",
+      "file_path": "docs/notes/development-web-security.json",
+      "claim_count": 5,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_network_first_screen_optimization",
+      "title": "首屏加载优化",
+      "domain": "network",
+      "source_path": "docs/raw/network.md",
+      "file_path": "docs/notes/network-first-screen-optimization.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_js_memoization",
+      "title": "函数缓存与 Memoization",
+      "domain": "javascript",
+      "source_path": "docs/raw/js.md",
+      "file_path": "docs/notes/js-memoization.json",
+      "claim_count": 3,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_js_higher_order_functions",
+      "title": "高阶函数与函数组合",
+      "domain": "javascript",
+      "source_path": "docs/raw/js.md",
+      "file_path": "docs/notes/js-higher_order_functions.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_js_functional_programming",
+      "title": "函数式编程",
+      "domain": "javascript",
+      "source_path": "docs/raw/js.md",
+      "file_path": "docs/notes/js-functional_programming.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_js_local_storage",
+      "title": "本地存储方式比较",
+      "domain": "javascript",
+      "source_path": "docs/raw/js.md",
+      "file_path": "docs/notes/js-local_storage.json",
+      "claim_count": 3,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_js_memory_management",
+      "title": "JS 内存管理",
+      "domain": "javascript",
+      "source_path": "docs/raw/js.md",
+      "file_path": "docs/notes/js-memory_management.json",
+      "claim_count": 3,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_js_float_precision",
+      "title": "浮点数精度丢失",
+      "domain": "javascript",
+      "source_path": "docs/raw/js.md",
+      "file_path": "docs/notes/js-float_precision.json",
+      "claim_count": 2,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_js_tail_recursion",
+      "title": "尾递归",
+      "domain": "javascript",
+      "source_path": "docs/raw/js.md",
+      "file_path": "docs/notes/js-tail_recursion.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_vue_component_performance",
+      "title": "Vue 组件性能优化",
+      "domain": "vue",
+      "source_path": "docs/raw/vue.md",
+      "file_path": "docs/notes/vue-component_performance.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_vue_component_communication",
+      "title": "Vue 组件间通信方式",
+      "domain": "vue",
+      "source_path": "docs/raw/vue.md",
+      "file_path": "docs/notes/vue-component_communication.json",
+      "claim_count": 4,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_vue_permission_management",
+      "title": "Vue 权限管理",
+      "domain": "vue",
+      "source_path": "docs/raw/vue.md",
+      "file_path": "docs/notes/vue-permission_management.json",
+      "claim_count": 5,
+      "created_at": "2026-04-26"
+    },
+    {
+      "id": "note_vue_keepalive",
+      "title": "Vue Keep-alive 缓存",
+      "domain": "vue",
+      "source_path": "docs/raw/vue.md",
+      "file_path": "docs/notes/vue-keepalive.json",
+      "claim_count": 5,
+      "created_at": "2026-04-26"
+    }
+  ],
+  "cards": [
+    {
+      "note_id": "note_css_box_model",
+      "file_path": "docs/note-cards/css-box-model.json",
+      "card_count": 2,
+      "domain": "css"
+    },
+    {
+      "note_id": "note_css_bfc",
+      "file_path": "docs/note-cards/css-bfc.json",
+      "card_count": 4,
+      "domain": "css"
+    },
+    {
+      "note_id": "note_css_responsive_layout",
+      "file_path": "docs/note-cards/css-responsive-layout.json",
+      "card_count": 4,
+      "domain": "css"
+    },
+    {
+      "note_id": "note_development_large_file_upload",
+      "file_path": "docs/note-cards/development-large-file-upload.json",
+      "card_count": 5,
+      "domain": "development"
+    },
+    {
+      "note_id": "note_development_search_box",
+      "file_path": "docs/note-cards/development-search-box.json",
+      "card_count": 4,
+      "domain": "development"
+    },
+    {
+      "note_id": "note_development_visibility_detection",
+      "file_path": "docs/note-cards/development-visibility-detection.json",
+      "card_count": 5,
+      "domain": "development"
+    },
+    {
+      "note_id": "note_development_virtual_scroll",
+      "file_path": "docs/note-cards/development-virtual-scroll.json",
+      "card_count": 4,
+      "domain": "development"
+    },
+    {
+      "note_id": "note_development_pull_refresh",
+      "file_path": "docs/note-cards/development-pull-refresh.json",
+      "card_count": 5,
+      "domain": "development"
+    },
+    {
+      "note_id": "note_development_web_security",
+      "file_path": "docs/note-cards/development-web-security.json",
+      "card_count": 5,
+      "domain": "development"
+    },
+    {
+      "note_id": "note_network_first_screen_optimization",
+      "file_path": "docs/note-cards/network-first-screen-optimization.json",
+      "card_count": 4,
+      "domain": "network"
+    },
+    {
+      "note_id": "note_js_memoization",
+      "file_path": "docs/note-cards/js-memoization.json",
+      "card_count": 3,
+      "domain": "javascript"
+    },
+    {
+      "note_id": "note_js_higher_order_functions",
+      "file_path": "docs/note-cards/js-higher_order_functions.json",
+      "card_count": 4,
+      "domain": "javascript"
+    },
+    {
+      "note_id": "note_js_functional_programming",
+      "file_path": "docs/note-cards/js-functional_programming.json",
+      "card_count": 4,
+      "domain": "javascript"
+    },
+    {
+      "note_id": "note_js_local_storage",
+      "file_path": "docs/note-cards/js-local_storage.json",
+      "card_count": 3,
+      "domain": "javascript"
+    },
+    {
+      "note_id": "note_js_memory_management",
+      "file_path": "docs/note-cards/js-memory_management.json",
+      "card_count": 3,
+      "domain": "javascript"
+    },
+    {
+      "note_id": "note_js_float_precision",
+      "file_path": "docs/note-cards/js-float_precision.json",
+      "card_count": 2,
+      "domain": "javascript"
+    },
+    {
+      "note_id": "note_js_tail_recursion",
+      "file_path": "docs/note-cards/js-tail_recursion.json",
+      "card_count": 4,
+      "domain": "javascript"
+    },
+    {
+      "note_id": "note_vue_component_performance",
+      "file_path": "docs/note-cards/vue-component_performance.json",
+      "card_count": 4,
+      "domain": "vue"
+    },
+    {
+      "note_id": "note_vue_component_communication",
+      "file_path": "docs/note-cards/vue-component_communication.json",
+      "card_count": 4,
+      "domain": "vue"
+    },
+    {
+      "note_id": "note_vue_permission_management",
+      "file_path": "docs/note-cards/vue-permission_management.json",
+      "card_count": 5,
+      "domain": "vue"
+    },
+    {
+      "note_id": "note_vue_keepalive",
+      "file_path": "docs/note-cards/vue-keepalive.json",
+      "card_count": 5,
+      "domain": "vue"
+    }
+  ],
+  "last_updated": "2026-04-26"
+}

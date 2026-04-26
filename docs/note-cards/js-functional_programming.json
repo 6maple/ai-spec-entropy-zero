@@ -1,7 +1,7 @@
 {
   "note_id": "note_js_functional_programming",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "cards": [
@@ -9,48 +9,38 @@
       "card_id": "card_0",
       "claim_ref": "note_js_functional_programming:0",
       "type": "qa",
-      "question": "What is the core idea of functional programming?",
-      "answer": "函数式编程把计算视为数学函数运算，强调声明式而不是命令式，关注“做什么”而非“怎么做”。",
-      "explanation": "这种范式让代码更接近数学函数的性质，使逻辑更可预测，便于 reasoning。",
-      "source_lines": [131, 132, 133, 134]
+      "question": "函数式编程的三个核心原则是什么？",
+      "answer": "纯函数、不可变性和函数一等公民。",
+      "explanation": "这三者保证函数式代码可预测、便于测试，并减少共享状态对程序的影响。",
+      "source_lines": [131, 133, 135, 136, 137, 138]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_js_functional_programming:1",
-      "type": "qa",
-      "question": "What are the three core principles of functional programming?",
-      "answer": "函数式编程的三大原则是纯函数、不可变性和函数是一等公民。它们使代码更可预测、更易测试，并减少共享状态错误。",
-      "explanation": "这些原则避免了副作用和可变状态带来的不确定性，是函数式代码稳定性的基础。",
-      "source_lines": [135, 136, 137, 138, 139, 140]
+      "type": "fill_in_blank",
+      "question": "函数式编程中常用的三种技术手段是什么？",
+      "answer": "高阶函数、函数组合和柯里化。",
+      "explanation": "这三种手段帮助把复杂逻辑拆成小函数，再通过组合或参数化复用。",
+      "source_lines": [
+        141, 143, 144, 145, 146, 148, 149, 150, 151, 152, 153, 154
+      ]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_js_functional_programming:2",
       "type": "qa",
-      "question": "Which techniques are commonly used in functional programming?",
-      "answer": "常用技术包括高阶函数、函数组合和柯里化，它们帮助构建可复用、可组合的业务逻辑。",
-      "explanation": "这些技术把复杂逻辑拆解成小函数，使代码更易维护并支持组合式开发。",
-      "source_lines": [
-        141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154,
-        155
-      ]
+      "question": "Vue 中哪些特性体现了函数式编程思想？",
+      "answer": "Composition API、计算属性和 Pinia/Vuex 的单向数据流体现了函数式编程的可预测性与透明性。",
+      "explanation": "这些实践把逻辑封装为函数、保持状态不可变，并使用确定性的变更方式。",
+      "source_lines": [156, 158, 159, 160, 161]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_js_functional_programming:3",
       "type": "qa",
-      "question": "How does Vue reflect functional programming ideas?",
-      "answer": "Vue 的 Composition API 和计算属性体现了函数式编程思想，通过纯函数封装逻辑，并利用依赖缓存提高性能。",
-      "explanation": "这使组件逻辑更模块化，减少了状态耦合，提升了复用性。",
-      "source_lines": [156, 157, 158, 159, 160, 161]
-    },
-    {
-      "card_id": "card_4",
-      "claim_ref": "note_js_functional_programming:4",
-      "type": "qa",
-      "question": "What is the tradeoff when applying functional programming widely?",
-      "answer": "函数式编程的优势是逻辑解耦和测试友好，但过度使用可能增加理解成本，尤其对习惯过程式思维的团队来说。",
-      "explanation": "过度函数式可能让代码难以阅读，需权衡可读性与纯函数带来的好处。",
+      "question": "函数式编程的主要优势与挑战是什么？",
+      "answer": "优势是高可维护性和测试友好，挑战是学习成本高且过度闭包可能带来内存开销。",
+      "explanation": "函数式编程让代码解耦，但需要平衡抽象复杂度与性能成本。",
       "source_lines": [162, 163, 164, 165, 166]
     }
   ]

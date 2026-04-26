@@ -1,7 +1,7 @@
 {
   "note_id": "note_development_pull_refresh",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "cards": [
@@ -9,45 +9,48 @@
       "card_id": "card_0",
       "claim_ref": "note_development_pull_refresh:0",
       "type": "qa",
-      "question": "How does pull-to-refresh detect a refresh gesture?",
-      "answer": "下拉刷新监听 touchstart、touchmove 和 touchend，记录初始触摸位置，仅在页面顶部且下拉距离超过阈值时进入刷新状态，否则回弹到初始位置。",
-      "explanation": "这能区分普通滚动与刷新手势，避免用户在页面中段下拉时误触。",
-      "source_lines": [
-        220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232
-      ]
+      "question": "下拉刷新实现时需要满足什么条件才能触发？",
+      "answer": "必须在页面顶部检测到 touchmove 的正向位移，并判断下拉距离是否超过刷新阈值。",
+      "explanation": "只有在 scrollTop 为 0 且向下拉动超过阈值时，才进入刷新状态，避免误触和非顶端刷新。",
+      "source_lines": [230, 233, 234, 235]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_development_pull_refresh:1",
       "type": "qa",
-      "question": "What is the typical condition for triggering infinite scroll?",
-      "answer": "上拉加载通常在 `scrollTop + clientHeight >= scrollHeight - threshold` 时触发。更现代的做法是使用 Intersection Observer 监听底部哨兵元素。",
-      "explanation": "提前预留阈值可以让内容在用户看不到底部之前开始加载，避免出现加载延迟。",
-      "source_lines": [
-        233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245
-      ]
+      "question": "上拉加载触发逻辑通常如何判断？",
+      "answer": "通过 scrollTop + clientHeight >= scrollHeight - threshold 判断接近底部，或监听底部哨兵元素进入可视区。",
+      "explanation": "提前预留阈值可以在用户滚动到底部前就开始加载，保持流畅体验。",
+      "source_lines": [245, 246, 247, 248, 251]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_development_pull_refresh:2",
-      "type": "qa",
-      "question": "Which states must be managed for robust pull/push loading?",
-      "answer": "必须维护 loading、finished、error 和 pulling 四个状态，防止重复触发，并为用户提供加载中、结束或错误的明确反馈。",
-      "explanation": "状态控制让加载逻辑严密，避免用户连续触发重复请求或在加载失败时陷入不确定状态。",
-      "source_lines": [246, 247, 248, 249, 250, 251, 252, 253]
+      "type": "fill_in_blank",
+      "question": "Vue 3 中常见的上拉加载实现模式是什么？",
+      "answer": "通常使用 Intersection Observer 监听底部哨兵元素，并在满足条件且未加载时调用 loadMoreData。",
+      "explanation": "通过监听哨兵元素进入视口，可以避免 scroll 事件频繁计算，且只在真正需要加载时触发。",
+      "source_lines": [
+        256, 257, 258, 259, 260, 261, 262, 263, 267, 268, 269, 270
+      ]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_development_pull_refresh:3",
       "type": "qa",
-      "question": "What performance improvements should accompany pull-to-refresh and infinite scroll?",
-      "answer": "应配合节流、虚拟列表和离线提示，避免滚动事件过于频繁、数据量过大或网络断开时造成体验不佳。",
-      "explanation": "这些优化能保护主线程性能，并在网络异常时向用户提供明确状态，避免出现卡顿或一直等待的体验。",
-      "source_lines": [
-        254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267,
-        268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281,
-        282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295
-      ]
+      "question": "上拉加载/下拉刷新流程中有哪些关键状态需要管理？",
+      "answer": "Loading、Finished、Error 和 Pulling 四个状态，分别表示加载中、已完成、请求失败及下拉程度。",
+      "explanation": "这四个状态帮助控制是否继续触发加载、展示“没有更多了”、处理错误重试和设置下拉交互反馈。",
+      "source_lines": [276, 277, 278, 279]
+    },
+    {
+      "card_id": "card_4",
+      "claim_ref": "note_development_pull_refresh:4",
+      "type": "qa",
+      "question": "为确保上拉加载/下拉刷新体验流畅，需要做哪些性能优化？",
+      "answer": "对 scroll 监听节流、结合虚拟列表渲染大数据，并在离线时给出明确提示。",
+      "explanation": "节流避免频繁计算，虚拟列表减少 DOM，离线提示让非网络状态下用户知道当前不可继续加载。",
+      "source_lines": [283, 284, 285]
     }
   ]
 }

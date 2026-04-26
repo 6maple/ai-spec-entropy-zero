@@ -1,57 +1,54 @@
 {
   "note_id": "note_development_large_file_upload",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "cards": [
     {
       "card_id": "card_0",
       "claim_ref": "note_development_large_file_upload:0",
-      "type": "qa",
-      "question": "What is the first step when uploading a very large file in the browser?",
-      "answer": "第一步是将文件切片为固定大小的 Blob 片段，然后通过并发控制队列或 Promise.all 将这些切片逐个上传。这样可以降低内存压力，并在连接中断时只需重传部分切片。",
-      "explanation": "切片上传把大文件拆成更小的单元，既能提高传输可靠性，也能避免一次性上传时的浏览器内存和网络瓶颈。",
-      "source_lines": [
-        14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
-        32, 33
-      ]
+      "type": "fill_in_blank",
+      "question": "为什么大文件上传通常要先把文件切成固定大小的片段？",
+      "answer": "为了避免网络中断和内存溢出，将文件物理切片后可以分片并发上传，降低单次传输压力。",
+      "explanation": "大文件直接上传容易因为连接中断或浏览器内存峰值失败。切片后可以并发上传并重新传输失败部分，提升稳定性。",
+      "source_lines": [16, 18, 19, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_development_large_file_upload:1",
       "type": "qa",
-      "question": "Why is a file hash computed before uploading chunks?",
-      "answer": "计算文件哈希可以让后端识别切片归属，通常使用 MD5。为了兼顾性能，可在 Web Worker 中计算，或采用抽样哈希取首、中、尾字节。",
-      "explanation": "哈希标识使后端能够把来自同一文件的切片关联起来，并支持秒传或断点续传。对大文件做全量哈希时，辅以辅助线程能降低主线程压力。",
-      "source_lines": [34, 35, 36, 37, 38, 39, 40]
+      "question": "文件 hash 在大文件上传流程中起什么作用？",
+      "answer": "它让后端识别切片归属，作为秒传和断点续传的关键标识，避免重复上传。",
+      "explanation": "通过计算唯一哈希，后端可以判断该文件是否已存在或哪些切片已上传，从而支持快速秒传和续传。",
+      "source_lines": [36, 38, 39]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_development_large_file_upload:2",
       "type": "qa",
-      "question": "What do speedy upload and resume upload do in a chunked upload flow?",
-      "answer": "秒传让后端检查文件 Hash 是否已存在，若存在则直接返回成功；断点续传让后端返回已收到的切片索引，前端只上传缺失部分。",
-      "explanation": "这两种机制可以避免重复传输，提升用户体验：已有文件直接秒传，网络断开后仅补传缺失片段。",
-      "source_lines": [41, 42, 43, 44, 45, 46, 47]
+      "question": "秒传和断点续传分别解决了上传流程的什么问题？",
+      "answer": "秒传避免重复上传已存在的整个文件，断点续传只上传还缺失的切片，提升体验与效率。",
+      "explanation": "秒传通过 hash 检查文件是否已经存在，断点续传通过索引列表过滤掉已上传切片，只上传缺失部分。",
+      "source_lines": [43, 45, 46, 47]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_development_large_file_upload:3",
       "type": "qa",
-      "question": "What should happen after all chunks have been uploaded successfully?",
-      "answer": "所有切片上传完成后，前端应发起合并请求，让后端按 Hash 顺序合并切片并校验完整性，然后清理临时存储的切片。",
-      "explanation": "合并请求把分片还原成完整文件，并在服务端校验成功后清理临时文件，避免占用无效磁盘空间。",
-      "source_lines": [48, 49, 50, 51, 52, 53]
+      "question": "切片上传完成后还应执行哪些后端操作？",
+      "answer": "前端需发送合并请求，后端按 hash 顺序合并切片、校验完整性，并清理临时切片文件。",
+      "explanation": "只有合并完成并校验通过后，临时切片文件才可删除，确保最终文件完整且不占用临时存储。",
+      "source_lines": [50, 51, 52]
     },
     {
       "card_id": "card_4",
       "claim_ref": "note_development_large_file_upload:4",
       "type": "qa",
-      "question": "Which UX controls are essential for a stable chunked upload experience?",
-      "answer": "重要的 UX 控制包括显示总进度、限制同时上传请求为 3-6 个，以及对失败切片进行 2-3 次自动重试，必要时提示用户手动恢复。",
-      "explanation": "这些措施兼顾了可见性和稳健性。适当的并发和重试策略能减少卡顿和中断带来的上传失败。",
-      "source_lines": [54, 55, 56, 57, 58, 59]
+      "question": "如何在大文件上传时避免并发过高和失败后重复上传？",
+      "answer": "需限制并发请求数量，并对失败切片自动重试数次，再失败则记录状态等待用户恢复。",
+      "explanation": "适度并发避免浏览器卡顿，错误重试减少网络抖动导致的单片失败，同时保留手动恢复机制。",
+      "source_lines": [56, 57, 58]
     }
   ]
 }

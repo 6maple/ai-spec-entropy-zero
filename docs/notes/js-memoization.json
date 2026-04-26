@@ -1,50 +1,51 @@
 {
   "id": "note_js_memoization",
-  "title": "函数缓存",
+  "title": "函数缓存与 Memoization",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "source": {
     "input_path": "docs/raw/js.md",
-    "line_range": [12, 48]
+    "line_range": [14, 48]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "函数缓存是一种空间换时间的优化策略，它将函数输入作为 key、执行结果作为 value 存储在闭包内，以便相同参数的后续调用直接返回缓存结果。",
+        "claim": "函数缓存是一种空间换时间的优化策略，通过将函数输入作为键、输出作为值存储在缓存中，避免重复执行相同参数的计算。",
         "evidence": {
-          "description": "函数缓存将参数和值保存起来，避免重复执行复杂逻辑，从而用额外内存换取更快的后续响应。"
+          "description": "函数缓存是一种空间换时间的优化手段。其核心逻辑是将函数的输入参数作为键（Key），将执行结果作为值（Value）存储在闭包内的 Map 或 Object 中。当下次以相同参数调用该函数时，不再执行函数体内的复杂逻辑，而是直接从内存中返回已存储的结果。"
         },
-        "source_lines": [14, 15, 16, 17]
+        "source_lines": [16]
       },
       {
-        "claim": "通用的 memoize 实现通常用 Map 存储缓存，并将参数通过 `JSON.stringify` 序列化为 key。",
+        "claim": "通用 memoize 实现通常用 Map 存储缓存，并通过 JSON.stringify 将参数序列化为唯一键。",
         "evidence": {
-          "description": "实际实现会封装一个高阶函数，用 Map 存储缓存结果，并把参数序列化后作为唯一标识。\n\n```javascript\nfunction memoize(fn) {\n  const cache = new Map(); // 使用 Map 存储缓存，支持更多类型的 Key\n  return function (...args) {\n    const key = JSON.stringify(args); // 将参数序列化作为唯一标识\n    if (cache.has(key)) {\n      return cache.get(key); // 命中缓存，直接返回\n    }\n    const result = fn.apply(this, args); // 执行原函数\n    cache.set(key, result); // 存入缓存\n    return result;\n  };\n}\n```"
+          "description": "在实际开发中，通常会封装一个高阶函数来实现通用化的缓存机制：\n\n```javascript\nfunction memoize(fn) {\n  const cache = new Map(); // 使用 Map 存储缓存，支持更多类型的 Key\n  return function (...args) {\n    const key = JSON.stringify(args); // 将参数序列化作为唯一标识\n    if (cache.has(key)) {\n      return cache.get(key); // 命中缓存，直接返回\n    }\n    const result = fn.apply(this, args); // 执行原函数\n    cache.set(key, result); // 存入缓存\n    return result;\n  };\n}\n```"
         },
-        "source_lines": [
-          18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-          35, 36
-        ]
+        "source_lines": [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
       },
       {
-        "claim": "函数缓存只适用于纯函数，否则缓存副作用会导致不可预测行为；对于参数多样性极高的场景，还需考虑内存管理，如采用 LRU 策略或限制缓存大小。",
+        "claim": "在 Vue 里，计算属性是最典型的函数缓存实践，而昂贵的递归计算和相同参数的 API 请求也适合使用缓存策略。",
         "evidence": {
-          "description": "缓存只适用于相同输入必定产生相同输出的纯函数。缓存会占用内存，参数序列化成本高时应使用更高效的哈希或限制缓存容量。"
+          "description": "Vue 场景下的典型应用：\n\n- **计算属性（Computed）**：这是 Vue 内部最典型的函数缓存实践。Vue 会根据响应式依赖自动缓存计算结果，只有当依赖项发生变化时，才重新求值。\n- **昂贵的递归计算**：在处理像斐波那契数列、大规模树形数据转换或复杂数学公式计算时，通过缓存避免重复渲染过程中的冗余计算。\n- **API 请求过滤**：对于短时间内参数完全相同的查询类接口（如配置信息获取），可以在前端层做函数缓存，减少不必要的后端压力。"
         },
-        "source_lines": [43, 44, 45, 46, 47, 48]
+        "source_lines": [37, 38, 39, 40, 41, 42]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "缓存有副作用的函数结果，会让函数行为在不同调用之间产生不可预测状态。",
-        "把函数参数对象直接当作 Map key，而不先做稳定的序列化或哈希，导致键比较失败。"
+        "对非纯函数使用 memoization，会让缓存返回过时或错误结果。",
+        "对大型参数对象直接 JSON.stringify，可能因为序列化成本过高而拖垮性能。"
       ]
     },
-    "hooks": [],
-    "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
-    }
+    "hooks": [
+      {
+        "type": "analogy",
+        "target_note_id": "note_js_memory_management",
+        "claim_ref": "note_js_memoization:0",
+        "description": "Memoization 用空间换时间，和内存管理中的缓存策略存在类似的权衡。"
+      }
+    ]
   }
 }

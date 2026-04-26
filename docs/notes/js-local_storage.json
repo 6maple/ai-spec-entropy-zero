@@ -2,68 +2,49 @@
   "id": "note_js_local_storage",
   "title": "本地存储方式比较",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "source": {
     "input_path": "docs/raw/js.md",
-    "line_range": [167, 223]
+    "line_range": [167, 214]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "Web 端常用存储方式包括 Cookie、LocalStorage、SessionStorage 和 IndexedDB，它们在容量、生命周期、与服务端通信方式上各不相同。",
+        "claim": "Cookie、LocalStorage、SessionStorage 和 IndexedDB 各有不同的生命周期、存储大小和访问方式，适用于不同的客户端存储场景。",
         "evidence": {
-          "description": "本地存储方式的核心对比是存储大小、生命周期、是否随 HTTP 请求携带以及数据格式支持。"
+          "description": "本地存储方式比较的核心对比表显示：\n\n- Cookie：约 4KB、可设置过期、每次请求自动携带。\n- LocalStorage：约 5MB、永久存储、不参与请求。\n- SessionStorage：约 5MB、标签页会话结束后失效。\n- IndexedDB：存储量大，适合结构化数据和离线应用。"
         },
-        "source_lines": [169, 170, 171, 172, 173, 174, 175, 176, 177, 178]
+        "source_lines": [171, 172, 173, 174, 175, 176, 177, 178]
       },
       {
-        "claim": "Cookie 适合少量标识数据，约 4KB，且会随每次 HTTP 请求自动携带，常用于身份验证类信息。",
+        "claim": "Cookie 适合身份标识，LocalStorage 适合持久配置，SessionStorage 适合单页会话数据，IndexedDB 适合离线大数据存储。",
         "evidence": {
-          "description": "Cookie 的设计初衷是身份标识，因为它会随请求发送。过多 Cookie 会影响请求性能，因此应限制存储量。"
+          "description": "各存储方式详解：\n\n- Cookie：用于标识用户身份，常配合 HttpOnly。\n- LocalStorage：存储主题偏好或长期缓存的静态数据。\n- SessionStorage：用于表单录入的中间状态或临时数据。\n- IndexedDB：适合离线应用或大量结构化数据。"
+        },
+        "source_lines": [181, 182, 183, 184, 185, 187, 188, 190, 191]
+      },
+      {
+        "claim": "读写 LocalStorage 时应封装 JSON 序列化与异常处理，避免直接写入复杂对象。",
+        "evidence": {
+          "description": "在 Vue 开发中，针对 LocalStorage 的读写通常会封装工具类，以处理 JSON 序列化带来的异常：\n\n```javascript\nconst storage = {\n  set(key, value) {\n    window.localStorage.setItem(key, JSON.stringify(value));\n  },\n  get(key) {\n    const val = window.localStorage.getItem(key);\n    try {\n      return JSON.parse(val);\n    } catch (e) {\n      return val;\n    }\n  },\n  remove(key) {\n    window.localStorage.removeItem(key);\n  },\n};\n```"
         },
         "source_lines": [
-          179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192
-        ]
-      },
-      {
-        "claim": "LocalStorage 永久存储，SessionStorage 仅在标签页会话内有效，两者都以字符串存储且不会参与 HTTP 请求。",
-        "evidence": {
-          "description": "LocalStorage 适合持久配置和缓存数据，SessionStorage 适合单标签页临时状态。它们都不随请求发送。"
-        },
-        "source_lines": [
-          193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
-          207, 208, 209, 210, 211, 212, 213, 214, 215
-        ]
-      },
-      {
-        "claim": "IndexedDB 适合大容量和结构化数据，支持异步 API 和索引搜索，是离线应用和复杂缓存的首选。",
-        "evidence": {
-          "description": "IndexedDB 可以存储更大数据量并提供索引查询，适用于离线应用、草稿缓存或大文件元数据。"
-        },
-        "source_lines": [215, 216, 217, 218, 219, 220, 221, 222, 223]
-      },
-      {
-        "claim": "在应用中对 LocalStorage 的读写应封装工具类，自动处理 JSON 序列化和异常，以避免直接读写字符串造成错误。",
-        "evidence": {
-          "description": "应用层应封装 LocalStorage 读写逻辑，自动序列化对象并处理解析异常，保证数据稳定性。\n\n```javascript\nconst storage = {\n  set(key, value) {\n    window.localStorage.setItem(key, JSON.stringify(value));\n  },\n  get(key) {\n    const val = window.localStorage.getItem(key);\n    try {\n      return JSON.parse(val);\n    } catch (e) {\n      return val;\n    }\n  },\n  remove(key) {\n    window.localStorage.removeItem(key);\n  },\n};\n```"
-        },
-        "source_lines": [
-          193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
-          207, 208, 209, 210, 211, 212, 213, 214, 215
+          197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
+          211, 212, 213, 214
         ]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把敏感 token 存在 localStorage 中，忽略它不受 HttpOnly 保护。",
-        "用 localStorage 存储超大对象，而不考虑同步操作对主线程的影响。"
+        "直接把对象写入 localStorage 而不先 JSON.stringify，导致存储结果不是预期数据。",
+        "把敏感 Token 存在 LocalStorage 中，增加 XSS 风险。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

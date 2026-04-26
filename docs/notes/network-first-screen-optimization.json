@@ -2,60 +2,53 @@
   "id": "note_network_first_screen_optimization",
   "title": "首屏加载优化",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "network"
   },
   "source": {
     "input_path": "docs/raw/network.md",
-    "line_range": [12, 43]
+    "line_range": [14, 44]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "将第三方库和静态图片托管到 CDN 可以利用就近节点缩短 TTFB，并通过不同域名的并发下载特性加速首屏资源获取。",
+        "claim": "首屏加载优化首要做法是减小资源体积，包括路由懒加载、按需引入依赖、Tree Shaking、图片优化和 Gzip/Brotli 压缩。",
         "evidence": {
-          "description": "CDN 加速的核心在于就近节点与跨域并发下载，可以显著减少首屏资源的响应时间。"
+          "description": "资源体积压缩（减法）：\n\n- **路由懒加载与组件动态导入**：利用 Vite/Webpack 的 `import()` 分解首屏 JS 体积。确保只有首页代码在初始阶段加载。\n- **依赖包按需引入**：针对 UI 组件库，通过插件配置按需引入组件和样式，避免将整库打入 `vendor.js`。\n- **Tree Shaking 优化**：编写代码时坚持使用 ES Modules 规范，确保构建工具能剔除未引用的死代码。\n- **静态资源压缩**：图片优化、Gzip/Brotli 压缩大幅减少传输字节数。"
         },
-        "source_lines": [14, 15, 16, 17, 18, 19, 20, 21, 22]
+        "source_lines": [16, 17, 18, 19, 20, 21]
       },
       {
-        "claim": "启用 HTTP/2 可以使用多路复用，解决 HTTP/1.1 的头部阻塞问题，实现资源并行下载。",
+        "claim": "传输优化包括利用 CDN、启用 HTTP/2 多路复用和合理的缓存策略，如强缓存、协商缓存、预加载/预取。",
         "evidence": {
-          "description": "HTTP/2 的多路复用特性允许在一个连接上并行传输多个资源，避免了 HTTP/1.1 的队头阻塞问题。"
+          "description": "传输与响应速度（加速）：\n\n- **CDN 内容分发**：将第三方库和静态图片托管至 CDN，利用最近节点加速响应。\n- **HTTP/2 协议升级**：启用多路复用，解决头部阻塞问题。\n- **合理利用缓存**：对带哈希的文件设置强缓存，并使用 preload/prefetch 提前加载关键资源。"
         },
-        "source_lines": [23, 24, 25, 26, 27, 28, 29, 30]
+        "source_lines": [25, 26, 28, 29]
       },
       {
-        "claim": "合理使用强缓存、协商缓存以及 preload/prefetch，可以减少重复请求并提前加载关键资源，提升首屏响应速度。",
+        "claim": "渲染架构优化包括 SSR/SSG、骨架屏和初始化时延后加载非关键接口以降低首屏感知等待。",
         "evidence": {
-          "description": "强缓存和协商缓存可避免重复请求，preload/prefetch 则可把关键资源提前加载到浏览器缓存中。"
+          "description": "渲染架构与执行策略（效率）：\n\n- **SSR 或 SSG**：对于 SEO 敏感或首屏性能要求高的项目，采用 Nuxt.js 等方案，返回填充好数据的 HTML。\n- **骨架屏**：在数据异步加载期间，用 CSS 绘制占位骨架屏，降低用户等待焦虑。\n- **初始化逻辑优化**：首页初始化只调用关键接口，非核心接口后置；将非必要脚本设为 defer 或 async。"
         },
-        "source_lines": [31, 32, 33, 34, 35, 36, 37, 38]
+        "source_lines": [33, 34, 35, 36, 37]
       },
       {
-        "claim": "对 SEO 敏感或首屏性能要求高的项目，应采用 SSR 或 SSG，直接由服务器返回已填充数据的 HTML，实现更快的首屏可见。",
+        "claim": "专项细节包括把首屏关键 CSS 内联到 HTML 中以避免白屏，并裁剪字体只保留页面实际用到的字符。",
         "evidence": {
-          "description": "SSR/SSG 可以让浏览器直接得到渲染好的 HTML，从而显著缩短首屏内容的呈现时间。"
+          "description": "专项细节（极致）：\n\n- **CSS 抽取与内联**：将影响首屏布局的核心 CSS 提取并内联在 HTML 中，避免白屏或样式闪烁。\n- **字体裁剪**：若首页使用了特殊字体，通过工具仅保留首屏出现的字符，将字体文件大小大幅减小。"
         },
-        "source_lines": [31, 32, 33, 34, 35, 36, 37, 38]
-      },
-      {
-        "claim": "骨架屏虽然不改变物理加载时间，但能在数据异步加载期间提供更好的感知体验，降低用户等待焦虑。",
-        "evidence": {
-          "description": "骨架屏是一种 UX 优化方案，在数据加载期间用占位效果替代空白加载，从而改善用户的感知等待。"
-        },
-        "source_lines": [39, 40, 41, 42, 43]
+        "source_lines": [41, 42]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把首屏优化仅当成图片压缩，而忽略了 HTML/CSS/JS 的传输与渲染链。",
-        "仅依赖浏览器缓存而不设置哈希文件名和正确的缓存策略。"
+        "把所有 JS 和 CSS 都打包到首屏入口，导致首屏资源体积过大。",
+        "不使用 CDN 或压缩，使静态资源传输速度受网络影响过大。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

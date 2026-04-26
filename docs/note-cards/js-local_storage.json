@@ -1,7 +1,7 @@
 {
   "note_id": "note_js_local_storage",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "cards": [
@@ -9,53 +9,30 @@
       "card_id": "card_0",
       "claim_ref": "note_js_local_storage:0",
       "type": "qa",
-      "question": "How do Cookie, LocalStorage, SessionStorage and IndexedDB differ?",
-      "answer": "Cookie、LocalStorage、SessionStorage 和 IndexedDB 在容量、生命周期、是否随 HTTP 请求发送以及数据格式支持上不同。Cookie 小且随请求发送，LocalStorage/SessionStorage 同步存储字符串，不参与请求，IndexedDB 支持大容量结构化异步存储。",
-      "explanation": "选择存储方式时必须结合容量需求、生命周期和是否需要与服务端共享这三点来判断。",
-      "source_lines": [169, 170, 171, 172, 173, 174, 175, 176, 177, 178]
+      "question": "Cookie、LocalStorage、SessionStorage 和 IndexedDB 的主要区别是什么？",
+      "answer": "它们在存储大小、生命周期、是否随请求发送以及数据格式上不同，分别适用于不同的存储场景。",
+      "explanation": "Cookie 小且会随请求发送，LocalStorage 和 SessionStorage 更适合浏览器持久或会话缓存，IndexedDB 适合大数据和离线存储。",
+      "source_lines": [171, 172, 173, 174, 175, 176, 177, 178]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_js_local_storage:1",
       "type": "qa",
-      "question": "What are the characteristics of Cookie storage?",
-      "answer": "Cookie 容量约 4KB，适合少量身份标识数据，且会随每次 HTTP 请求自动携带，因此常用于登录态管理。",
-      "explanation": "Cookie 的请求携带特性使其适合身份信息，但也要注意不要过量存储，以免影响请求性能。",
-      "source_lines": [
-        179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192
-      ]
+      "question": "LocalStorage 和 SessionStorage 各自适合保存哪类数据？",
+      "answer": "LocalStorage 适合持久配置和长期缓存，SessionStorage 适合标签页会话中的临时状态。",
+      "explanation": "LocalStorage 不随标签页关闭而清除，适合长期设置；SessionStorage 在标签页关闭时失效，适合单次会话数据。",
+      "source_lines": [181, 182, 183, 184, 185, 187, 188]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_js_local_storage:2",
-      "type": "qa",
-      "question": "What is the difference between LocalStorage and SessionStorage?",
-      "answer": "LocalStorage 是永久存储，除非手动删除；SessionStorage 仅在标签页会话内有效。两者都以字符串形式存储，不随 HTTP 请求发送。",
-      "explanation": "这使得 LocalStorage 适合持久配置和缓存，SessionStorage 适合临时会话状态。",
+      "type": "fill_in_blank",
+      "question": "为什么要为 LocalStorage 的读写操作封装 JSON 序列化和异常处理？",
+      "answer": "因为 LocalStorage 只能存储字符串，封装可统一处理对象序列化和解析失败的异常。",
+      "explanation": "通过封装 set/get/remove，可以防止 JSON.parse 失败导致的异常，并保持存储操作一致。",
       "source_lines": [
-        193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
-        207, 208, 209, 210, 211, 212, 213, 214, 215
-      ]
-    },
-    {
-      "card_id": "card_3",
-      "claim_ref": "note_js_local_storage:3",
-      "type": "qa",
-      "question": "When should you use IndexedDB in the browser?",
-      "answer": "IndexedDB 适合存储大容量和结构化数据，支持异步 API 和索引搜索，是离线应用或复杂缓存场景的首选。",
-      "explanation": "它比同步存储更适合大数据量应用，因为可以避免阻塞主线程。",
-      "source_lines": [215, 216, 217, 218, 219, 220, 221, 222, 223]
-    },
-    {
-      "card_id": "card_4",
-      "claim_ref": "note_js_local_storage:4",
-      "type": "qa",
-      "question": "How should LocalStorage read/write operations be wrapped in code?",
-      "answer": "应封装 LocalStorage 工具，自动处理 JSON 序列化和解析异常，以避免直接读取字符串时发生错误。\\n\\n```javascript\\nconst storage = {\\n  set(key, value) {\\n    window.localStorage.setItem(key, JSON.stringify(value));\\n  },\\n  get(key) {\\n    const val = window.localStorage.getItem(key);\\n    try {\\n      return JSON.parse(val);\\n    } catch (e) {\\n      return val;\\n    }\\n  },\\n  remove(key) {\\n    window.localStorage.removeItem(key);\\n  },\\n};\\n```",
-      "explanation": "这个封装防止因数据结构变化或空值导致的解析失败，是可靠存储访问的最佳实践。",
-      "source_lines": [
-        193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206,
-        207, 208, 209, 210, 211, 212, 213, 214, 215
+        197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210,
+        211, 212, 213, 214
       ]
     }
   ]

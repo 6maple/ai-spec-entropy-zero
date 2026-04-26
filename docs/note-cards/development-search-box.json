@@ -1,7 +1,7 @@
 {
   "note_id": "note_development_search_box",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "cards": [
@@ -9,46 +9,37 @@
       "card_id": "card_0",
       "claim_ref": "note_development_search_box:0",
       "type": "qa",
-      "question": "What are the key interactive states for a search input component?",
-      "answer": "搜索输入框需要维护搜索词、候选列表、选中项索引和加载状态，并通过输入事件或 watch 监听搜索词变化来更新结果。",
-      "explanation": "这些状态构成了搜索框的核心交互逻辑。只要状态管理清晰，就能支持候选词上下键导航和搜索确认。",
-      "source_lines": [62, 63, 64, 65, 66, 67]
+      "question": "实现搜索框时，必须维护哪几个核心状态？",
+      "answer": "搜索词、候选列表、选中项索引和加载状态。",
+      "explanation": "这四个状态共同支撑搜索框交互和结果展示，任何一个缺失都会影响体验。",
+      "source_lines": [64, 65, 66]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_development_search_box:1",
       "type": "qa",
-      "question": "How should you handle frequent input changes when implementing a search box?",
-      "answer": "应使用防抖处理输入，通常设置 300ms 延迟，并用 AbortController 或 CancelToken 取消过期请求以避免竞态返回覆盖最新结果。",
-      "explanation": "防抖减少无效请求，取消竞态请求则保证最终结果与当前输入一致，避免出现错误提示或旧结果。",
-      "source_lines": [68, 69, 70, 71, 72, 73]
+      "question": "为什么搜索框建议使用防抖和请求竞态控制？",
+      "answer": "防抖避免每输入一个字符就发送请求，请求竞态控制确保最后一次输入对应的结果展示。",
+      "explanation": "防抖减少无效请求，竞态控制避免旧请求先返回覆盖新结果，从而提升搜索体验。",
+      "source_lines": [70, 71, 72]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_development_search_box:2",
-      "type": "qa",
-      "question": "How can caching improve search box performance?",
-      "answer": "可以在内存中使用 Map 缓存相同关键词的结果，避免对相同查询重复发送后端请求，从而提升响应速度。",
-      "explanation": "缓存对于用户输入重复关键词非常有效，能减少后端负担并让搜索体验更加流畅。",
-      "source_lines": [109, 110, 111, 112, 113]
+      "type": "fill_in_blank",
+      "question": "在 Vue 3 中，为什么推荐将搜索逻辑封装为 composable？",
+      "answer": "因为 composable 让搜索逻辑可复用，通过 watch 调用防抖函数并在输入为空时清空候选列表。",
+      "explanation": "Vue 3 composable 能把搜索状态和防抖行为封装起来，保持组件简洁并支持逻辑复用。",
+      "source_lines": [78, 79, 80, 83, 84, 85, 89, 90, 91, 95, 96, 97]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_development_search_box:3",
       "type": "qa",
-      "question": "What boundary handling is required for a robust search box?",
-      "answer": "需要显示 loading 状态、提供空结果提示，并在中文输入时用 `compositionstart` / `compositionend` 避免在汉字上屏前触发搜索。",
-      "explanation": "这能避免用户在输入过程中看到错误结果或频繁触发请求，同时让搜索状态对用户更友好。",
-      "source_lines": [100, 101, 102, 103, 104, 105, 106, 107, 108]
-    },
-    {
-      "card_id": "card_4",
-      "claim_ref": "note_development_search_box:4",
-      "type": "qa",
-      "question": "What architectural pattern is recommended in Vue 3 for search logic?",
-      "answer": "推荐将搜索逻辑封装为组合式函数（composable），在 watch 中调用防抖搜索函数，使逻辑可复用且更容易测试。",
-      "explanation": "组合式函数提高了可维护性和复用性，适合把搜索行为从组件中抽离出来，减少模板与逻辑耦合。",
-      "source_lines": [74, 75, 76, 77, 78, 79]
+      "question": "搜索框边界处理应包含哪些体验细节？",
+      "answer": "应处理空状态和加载状态，支持中文输入优化，点击外部隐藏下拉，并对关键词回显进行 XSS 过滤。",
+      "explanation": "这些边界细节避免用户困惑、拼音输入误触、列表遮挡和安全风险，提高搜索框可靠性。",
+      "source_lines": [102, 103, 104, 105, 106, 107]
     }
   ]
 }

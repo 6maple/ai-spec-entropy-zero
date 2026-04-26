@@ -1,8 +1,8 @@
 {
   "id": "note_vue_keepalive",
-  "title": "Keep-alive 缓存",
+  "title": "Vue Keep-alive 缓存",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "vue"
   },
   "source": {
@@ -12,59 +12,56 @@
   "content": {
     "core_claims": [
       {
-        "claim": "Keep-alive 是 Vue 的抽象组件，用于缓存动态组件实例，使组件切换时不会被销毁和重新挂载。",
+        "claim": "Keep-alive 是 Vue 内置的抽象组件，用于缓存动态组件实例，保留渲染状态并避免重复销毁与重建。",
         "evidence": {
-          "description": "Keep-alive 缓存内部组件实例，以避免重复销毁和重新渲染，从而提高切换性能。"
+          "description": "Keep-alive 是 Vue 的内置抽象组件，用于缓存内部的动态组件。当组件在切换过程中被包裹在 Keep-alive 中时，其实例会被存储在内存中而非销毁。这不仅能保留组件的渲染状态（如滚动位置、表单输入），还能避免重复渲染导致的性能开销。"
         },
         "source_lines": [134, 135, 136, 137]
       },
       {
-        "claim": "被缓存组件会新增 `activated` 和 `deactivated` 生命周期钩子，首次加载的 mounted/unmounted 只发生一次。",
+        "claim": "被 Keep-alive 缓存的组件会触发 activated 和 deactivated 钩子，而 mounted 与 unmounted 仅在首次加载和最终销毁时触发。",
         "evidence": {
-          "description": "缓存组件的激活与停用会触发专有钩子，而 mounted 和 unmounted 仅在首次加载与最终销毁时触发一次。"
+          "description": "生命周期逻辑：\n\n- activated：组件被激活时触发，可执行数据刷新、启动定时器等。\n- deactivated：组件被停用时触发，应清理临时逻辑或停止轮询。\n\n注意：被缓存组件的 mounted 和 unmounted 只会在首次加载和最终销毁时触发一次。"
         },
         "source_lines": [138, 139, 140, 141, 142, 143, 144, 145]
       },
       {
-        "claim": "Keep-alive 的 `include`、`exclude` 和 `max` 属性用于精细控制缓存对象集，达到精确缓存与 LRU 淘汰的效果。",
+        "claim": "Keep-alive 通过 include、exclude 和 max 属性控制缓存范围，max 使用 LRU 策略回收最久未访问的实例。",
         "evidence": {
-          "description": "通过 include/exclude 可以指定要缓存或排除的组件，max 可以限制最大缓存实例数，超出后按 LRU 策略销毁最久未访问实例。"
+          "description": "核心属性与配置：\n\n- include：定义需要缓存的组件。\n- exclude：定义不缓存的组件，优先级高于 include。\n- max：指定最大缓存实例数。采用 LRU 算法，当达到上限时最久未访问的实例被销毁。"
         },
         "source_lines": [146, 147, 148, 149, 150, 151, 152, 153]
       },
       {
-        "claim": "在路由中配合 router-view 使用 Keep-alive 可以缓存频繁切换的页面组件，避免重复初始化。",
+        "claim": "Vue Router 中常用 keep-alive v-slot 语法包裹 component，配合 include/max 实现页面级缓存。",
         "evidence": {
-          "description": "在路由视图中包裹 Keep-alive 可以让切换页面时保留组件实例，避免重复加载和渲染。\n\n```html\n<router-view v-slot=\"{ Component }\">\n  <keep-alive :include=\"['Home', 'List']\" :max=\"10\">\n    <component :is=\"Component\" />\n  </keep-alive>\n</router-view>\n```"
+          "description": "路由结合与实际代码：在 Vue Router 中，通常配合 v-slot 语法来实现页面级缓存。\n\n```html\n<router-view v-slot=\"{ Component }\">\n  <keep-alive :include=\"['Home', 'List']\" :max=\"10\">\n    <component :is=\"Component\" />\n  </keep-alive>\n</router-view>\n```"
         },
         "source_lines": [
           154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165
         ]
       },
       {
-        "claim": "Keep-alive 是空间换时间的方案，应仅缓存交互复杂、切换频繁的页面，避免对所有路由都缓存导致内存占用过高。",
+        "claim": "Keep-alive 是空间换时间的方案，应仅对交互复杂、数据量大且频繁返回的页面启用，以避免内存占用过高。",
         "evidence": {
-          "description": "由于 Keep-alive 会占用内存，应该只缓存频繁切换且初始化成本高的页面，避免无差别缓存导致内存压力。"
+          "description": "内部原理与思维习惯：\n\n- 内存权衡：Keep-alive 的本质是“空间换时间”。仅对交互复杂、数据量大且用户频繁返回的页面开启缓存。\n- 抽象组件：Keep-alive 本身不渲染 DOM，也不会出现在父组件链中。\n- 状态重置需求：如果页面需要每次进入时重置状态，应该通过 exclude 或在 activated 钩子中手动初始化。\n\n常见问题处理：缓存失效要确保组件有明确 name，滚动位置丢失时可在 deactivated 记录 scrollY，在 activated 时恢复。"
         },
-        "source_lines": [166, 167, 168, 169, 170, 171]
-      },
-      {
-        "claim": "常见问题包括未给组件设定 name 导致 include/exclude 失效，以及缓存时滚动位置需要在 activated 时手动恢复。",
-        "evidence": {
-          "description": "Keep-alive 需要组件 name 才能使用 include/exclude。缓存组件虽能保留状态，但滚动位置等全局状态可能需要手动在 activated 时恢复。"
-        },
-        "source_lines": [172, 173, 174, 175]
+        "source_lines": [167, 168, 169, 170, 171, 172, 173, 174, 175]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "没有为 keep-alive 缓存的组件设置 name，使 include/exclude 失效。",
-        "对所有路由都使用 keep-alive，最终造成内存占用过高。"
+        "对所有页面都开启 Keep-alive，导致内存占用过高且缓存内容难以管理。",
+        "只依赖 Keep-alive 解决滚动位置问题，而不记录和恢复 scrollY。"
       ]
     },
-    "hooks": [],
-    "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
-    }
+    "hooks": [
+      {
+        "type": "supplement",
+        "target_note_id": "note_vue_component_performance",
+        "claim_ref": "note_vue_keepalive:0",
+        "description": "Keep-alive 是 Vue 组件性能优化中的一种页面缓存方案。"
+      }
+    ]
   }
 }

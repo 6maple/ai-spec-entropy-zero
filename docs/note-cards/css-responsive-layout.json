@@ -1,7 +1,7 @@
 {
   "note_id": "note_css_responsive_layout",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "css"
   },
   "cards": [
@@ -9,64 +9,37 @@
       "card_id": "card_0",
       "claim_ref": "note_css_responsive_layout:0",
       "type": "qa",
-      "question": "What is the foundation of responsive layout in CSS?",
-      "answer": "响应式布局的基础是 Media Queries。通常采用移动端优先策略，即先写基础样式，再通过 `min-width` 针对更大屏幕补充差异化规则。",
-      "explanation": "这种方式使样式从小屏逐步扩展，避免在大屏和小屏之间出现不必要的重复规则。",
-      "source_lines": [69, 70, 71, 72, 73, 74, 75]
+      "question": "构建响应式布局时常用的基础方案有哪些？",
+      "answer": "媒体查询、百分比布局、Flexbox 和 Grid。它们分别用于按屏幕宽度适配、流式比例布局、弹性排列和二维网格布局。",
+      "explanation": "这些基础方案覆盖了从传统百分比布局到现代 Flex/Grid 的不同响应式需求，适应了各种组件和页面结构。",
+      "source_lines": [69, 71, 72, 73, 74]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_css_responsive_layout:1",
       "type": "qa",
-      "question": "What is the main limitation of percentage-based responsive layout?",
-      "answer": "百分比布局可以实现流式适配，但它的高度关系比较复杂，难以处理高度自适应的场景。",
-      "explanation": "百分比依赖父元素尺寸，尤其是高度计算时容易产生依赖链问题，因此更适合宽度流式而非高度自适应。",
-      "source_lines": [69, 70, 71, 72, 73, 74, 75]
+      "question": "现代响应式布局常用哪些比例单位？",
+      "answer": "常用 rem、vw 和 vh。rem 依赖根元素字体大小，vw/vh 直接依赖视口宽高，适合等比例缩放。",
+      "explanation": "rem 和视口单位可以减少对 JS 计算的依赖，实现原生 CSS 的等比缩放，从而提高适配一致性。",
+      "source_lines": [78, 79, 80, 81, 82, 83]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_css_responsive_layout:2",
       "type": "qa",
-      "question": "How does Flexbox support responsive component layout?",
-      "answer": "Flexbox 适合局部组件排列，使用 `flex-wrap: wrap` 可以自动换行，`flex-grow` 和 `flex-shrink` 可以动态分配剩余空间。",
-      "explanation": "Flexbox 的伸缩特性让组件在不同宽度下自动调整大小，是处理行内布局和对齐的首选方案。",
-      "source_lines": [69, 70, 71, 72, 73, 74, 75]
+      "question": "哪些工程化方案可以提高响应式开发效率？",
+      "answer": "断点组件化、栅格系统、原子化 CSS 和图片响应式。它们分别通过条件渲染、组件布局、类名响应式和多分辨率资源优化开发效率。",
+      "explanation": "这些方案结合框架、组件和构建工具，让响应式页面从样式层面和资源层面都更易维护。",
+      "source_lines": [85, 87, 88, 89, 90, 91, 92]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_css_responsive_layout:3",
       "type": "qa",
-      "question": "In what scenario is CSS Grid particularly effective?",
-      "answer": "Grid 适合二维布局，能够同时控制行和列。它在复杂页面大框架（如后台管理系统的侧边栏与内容区）中比 Flexbox 更高效。",
-      "explanation": "Grid 的网格模型可以直接表达复杂布局，避免大量嵌套容器和辅助对齐样式。",
-      "source_lines": [69, 70, 71, 72, 73, 74, 75]
-    },
-    {
-      "card_id": "card_4",
-      "claim_ref": "note_css_responsive_layout:4",
-      "type": "qa",
-      "question": "How do rem and viewport units differ in responsive design?",
-      "answer": "rem 依赖根元素字体大小实现等比缩放，而 vw/vh 直接等于视口宽高的百分比。rem 适合全局缩放，vw/vh 适合基于视口的无 JS 响应式布局。",
-      "explanation": "这两种单位提供不同的缩放方式：rem 通过根字号实现比例关系，vw/vh 则直接反映视口尺寸。",
-      "source_lines": [76, 77, 78, 79, 80, 81, 82, 83, 84]
-    },
-    {
-      "card_id": "card_5",
-      "claim_ref": "note_css_responsive_layout:5",
-      "type": "qa",
-      "question": "What engineering practices improve responsive development efficiency?",
-      "answer": "组件化与工程化方案包括断点组件、栅格系统和 Tailwind CSS，配合 `srcset` 或 `picture` 实现图片响应式加载，从而提高开发效率和适配能力。",
-      "explanation": "这种方案把响应式逻辑封装成可复用组件和规则，减少重复代码，并让图片加载适配不同分辨率。",
-      "source_lines": [85, 86, 87, 88, 89, 90, 91, 92, 93]
-    },
-    {
-      "card_id": "card_6",
-      "claim_ref": "note_css_responsive_layout:6",
-      "type": "qa",
-      "question": "What is the preferred way to decide when to add a responsive breakpoint?",
-      "answer": "应根据内容何时出现布局异常来决定是否新增媒体查询，而不是死守固定断点。优先移动端体验，组合使用 Grid、Flex 和 vw 来适配不同场景。",
-      "explanation": "这种思路避免了对固定断点的盲目依赖，使布局更贴合实际内容变化。",
-      "source_lines": [94, 95, 96, 97, 98]
+      "question": "响应式布局应该如何决定断点，而不是简单依赖固定值？",
+      "answer": "应优先移动端体验，并根据内容什么时候变丑来决定断点，而不是死守固定屏宽值。",
+      "explanation": "内容驱动的断点决策避免了模板化的布局切换，让页面在真正需要时才调整样式。",
+      "source_lines": [96, 97, 98]
     }
   ]
 }

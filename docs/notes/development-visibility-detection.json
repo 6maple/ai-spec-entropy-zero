@@ -2,66 +2,65 @@
   "id": "note_development_visibility_detection",
   "title": "可视区域检测",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "source": {
     "input_path": "docs/raw/development.md",
-    "line_range": [114, 178]
+    "line_range": [114, 177]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "Intersection Observer API 是检测元素可见性的现代推荐方案，它异步触发回调，不依赖 scroll 事件，并可通过 `threshold` 配置触发比例。",
+        "claim": "Intersection Observer API 是现代推荐的可视区域检测方案，它性能高、异步执行且无需监听滚动事件。",
         "evidence": {
-          "description": "Intersection Observer 是性能最佳的方案，它通过异步回调检测目标元素与视口或祖先容器的交叉状态。\n\n```javascript\nconst observer = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        // 元素进入可视区域\n        console.log('Element is visible');\n      }\n    });\n  },\n  { threshold: 0.1 },\n); // 阈值，表示元素出现 10% 时触发\n\nobserver.observe(targetElement);\n```"
+          "description": "Intersection Observer API（现代推荐方案）：这是目前最优雅且性能最优的方案。它是浏览器原生的观察者模式实现，异步检测目标元素与其祖先元素或视口的交叉状态。\n\n- 优点：性能极高，不会阻塞主线程，不需要监听滚动事件。\n- 核心代码：\n\n```javascript\nconst observer = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        // 元素进入可视区域\n        console.log('Element is visible');\n      }\n    });\n  },\n  { threshold: 0.1 },\n);\n\nobserver.observe(targetElement);\n```"
         },
         "source_lines": [
-          116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
-          130, 131, 132, 133, 134, 135, 136, 137, 138
+          118, 120, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134,
+          135, 136, 137
         ]
       },
       {
-        "claim": "经典方案是通过 `getBoundingClientRect()` 计算元素与视口的位置，并结合 scroll 事件及防抖/节流来判断是否进入可视区域。",
+        "claim": "getBoundingClientRect 仍然是经典方案，但必须配合滚动事件和节流来避免性能问题。",
         "evidence": {
-          "description": "getBoundingClientRect() 可获得元素相对于视口的位置。必须结合滚动事件并加上防抖或节流，否则频繁计算会造成性能问题。"
+          "description": "getBoundingClientRect（经典计算方案）：通过调用元素的 getBoundingClientRect() 方法获取其相对于视口的位置坐标，手动进行逻辑判断。\n\n- 判断逻辑：元素的 top 小于视口高度，且 bottom 大于 0；同时 left 小于视口宽度，且 right 大于 0。\n- 注意事项：必须配合滚动事件（scroll）使用，且务必引入防抖（Debounce）或节流（Throttle）来控制执行频率。\n\n```javascript\nfunction isInViewport(el) {\n  const rect = el.getBoundingClientRect();\n  return (\n    rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&\n    rect.bottom >= 0 &&\n    rect.left <= (window.innerWidth || document.documentElement.clientWidth) &&\n    rect.right >= 0\n  );\n}\n```"
         },
         "source_lines": [
-          139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
-          153, 154, 155, 156, 157, 158
+          141, 143, 144, 145, 147, 148, 149, 150, 151, 152, 153, 154, 156
         ]
       },
       {
-        "claim": "传统的 offsetTop / scrollTop 方案通过计算绝对偏移和容器滚动位置来判断可见性，但在多层嵌套滚动或变换布局时容易出错。",
+        "claim": "传统的 offsetTop 与 scrollTop 判断可见性，但它在多层嵌套或 transform 场景下容易出错，因此已较少作为首选。",
         "evidence": {
-          "description": "offsetTop 与 scrollTop 的计算方式需要考虑容器嵌套和滚动位置，且在 transform 或复杂布局下容易失准，因此已经是一个降级方案。"
+          "description": "offsetTop & scrollTop（传统计算方案）：通过计算元素的绝对偏移量与容器滚动条位置的差值来判断。\n\n- 计算公式：el.offsetTop < (container.scrollTop + container.clientHeight)。\n- 缺点：这种方式计算相对复杂，尤其在多层嵌套或存在 CSS 变换（transform）时容易出错，目前已较少作为首选。"
         },
-        "source_lines": [159, 160, 161, 162, 163, 164, 165]
+        "source_lines": [159, 161, 162, 163, 164, 165]
       },
       {
-        "claim": "在 Vue 生态中，应把可视检测逻辑抽象为自定义指令或组合式函数，必要时使用第三方库如 vue-observe-visibility 来提高复用性。",
+        "claim": "在 Vue 生态中，推荐将可见性检测逻辑封装为指令或 composable，或使用成熟的第三方库进行复用。",
         "evidence": {
-          "description": "Vue 可以通过指令封装 IntersectionObserver，在组件 mounted 时初始化、unmounted 时销毁。也可以用组合式函数或现成库来避免重复实现。"
+          "description": "Vue 生态下的工程化实践：在 Vue 项目中，通常会将上述逻辑封装以提高复用性：\n\n- 自定义指令（Directives）：封装一个 v-lazy 或 v-observe 指令，在 mounted 钩子中初始化 IntersectionObserver，在 unmounted 钩子中销毁。\n- 组合式函数（Composables）：利用 VueUse 库中的 useIntersectionObserver，可以快速实现响应式的可见性判断。\n- 第三方库：直接使用 vue-observe-visibility 等成熟方案。"
         },
-        "source_lines": [166, 167, 168, 169, 170, 171, 172, 173]
+        "source_lines": [168, 170, 171, 172]
       },
       {
-        "claim": "现代方案优先使用 Intersection Observer，低版本浏览器则可退回到手动计算的 scroll 事件方案。",
+        "claim": "应优先选择 Intersection Observer，只有在极端兼容需求下才使用 getBoundingClientRect 作为备用方案。",
         "evidence": {
-          "description": "Intersection Observer 在大多数现代浏览器中是首选。对于兼容性要求高的项目，可以提供 getBoundingClientRect 或 offsetTop 的降级实现。"
+          "description": "方案总结与选型：\n\n- 优先选择：Intersection Observer API。适用于大多数现代浏览器，能有效避免因监听滚动导致的页面卡顿（重排与重绘）。\n- 备选方案：如果需要兼容极低版本的浏览器（如 IE），则使用 getBoundingClientRect 结合节流函数作为降级处理。"
         },
-        "source_lines": [174, 175, 176, 177, 178]
+        "source_lines": [176, 177]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "在长列表中持续监听 scroll 事件而不节流，最终导致页面卡顿。",
-        "把 `getBoundingClientRect()` 的结果与视口位置直接比较，却忘记在布局变化后重新计算。"
+        "直接用 scroll 事件不停计算可见性而不做节流，容易引起性能问题。",
+        "在现代浏览器中仍优先使用 getBoundingClientRect，而不先尝试性能更好的 Intersection Observer。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

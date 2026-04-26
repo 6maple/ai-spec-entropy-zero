@@ -1,53 +1,61 @@
 {
   "id": "note_development_web_security",
-  "title": "Web 安全",
+  "title": "Web 安全防御",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "source": {
     "input_path": "docs/raw/development.md",
-    "line_range": [296, 336]
+    "line_range": [287, 336]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "XSS 防御需要对用户输入进行过滤，输出时转义 HTML，使用 HttpOnly Cookie 并配置 CSP，防止恶意脚本注入和执行。",
+        "claim": "防御 XSS 需要严格过滤输入、转义输出、在 v-html 使用前进行消毒，并且通过 HttpOnly Cookie 和 CSP 限制脚本执行。",
         "evidence": {
-          "description": "XSS 意味着恶意脚本在浏览器中执行。防御措施包括输入过滤、输出转义、HttpOnly Cookie，以及通过 CSP 限制可加载资源域名。"
+          "description": "XSS (跨站脚本攻击) 原理：攻击者通过在页面注入恶意脚本，在用户浏览器上运行，从而窃取 Cookie 或进行非法操作。\n\n防御策略：\n\n- 输入过滤：对用户提交的所有内容进行严格的长度限制和格式校验。\n- 转义输出：在 Vue 模板中，默认的 {{ }} 会自动转义 HTML，但使用 v-html 时必须极其谨慎。必须对动态渲染的 HTML 使用 DOMPurify 等库进行消毒。\n- HTTP Only Cookie：后端设置 Cookie 时开启 HttpOnly 属性，脚本将无法通过 document.cookie 读取。\n- 内容安全策略 (CSP)：通过配置 HTTP 响应头，限制浏览器只能加载特定域名的资源。"
         },
-        "source_lines": [
-          296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309,
-          310, 311, 312, 313, 314, 315
-        ]
+        "source_lines": [289, 291, 294, 295, 296, 297]
       },
       {
-        "claim": "CSRF 防御通过将 Cookie 的 SameSite 设为 Strict 或 Lax、使用 CSRF Token，以及验证 Referer/Origin，防止第三方站点盗用登录状态发起请求。",
+        "claim": "防御 CSRF 需要设置 SameSite Cookie、使用 CSRF Token，并验证请求的 Referer 或 Origin。",
         "evidence": {
-          "description": "CSRF 攻击依赖用户登录态。防御手段包括 SameSite Cookie、每次请求携带 CSRF Token，以及后端校验请求来源。"
+          "description": "CSRF (跨站请求伪造) 原理：攻击者诱导用户访问恶意网站，利用用户在目标网站的登录状态（Cookie），冒充用户发送非法请求。\n\n防御策略：\n\n- SameSite Cookie：将 Cookie 的 SameSite 属性设置为 Strict 或 Lax，限制第三方网站携带 Cookie。\n- CSRF Token：每次请求时在请求头中携带一个由服务器生成的随机 Token。\n- 验证 Referer/Origin：服务器端检查请求来源是否为可信域名。"
         },
-        "source_lines": [
-          316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
-          330, 331, 332
-        ]
+        "source_lines": [299, 301, 304, 305, 306, 307]
       },
       {
-        "claim": "SQL 注入防御的最有效手段是使用参数化查询，并遵循最小权限原则，不把用户输入直接拼接进 SQL 语句。",
+        "claim": "防御 SQL 注入的最有效做法是参数化查询，并为数据库账号只授予最低权限。",
         "evidence": {
-          "description": "SQL 注入的核心是在查询中注入恶意语句。正确做法是使用参数化查询，不直接拼接字符串，并让数据库账号只拥有必要权限。"
+          "description": "SQL 注入原理：通过在 Web 表单或 URL 参数中输入恶意的 SQL 语句，欺骗服务器执行非法的数据库查询。\n\n防御策略：\n\n- 参数化查询 (Prepared Statements)：这是最有效的手段。不直接拼接字符串，而是使用占位符，由数据库驱动处理转义。\n- 最小权限原则：数据库账号仅赋予执行业务所需的最低权限。\n\n```javascript\n// 错误示例：直接拼接\nconst query = 'SELECT * FROM users WHERE id = ' + req.query.id;\n\n// 正确示例：参数化 (Node.js mysql2 库)\ndb.execute('SELECT * FROM users WHERE id = ?', [req.query.id]);\n```"
         },
-        "source_lines": [333, 334, 335, 336]
+        "source_lines": [313, 314, 317, 318, 319, 320, 321]
+      },
+      {
+        "claim": "防御点击劫持应设置 X-Frame-Options 为 DENY 或 SAMEORIGIN，并可通过 CSP 的 frame-ancestors 指令限制可嵌入域。",
+        "evidence": {
+          "description": "点击劫持原理：将受害网站嵌入到透明的 iframe 中，诱导用户在不知情的情况下点击伪装后的按钮。\n\n防御策略：\n\n- X-Frame-Options：设置 HTTP 响应头为 DENY（禁止嵌套）或 SAMEORIGIN（仅允许同源嵌套）。\n- Content-Security-Policy (CSP)：使用 frame-ancestors 指令限制哪些域名可以嵌入当前页面。"
+        },
+        "source_lines": [324, 326, 329, 330]
+      },
+      {
+        "claim": "其他安全实践包括全站 HTTPS、HSTS、以及定期用 npm audit 检查第三方依赖漏洞。",
+        "evidence": {
+          "description": "其他安全实践：\n\n- HTTPS 全站加密：防止中间人攻击（MITM）和数据嗅探。\n- HSTS (HTTP Strict Transport Security)：强制浏览器始终通过 HTTPS 访问。\n- 依赖项安全扫描：定期使用 npm audit 检查前端项目的第三方库是否存在已知安全漏洞。"
+        },
+        "source_lines": [334, 335, 336]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把前端 XSS 过滤当成唯一防线，而忽略了后端输出转义和 CSP 的必要性。",
-        "把 SQL 查询字符串拼接在前端或后端都不做参数化，导致注入风险。"
+        "直接拼接 SQL 查询字符串，导致 SQL 注入漏洞。",
+        "在 v-html 中渲染未经消毒的用户输入，造成 XSS 漏洞。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

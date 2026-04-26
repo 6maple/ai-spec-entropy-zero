@@ -1,7 +1,7 @@
 {
   "note_id": "note_vue_component_communication",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "vue"
   },
   "cards": [
@@ -9,54 +9,36 @@
       "card_id": "card_0",
       "claim_ref": "note_vue_component_communication:0",
       "type": "qa",
-      "question": "What is the standard way for parent-child communication in Vue?",
-      "answer": "父组件通过 props 向子组件传数据，子组件通过 emits 向父组件发送事件通知。",
-      "explanation": "这种单向数据流保持了组件关系的清晰性，避免了双向耦合。",
+      "question": "父子组件通信在 Vue 中通常通过哪些方式实现？",
+      "answer": "通过 Props/Emits、v-model 和 Template Refs/Expose 实现单向数据流和显式事件。",
+      "explanation": "父部件传递数据给子部件，子部件通过事件通知父部件，并可通过 ref/expose 提供实例方法。",
       "source_lines": [46, 47, 48, 49, 50, 51]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_vue_component_communication:1",
       "type": "qa",
-      "question": "What does v-model compile to in Vue 3?",
-      "answer": "Vue 3 中 v-model 是 `modelValue` 与 `update:modelValue` 的语法糖，适用于自定义表单控件的双向绑定。",
-      "explanation": "它简化了父子组件传值和变更通知的写法，使自定义字段组件的使用更自然。",
-      "source_lines": [46, 47, 48, 49, 50, 51]
+      "question": "跨级组件通信有哪些推荐方案？",
+      "answer": "推荐使用 Provide/Inject 避免 props 逐层透传，$attrs 用于透传未声明的属性和事件。",
+      "explanation": "这些机制能减少层级传递的样板代码，并保持组件接口的清晰。",
+      "source_lines": [52, 53, 54, 55, 56]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_vue_component_communication:2",
       "type": "qa",
-      "question": "How can a parent component access a child component's methods?",
-      "answer": "父组件可以通过 template ref 获取子组件实例，子组件需使用 defineExpose 显式暴露方法或数据。",
-      "explanation": "这种方式可以实现父组件对子组件行为的直接控制，但应谨慎使用以避免破坏组件封装。",
-      "source_lines": [46, 47, 48, 49, 50, 51]
+      "question": "复杂共享状态场景下应选择什么方案？",
+      "answer": "应选择 Pinia/Vuex，而不是简单的事件总线；对于轻量解耦场景可以使用 mitt 等库。",
+      "explanation": "状态管理库适合跨组件共享复杂业务状态，事件总线适合简单解耦信息传递。",
+      "source_lines": [57, 58, 59, 60, 61]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_vue_component_communication:3",
-      "type": "qa",
-      "question": "What is the advantage of provide/inject for deep component communication?",
-      "answer": "provide/inject 可以避免 props 逐层传递，将数据从祖先组件直接传递给深层子组件，减少 prop drilling。",
-      "explanation": "这使得跨多层组件的依赖更简洁，但要注意响应性需要传递 Ref 或 reactive 对象。",
-      "source_lines": [52, 53, 54, 55, 56]
-    },
-    {
-      "card_id": "card_4",
-      "claim_ref": "note_vue_component_communication:4",
-      "type": "qa",
-      "question": "When should you use Pinia or Vuex instead of local component communication?",
-      "answer": "当多个组件共享同一状态或业务逻辑复杂时，应使用 Pinia/Vuex，而不是靠事件总线或临时变量来耦合组件。",
-      "explanation": "集中状态管理提供更一致的共享机制，避免跨组件通信逻辑散乱。",
-      "source_lines": [57, 58, 59, 60, 61]
-    },
-    {
-      "card_id": "card_5",
-      "claim_ref": "note_vue_component_communication:5",
-      "type": "qa",
-      "question": "What is the benefit of composables for sharing Vue logic?",
-      "answer": "Composable 可以把共享逻辑抽象成独立函数，不同组件直接导入使用，替代 mixins 的隐式依赖，提高透明度和复用性。",
-      "explanation": "它是一种更现代的逻辑复用方式，便于维护和测试。",
+      "type": "fill_in_blank",
+      "question": "为什么推荐使用 Composables 进行逻辑复用？",
+      "answer": "因为它能把共享逻辑封装成独立函数，提高透明性和维护性，替代复杂的 Mixins。",
+      "explanation": "Composables 把状态和行为抽象成可复用函数，使不同组件可以共享逻辑且更易追踪。",
       "source_lines": [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74]
     }
   ]

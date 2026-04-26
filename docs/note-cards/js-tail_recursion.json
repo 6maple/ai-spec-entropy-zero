@@ -1,7 +1,7 @@
 {
   "note_id": "note_js_tail_recursion",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "cards": [
@@ -9,48 +9,39 @@
       "card_id": "card_0",
       "claim_ref": "note_js_tail_recursion:0",
       "type": "qa",
-      "question": "What characterizes a tail recursive function?",
-      "answer": "尾递归指函数的最后一步操作是调用自身，且调用结果不再被额外处理。这意味着当前调用帧不需要保存返回后的计算上下文。",
-      "explanation": "这使得尾递归有可能被引擎优化为常数栈帧，从而避免普通递归的栈溢出风险。",
+      "question": "什么是尾递归？",
+      "answer": "尾递归是函数最后一步直接调用自身，不再对返回值做额外运算。",
+      "explanation": "尾递归的关键在于递归调用位于函数末尾，这样可为优化器提供栈帧重用的可能。",
       "source_lines": [350, 351, 352, 353]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_js_tail_recursion:1",
-      "type": "qa",
-      "question": "How does tail recursion differ from ordinary recursion in implementation?",
-      "answer": "普通递归在 return 语句中包含额外运算，必须等待下层返回；尾递归通过累加器把中间结果传递下去，使递归调用成为最后一步。\n\n```javascript\nfunction factorial(n) {\n  if (n === 1) return 1;\n  return n * factorial(n - 1); // not tail recursive\n}\n```\n\n```javascript\nfunction factorial(n, total = 1) {\n  if (n === 1) return total;\n  return factorial(n - 1, n * total); // tail recursive\n}\n```",
-      "explanation": "尾递归通过传递累加参数避免在返回后做额外计算，从而使栈帧可以被复用。",
+      "type": "fill_in_blank",
+      "question": "尾递归与普通递归的主要结构差异是什么？",
+      "answer": "普通递归在返回前还有额外运算，尾递归通过累加器参数直接在最后一步调用自身。",
+      "explanation": "尾递归避免了在递归返回时再处理结果，因此更容易被引擎优化成常数级栈空间。",
       "source_lines": [
         354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365, 366, 367,
-        368, 369, 370, 371, 372, 373, 374
+        368, 369, 370, 371, 372, 373, 374, 375
       ]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_js_tail_recursion:2",
       "type": "qa",
-      "question": "What is the benefit of tail call optimization?",
-      "answer": "尾调用优化可以复用当前栈帧，或者覆盖当前栈帧，使深度递归的栈空间保持不变，从 O(n) 降到 O(1)。",
-      "explanation": "这意味着递归层数再大也不会因为栈帧累积而溢出，是处理深度递归时的关键性能优化。",
-      "source_lines": [376, 377, 378, 379, 380]
+      "question": "JavaScript 引擎当前对尾调用优化的支持情况如何？",
+      "answer": "ES6 规范要求支持尾调用优化，但目前只有 Safari 的 JavaScriptCore 完全实现，V8 默认未开启。",
+      "explanation": "虽然规范存在，实际引擎实现受调试和堆栈跟踪问题影响，因此不能完全依赖。",
+      "source_lines": [381, 382, 383, 384, 385, 386]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_js_tail_recursion:3",
       "type": "qa",
-      "question": "Does JavaScript consistently support tail call optimization?",
-      "answer": "虽然 ES6 规范在严格模式下要求支持尾调用优化，但实际引擎实现有限。只有 Safari 的 JavaScriptCore 完整实现，V8 默认并未开启。",
-      "explanation": "因此在实际项目中不能完全依赖尾递归优化，而应把它作为写法习惯，必要时手动重构为迭代。",
-      "source_lines": [381, 382, 383, 384, 385, 386]
-    },
-    {
-      "card_id": "card_4",
-      "claim_ref": "note_js_tail_recursion:4",
-      "type": "qa",
-      "question": "Why is tail recursion still a valuable coding practice in JavaScript?",
-      "answer": "即使引擎支持有限，尾递归风格仍有助于把递归逻辑写得清晰，并为将来手动重构为迭代方式提供良好基础。",
-      "explanation": "它是一种高性能思维工具，能提醒开发者把递归边界和状态传递写得更明确。",
+      "question": "为什么仍然要关注尾递归风格？",
+      "answer": "因为它有助于逻辑清晰，并且在必要时可以很容易重构为迭代以规避栈风险。",
+      "explanation": "尾递归风格让递归逻辑更明确，方便识别可优化为循环的场景。",
       "source_lines": [387, 388, 389]
     }
   ]

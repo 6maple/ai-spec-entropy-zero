@@ -1,8 +1,8 @@
 {
   "id": "note_development_search_box",
-  "title": "搜索输入框",
+  "title": "搜索框交互与性能",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "source": {
@@ -12,50 +12,44 @@
   "content": {
     "core_claims": [
       {
-        "claim": "实现类似谷歌搜索框时，关键交互包括输入绑定、候选列表状态、选中项索引，以及上下箭头和回车键的键盘导航。",
+        "claim": "搜索框需要维护关键词、候选列表、选中索引和加载状态，并支持上下键导航与回车确认。",
         "evidence": {
-          "description": "搜索框需要维护搜索词、候选结果、激活索引和加载状态，并通过输入事件或 watch 监听搜索词变化，以支持键盘导航与搜索确认。"
+          "description": "响应式监听：使用 Vue 的 v-model 绑定输入框，并通过 watch 监听搜索词变化，或者通过 @input 事件触发检索逻辑。\n\n状态管理：需要维护搜索词（keyword）、候选列表（suggestions）、选中项索引（activeIndex）以及加载状态（loading）。\n\n键盘导航：支持用户通过上下方向键（ArrowUp/Down）切换候选词，并按回车键（Enter）确认搜索，提升操作效率。"
         },
-        "source_lines": [62, 63, 64, 65, 66, 67]
+        "source_lines": [64, 65, 66]
       },
       {
-        "claim": "性能优化必须防抖处理输入，通常设置 300ms 延迟，并用中止控制器或 Axios CancelToken 取消过期请求，防止返回竞态结果覆盖最新输入。",
+        "claim": "搜索建议必须使用防抖和请求竞态控制，避免每次输入都发送请求或让旧请求覆盖新结果。",
         "evidence": {
-          "description": "防抖可以避免每次输入都发送请求；同时通过取消前一个请求或 AbortController，确保页面展示的是最后一次输入对应的结果。"
+          "description": "性能优化（关键点）：\n\n- 防抖处理（Debounce）：这是搜索框的必备策略。避免用户每输入一个字符就发送请求，通常设置 300ms 左右的延迟。\n- 请求竞态处理：网络波动可能导致后发出的请求先返回。需要通过取消重复请求（如使用 Axios 的 CancelToken 或原生 AbortController）来确保页面最终展示的是最后一次输入对应的结果。\n- 缓存机制：对于相同的关键词，可以在内存中使用 Map 进行简单缓存，减少不必要的后端压力。"
         },
-        "source_lines": [68, 69, 70, 71, 72, 73]
+        "source_lines": [70, 71, 72]
       },
       {
-        "claim": "对于相同关键词可以在内存中使用 Map 做缓存，减少重复请求并提升搜索响应速度。",
+        "claim": "在 Vue 3 中，应把搜索逻辑封装为 composable，通过 watch 调用防抖搜索函数，并在输入置空时清空候选列表。",
         "evidence": {
-          "description": "简单缓存机制可以在内存中保存相同关键词的结果，避免相同关键词重复调用后端接口。"
+          "description": "在 Vue 3 中，推荐将搜索逻辑封装为组合式函数（Composables）：\n\n```javascript\nconst keyword = ref('');\nconst suggestions = ref([]);\n\nconst handleSearch = useDebounceFn(async (val) => {\n  if (!val) {\n    suggestions.value = [];\n    return;\n  }\n  // 1. 中止之前的请求 (AbortController)\n  // 2. 发起新请求\n  const res = await fetchSuggestions(val);\n  suggestions.value = res;\n}, 300);\n\nwatch(keyword, (newVal) => {\n  handleSearch(newVal);\n});\n```"
         },
-        "source_lines": [109, 110, 111, 112, 113]
+        "source_lines": [78, 79, 80, 83, 84, 85, 89, 90, 91, 95, 96, 97]
       },
       {
-        "claim": "在边界处理上，应显示 loading 状态、空结果提示，中文输入期间通过 `compositionstart` / `compositionend` 避免过早触发搜索。",
+        "claim": "搜索框需要处理空状态、中文输入、点击外部隐藏、关键词高亮和 XSS 过滤等边界细节。",
         "evidence": {
-          "description": "搜索框需要在请求期间显式 loading，搜索无结果时显示明确提示。中文拼音输入时用组合输入事件避免在汉字上屏前触发搜索。"
+          "description": "边界处理与细节：\n\n- 空状态与加载中：在请求时显示 loading 状态，如果搜索无结果，需明确展示“未找到相关内容”，避免用户困惑。\n- 中文输入优化：利用 @compositionstart 和 @compositionend 事件。在用户输入拼音过程中不触发搜索，只有当汉字真正上屏后再进行检索。\n- 样式与交互细节：点击搜索框外部自动隐藏下拉列表；对匹配到的关键词进行高亮显示。\n- 安全处理：对用户输入的关键词进行 XSS 过滤。"
         },
-        "source_lines": [100, 101, 102, 103, 104, 105, 106, 107, 108]
-      },
-      {
-        "claim": "Vue 3 中推荐将搜索逻辑封装为组合式函数，使用 `watch` 监听关键字变化并将防抖搜索函数抽离为可复用的 composable。",
-        "evidence": {
-          "description": "在 Vue 3 中，搜索逻辑应封装为组合式函数，通过 `ref`、`watch` 和防抖函数实现可复用的检索行为。"
-        },
-        "source_lines": [74, 75, 76, 77, 78, 79]
+        "source_lines": [102, 103, 104, 105, 106, 107]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "没有处理中英文输入组合事件，导致中文输入时搜索请求频繁触发。",
-        "不缓存相同关键词，导致相同搜索词在短时间内重复请求后端。"
+        "每次输入一个字符就发送请求，导致后端压力大且体验抖动。",
+        "不取消旧请求，结果出现旧输入覆盖新输入的竞态问题。",
+        "在中文拼音输入阶段就触发搜索，导致无效请求和错误结果。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

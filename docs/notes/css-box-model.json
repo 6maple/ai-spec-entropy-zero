@@ -1,47 +1,40 @@
 {
   "id": "note_css_box_model",
-  "title": "盒模型",
+  "title": "CSS 盒模型",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "css"
   },
   "source": {
     "input_path": "docs/raw/css.md",
-    "line_range": [12, 33]
+    "line_range": [14, 33]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "CSS 盒模型把元素视为四个嵌套区域：内容区、内边距、边框和外边距，每个区域对布局尺寸和外部间距的计算方式不同。",
+        "claim": "CSS 盒模型把元素的显示区域拆成 content、padding、border 和 margin 四个层次，用于让浏览器按层次计算尺寸与间距。",
         "evidence": {
-          "description": "浏览器将 HTML 元素视为一个矩形盒子，盒模型由四层区域组成：\n\n- **Content（内容区）**：放置文本或图片的实际区域。\n- **Padding（内边距）**：内容与边框之间的透明区域。\n- **Border（边框）**：包裹在内边距和内容外的线条。\n- **Margin（外边距）**：盒子与其他元素之间的空白区域。"
+          "description": "盒模型是浏览器对 HTML 元素进行布局的基础，任何元素都可以看作一个矩形盒子。\n\n- **Content（内容区）**：放置文本或图片的实际区域。\n- **Padding（内边距）**：内容与边框之间的透明区域。\n- **Border（边框）**：包裹在内边距和内容外的线条。\n- **Margin（外边距）**：盒子与其他元素之间的空白区域，用于控制外部间距。"
         },
-        "source_lines": [14, 15, 16, 17, 18, 19, 20, 21, 22]
+        "source_lines": [16, 18, 19, 20, 21]
       },
       {
-        "claim": "当 `box-sizing: content-box` 时，元素的 `width` 仅指内容区宽度，实际宽度等于 `width + padding + border`，因此增加内边距或边框会让盒子总尺寸变大。",
+        "claim": "`box-sizing: content-box` 时 width 只包含内容区，padding 和 border 会让盒子实际变大；`box-sizing: border-box` 时 width 已包含 padding 和 border，使元素总宽度保持不变。",
         "evidence": {
-          "description": "标准盒模型（content-box）中，width 指代内容区，padding 和 border 会被叠加到实际盒子尺寸中，导致外部显示的宽度超过声明值。"
+          "description": "通过 `box-sizing` 属性可以切换两种不同的空间计算逻辑：\n\n- **标准盒模型（W3C 盒模型）**：设置方式：`box-sizing: content-box`（默认值）。计算公式：`实际宽度 = width + padding + border`。\n- **怪异盒模型（IE 盒模型）**：设置方式：`box-sizing: border-box`。计算公式：`实际宽度 = width`。"
         },
-        "source_lines": [23, 24, 25, 26, 27]
-      },
-      {
-        "claim": "当 `box-sizing: border-box` 时，元素的 `width` 已包含 padding 和 border，内部内容区会被挤压，盒子总宽度保持不变。",
-        "evidence": {
-          "description": "怪异盒模型（border-box）把 padding 和 border 纳入 width 计算，因此改变内边距或边框时，不会改变元素的外部总宽度。"
-        },
-        "source_lines": [28, 29, 30, 31, 32, 33]
+        "source_lines": [25, 27, 28, 30, 31, 32]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "误以为 `border-box` 会自动让内部内容宽度不变，忽略了 padding 和 border 仍然占据空间。",
-        "在复杂布局中把所有元素都设置为 `content-box`，导致 padding 或 border 修改时元素总宽度频繁变化。"
+        "在默认 `content-box` 里，误以为 width 已包含 padding 和 border，从而导致布局宽度超出预期。",
+        "在 `border-box` 模式下忽略 padding 会压缩内容区，误以为 padding 不影响内部可用空间。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "note_id": "note_development_web_security",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "cards": [
@@ -9,34 +9,46 @@
       "card_id": "card_0",
       "claim_ref": "note_development_web_security:0",
       "type": "qa",
-      "question": "What measures are required to defend against XSS?",
-      "answer": "XSS 防御需要对用户输入进行过滤、输出时转义 HTML、使用 HttpOnly Cookie，并配置 CSP 限制可加载资源域名。",
-      "explanation": "这些措施从输入、输出、浏览器执行环境三个层面阻断恶意脚本，降低攻击面。",
-      "source_lines": [
-        296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309,
-        310, 311, 312
-      ]
+      "question": "防御 XSS 需要采取哪些措施？",
+      "answer": "严格过滤输入、转义输出、对 v-html 内容做消毒，并使用 HttpOnly Cookie 与 CSP 限制脚本执行。",
+      "explanation": "XSS 防御应从输入、输出和浏览器权限三个层面综合处理，避免脚本注入和敏感数据泄露。",
+      "source_lines": [289, 291, 294, 295, 296, 297]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_development_web_security:1",
       "type": "qa",
-      "question": "How should CSRF be defended in web applications?",
-      "answer": "CSRF 防御包括将 Cookie 的 SameSite 设为 Strict 或 Lax、在请求中使用 CSRF Token，以及后端验证 Referer/Origin。",
-      "explanation": "这些手段可以阻止第三方站点用用户登录态发起非法请求，保护用户会话安全。",
-      "source_lines": [
-        316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328, 329,
-        330, 331, 332
-      ]
+      "question": "CSRF 防御的核心策略是什么？",
+      "answer": "使用 SameSite Cookie、CSRF Token 并验证请求的 Referer/Origin。",
+      "explanation": "这些机制可以防止第三方网页在用户登录状态下伪造请求执行敏感操作。",
+      "source_lines": [299, 301, 304, 305, 306, 307]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_development_web_security:2",
+      "type": "fill_in_blank",
+      "question": "防御 SQL 注入的最有效手段是什么？",
+      "answer": "使用参数化查询，并为数据库账号赋予最低权限。",
+      "explanation": "参数化查询避免拼接字符串带来的注入风险，最小权限原则减少攻击面。",
+      "source_lines": [313, 314, 317, 318, 319, 320, 321]
+    },
+    {
+      "card_id": "card_3",
+      "claim_ref": "note_development_web_security:3",
       "type": "qa",
-      "question": "What is the most effective defense against SQL injection?",
-      "answer": "最有效的防御是使用参数化查询，并遵循最小权限原则，不把用户输入直接拼接进 SQL 语句。",
-      "explanation": "参数化查询让数据库驱动处理输入转义，从根本上避免注入漏洞，同时最小权限减少了攻击成功后的破坏范围。",
-      "source_lines": [333, 334, 335, 336]
+      "question": "如何防御点击劫持？",
+      "answer": "设置 X-Frame-Options 为 DENY 或 SAMEORIGIN，并通过 CSP frame-ancestors 限制可嵌入域名。",
+      "explanation": "这些响应头可以阻止页面被嵌入到恶意 iframe，从而避免用户在不知情时点击钓鱼内容。",
+      "source_lines": [324, 326, 329, 330]
+    },
+    {
+      "card_id": "card_4",
+      "claim_ref": "note_development_web_security:4",
+      "type": "qa",
+      "question": "除了常见攻击防御外，还应采取哪些安全实践？",
+      "answer": "全站 HTTPS、HSTS 和定期使用 npm audit 检查依赖漏洞。",
+      "explanation": "这些基础安全措施帮助防止中间人攻击、强制安全访问并发现第三方库风险。",
+      "source_lines": [334, 335, 336]
     }
   ]
 }

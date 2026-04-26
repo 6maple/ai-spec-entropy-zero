@@ -1,7 +1,7 @@
 {
   "note_id": "note_development_virtual_scroll",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "cards": [
@@ -9,40 +9,37 @@
       "card_id": "card_0",
       "claim_ref": "note_development_virtual_scroll:0",
       "type": "qa",
-      "question": "What is the core idea behind virtual scrolling?",
-      "answer": "虚拟滚动的核心是按需渲染，只将可视区域内的列表项渲染为真实 DOM，其余项由一个撑高容器模拟总高度。",
-      "explanation": "这种策略减少了渲染节点数量，显著降低了 DOM 开销和页面卡顿风险。",
-      "source_lines": [181, 182, 183, 184]
+      "question": "虚拟滚动的核心思想是什么？",
+      "answer": "只渲染当前可视区域的 DOM 节点，使用占位容器模拟完整列表高度，从而减少真实 DOM 数量。",
+      "explanation": "通过渲染可视区节点并用 Phantom Layer 模拟整体高度，虚拟滚动显著降低了长列表渲染开销。",
+      "source_lines": [181, 183, 184, 185, 187, 188, 189, 190, 191]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_development_virtual_scroll:1",
       "type": "qa",
-      "question": "What are the three structural layers of a standard virtual scroll implementation?",
-      "answer": "标准虚拟滚动结构包含：固定高度的外层滚动容器、用来撑高的 Phantom/Spacer 占位层，以及绝对定位的实际渲染列表层。",
-      "explanation": "这三层协作模拟原生滚动效果，同时只渲染可见项，兼顾体验和性能。",
-      "source_lines": [185, 186, 187, 188, 189]
+      "question": "虚拟滚动的关键计算逻辑是什么？",
+      "answer": "根据 scrollTop 和 itemHeight 计算 startIndex、endIndex，并通过 translateY 偏移渲染列表。",
+      "explanation": "这种计算方式能快速确定可视项范围，并将渲染列表移动到正确位置，保持滚动体验。",
+      "source_lines": [195, 197, 198, 199, 200, 209, 210, 211, 212]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_development_virtual_scroll:2",
       "type": "qa",
-      "question": "How are visible list indices calculated in virtual scrolling?",
-      "answer": "通过 `startIndex = Math.floor(scrollTop / itemHeight)` 计算起始位置，`endIndex = startIndex + Math.floor(containerHeight / itemHeight)` 计算结束位置，`offset = startIndex * itemHeight` 用于位移实际列表。",
-      "explanation": "这种计算方式把滚动坐标转成当前可见项范围，使渲染只集中在视口附近的元素。",
-      "source_lines": [190, 191, 192, 193, 194, 195, 196, 197, 198]
+      "question": "为了避免虚拟滚动的白屏和卡顿，应该做哪些优化？",
+      "answer": "增加缓冲区、处理变高项、使用 requestAnimationFrame 节流和动态回收不再显示的实例。",
+      "explanation": "这些优化确保滚动过程平滑，并在不规则高度或频繁滚动时维持稳定显示。",
+      "source_lines": [217, 218, 219, 220]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_development_virtual_scroll:3",
       "type": "qa",
-      "question": "What optimizations are needed to make virtual scrolling smooth?",
-      "answer": "需要设置上下缓冲区、处理可变高度项、使用 requestAnimationFrame 优化渲染，并动态回收不再可见的组件实例。",
-      "explanation": "这些优化帮助避免快速滚动时白屏和抖动，并使虚拟列表在复杂数据下保持流畅。",
-      "source_lines": [
-        199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212,
-        213, 214, 215, 216, 217, 218
-      ]
+      "question": "虚拟滚动适合解决哪类场景？",
+      "answer": "适合后台日志、电商长列表和社交消息流等海量数据展示场景。",
+      "explanation": "这些场景节点过多时直接渲染会导致性能问题，虚拟滚动通过按需渲染解决此类瓶颈。",
+      "source_lines": [224]
     }
   ]
 }

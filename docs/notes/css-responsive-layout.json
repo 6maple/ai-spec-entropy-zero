@@ -1,8 +1,8 @@
 {
   "id": "note_css_responsive_layout",
-  "title": "响应式布局",
+  "title": "CSS 响应式布局",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "css"
   },
   "source": {
@@ -12,64 +12,47 @@
   "content": {
     "core_claims": [
       {
-        "claim": "响应式布局的基石是 Media Queries，通常采用移动端优先策略，先定义基础样式，再通过 `min-width` 针对更大屏幕补充差异样式。",
+        "claim": "响应式布局的基础方案包括媒体查询、百分比布局、Flexbox 和 Grid，它们分别适用于不同粒度的布局场景。",
         "evidence": {
-          "description": "Media Queries 是响应式布局的基础。移动端优先的写法先定义通用样式，再在 `min-width` 条件下添加大屏适配规则。"
+          "description": "响应式布局的核心基础方案包括：\n\n- **媒体查询 (Media Queries)**：响应式布局的基石。通过 `@media` 针对不同屏幕宽度（Breakpoints）编写差异化样式。通常采用“移动端优先”策略。\n- **百分比布局 (Percentage)**：最原始的流式布局方式。将子元素的宽高、内边距设置为父元素的百分比。缺点是计算关系复杂。\n- **Flexbox (弹性盒布局)**：现代布局的首选方案。通过 `flex-wrap: wrap` 实现自动换行，适用于局部组件的排列与对齐。\n- **Grid (网格布局)**：二维布局利器。相比 Flex 的轴线布局，Grid 能同时控制行和列，适合复杂页面大框架。"
         },
-        "source_lines": [69, 70, 71, 72, 73, 74, 75]
+        "source_lines": [69, 71, 72, 73, 74]
       },
       {
-        "claim": "百分比布局通过把宽度和内边距设为父元素的百分比来实现流式适配，但高度关系复杂，难以处理高度自适应。",
+        "claim": "现代响应式方案还依赖于 rem 和 vw/vh 单位，通过根元素大小或视口单位实现整体等比缩放，减少对 JS 计算的依赖。",
         "evidence": {
-          "description": "百分比布局是最原始的流式方案。它的优点是适配平滑，缺点是高度依赖父元素，导致高度计算关系复杂。"
+          "description": "现代单位方案包括：\n\n- **rem 适配方案**：rem 相对于 HTML 根元素的 `font-size`，常配合动态计算根字号，将设计稿 px 转换为 rem。\n- **vw/vh 视口单位**：1vw 等于视口宽度的 1%。直接利用 CSS 原生单位，不再依赖 JS 计算。"
         },
-        "source_lines": [69, 70, 71, 72, 73, 74, 75]
+        "source_lines": [78, 79, 80, 81, 82, 83]
       },
       {
-        "claim": "Flexbox 适合局部组件排列，`flex-wrap: wrap` 可以自动换行，`flex-grow` 和 `flex-shrink` 可动态分配剩余空间。",
+        "claim": "高效的响应式工程化做法包括断点组件化、栅格系统、原子化 CSS 和图片响应式，以提升开发效率和页面适配能力。",
         "evidence": {
-          "description": "Flexbox 是现代布局首选，适用于组件内的排列与对齐。通过自动换行和伸缩属性，子元素可以在容器内灵活占用空间。"
+          "description": "组件化与工程化方案包括：\n\n- **断点组件化 (Breakpoint Component)**：在 Vue 中封装 `v-responsive` 指令或响应式 Hook，根据窗口宽度条件渲染不同组件。\n- **栅格系统 (Grid System)**：如 Element Plus 或 Ant Design Vue 中的 `Row/Col` 组件。\n- **原子化 CSS (Tailwind CSS)**：利用类名前缀在 HTML 层快速构建响应式界面。\n- **图片响应式**：使用 `<img>` 的 `srcset` 或 `<picture>` 标签，根据屏幕分辨率加载不同尺寸资源。"
         },
-        "source_lines": [69, 70, 71, 72, 73, 74, 75]
+        "source_lines": [85, 87, 88, 89, 90, 91, 92]
       },
       {
-        "claim": "Grid 是二维布局利器，它可以同时控制行和列，在复杂页面大框架（如后台侧边栏与内容区）时效率更高。",
+        "claim": "实践中应优先移动端、组合使用 Grid/Flex/vw/vh，并根据内容变化而非固定断点来决定响应式方案。",
         "evidence": {
-          "description": "Grid 相比 Flexbox 更适合同时管理行和列的布局。对于大框架结构，Grid 能一次性描述整体网格，简化复杂布局的实现。"
+          "description": "实践思维总结强调：\n\n- **优先移动端**：先确保小屏体验，再逐步增加大屏细节。\n- **组合拳策略**：大框架用 Grid，局部列表用 Flex，等比例缩放用 vw/vh，特殊差异点用 Media Queries。\n- **内容驱动**：不要死守固定断点（如 768px），应根据内容在什么宽度下“变丑”来决定是否添加新的媒体查询。"
         },
-        "source_lines": [69, 70, 71, 72, 73, 74, 75]
-      },
-      {
-        "claim": "现代单位方案包括 rem 和视口单位，rem 依赖根元素字体大小实现等比缩放，vw/vh 直接基于视口尺寸，无需 JS 计算。",
-        "evidence": {
-          "description": "rem 以 HTML 根字体大小为基准，实现整体等比缩放；vw/vh 则直接等于视口宽高的百分比，是无 JS 的响应式方案。"
-        },
-        "source_lines": [76, 77, 78, 79, 80, 81, 82, 83, 84]
-      },
-      {
-        "claim": "组件化与工程化方案通过封装断点组件、栅格系统或 Tailwind 类前缀，结合 `srcset` / `picture` 实现更高效的响应式开发。",
-        "evidence": {
-          "description": "在 Vue 中可以通过断点组件或自定义指令封装响应式逻辑。UI 框架的栅格系统与原子化 CSS 也能快速配置不同尺寸下的布局。图片响应式则使用 `srcset` 或 `picture` 按分辨率加载。"
-        },
-        "source_lines": [85, 86, 87, 88, 89, 90, 91, 92, 93]
-      },
-      {
-        "claim": "响应式选型应优先移动端体验、组合使用 Grid/Flex/vw，并根据内容实际“变丑”时再新增断点，避免死板的固定像素阈值。",
-        "evidence": {
-          "description": "实践思维强调不要死守固定断点，而是根据内容何时出现布局问题来决定是否添加媒体查询。"
-        },
-        "source_lines": [94, 95, 96, 97, 98]
+        "source_lines": [96, 97, 98]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "只依赖固定像素断点（如 768px）来写响应式样式，忽略了内容在不同屏幕下的实际变化。",
-        "把所有响应式计算交给 JavaScript，而不优先利用 Media Queries 和 CSS 原生单位。"
+        "固定使用 768px 等通用断点，而不是根据页面内容与组件设计点来决定何时切换布局。",
+        "依赖 JS 动态计算布局单元，而不是优先使用 rem / vw / vh 这样的 CSS 原生等比例单位。"
       ]
     },
-    "hooks": [],
-    "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
-    }
+    "hooks": [
+      {
+        "type": "prerequisite",
+        "target_note_id": "note_css_box_model",
+        "claim_ref": "note_css_responsive_layout:0",
+        "description": "响应式布局依赖对宽度计算和 `box-sizing` 规则的理解。"
+      }
+    ]
   }
 }

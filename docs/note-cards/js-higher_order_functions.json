@@ -1,53 +1,45 @@
 {
   "note_id": "note_js_higher_order_functions",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "cards": [
     {
       "card_id": "card_0",
       "claim_ref": "note_js_higher_order_functions:0",
-      "type": "qa",
-      "question": "What is currying in JavaScript?",
-      "answer": "柯里化将一个接受多个参数的函数转化为一系列接收单个参数的函数，并利用闭包保存已传递参数。",
-      "explanation": "这种转换能让函数参数复用，并通过分步调用实现延迟执行和更灵活的函数组合。",
-      "source_lines": [
-        51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68,
-        69, 70, 71, 72, 73, 74
-      ]
+      "type": "fill_in_blank",
+      "question": "柯里化如何将多参数函数转化为一系列单参数函数？",
+      "answer": "通过闭包逐步收集参数，当参数数量满足时再执行原函数。",
+      "explanation": "柯里化把多参数函数分解成链式调用，每次调用返回一个收集更多参数的函数。",
+      "source_lines": [51, 53, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_js_higher_order_functions:1",
-      "type": "qa",
-      "question": "How does function composition combine functions?",
-      "answer": "函数组合把多个单一职责函数按从右向左的顺序嵌套执行，前一个函数的输出作为后一个函数的输入。\\n\\n```javascript\\nconst compose =\\n  (...fns) =>\\n  (x) =>\\n    fns.reduceRight((v, f) => f(v), x);\\n```",
-      "explanation": "组合让数据流经过多个纯函数处理，适合把小函数拼成更复杂的转换逻辑。",
-      "source_lines": [
-        75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92,
-        93, 94, 95, 96, 97, 98, 99
-      ]
+      "type": "fill_in_blank",
+      "question": "函数组合的执行顺序是怎样的？",
+      "answer": "函数组合从右向左执行，前一个函数的输出作为后一个函数的输入。",
+      "explanation": "Compose 将多个小函数嵌套起来，最终形成一个从右到左的数据处理链。",
+      "source_lines": [75, 77, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_js_higher_order_functions:2",
-      "type": "qa",
-      "question": "What is piping and how does it differ from composition?",
-      "answer": "管道把多个函数按从左向右的顺序连接，前一个函数的输出作为下一个函数的输入。相比组合，管道更符合线性思维方式。\\n\\n```javascript\\nconst pipe =\\n  (...fns) =>\\n  (x) =>\\n    fns.reduce((v, f) => f(v), x);\\n```",
-      "explanation": "管道强调数据流向，与人类阅读顺序一致，适合描述多步转换过程。",
-      "source_lines": [
-        100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112
-      ]
+      "type": "fill_in_blank",
+      "question": "管道函数的执行顺序与组合函数有何不同？",
+      "answer": "管道函数按从左到右的顺序执行，适合线性数据处理流程。",
+      "explanation": "Pipe 将函数按顺序串联，输出结果依次传给下一个函数，符合直线式思维。",
+      "source_lines": [100, 106, 107, 108, 109, 110, 111, 112]
     },
     {
       "card_id": "card_3",
       "claim_ref": "note_js_higher_order_functions:3",
       "type": "qa",
-      "question": "Why are higher-order functions useful in Vue development?",
-      "answer": "在 Vue 场景中，函数式编程技巧可以把逻辑拆成可组合的小函数，让数据处理链更声明式，提升代码可读性和复用性。",
-      "explanation": "这种方式有助于把组件行为抽象为可复用单元，减少嵌套和状态耦合。",
-      "source_lines": [118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
+      "question": "柯里化、组合和管道分别适合什么场景？",
+      "answer": "柯里化适合参数复用，组合适合嵌套逻辑，管道适合线性数据处理。",
+      "explanation": "它们各有侧重：柯里化处理参数预设，组合提高声明式表达，管道让数据流更直观。",
+      "source_lines": [114, 115, 116, 117]
     }
   ]
 }

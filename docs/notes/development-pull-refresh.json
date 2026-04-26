@@ -1,62 +1,63 @@
 {
   "id": "note_development_pull_refresh",
-  "title": "上下拉加载",
+  "title": "上拉加载与下拉刷新",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "development"
   },
   "source": {
     "input_path": "docs/raw/development.md",
-    "line_range": [219, 295]
+    "line_range": [226, 286]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "下拉刷新依赖 touchstart、touchmove 和 touchend 事件，在页面顶部检测下拉位移，超过阈值后进入刷新状态，否则回弹至初始位置。",
+        "claim": "下拉刷新依赖触摸事件和位移计算，只在页面顶部时监听 touchmove，并在释放后根据阈值决定是否刷新。",
         "evidence": {
-          "description": "实现下拉刷新时，需要记录初始触摸位置，计算下拉距离，并且只有在 scrollTop 为 0 时才触发刷新逻辑。超过设定阈值后进入刷新，否则回弹。"
+          "description": "下拉刷新 (Pull-to-Refresh) 主要依赖于对触摸事件（Touch Events）的监听与位移计算。\n\n- 监听 touchstart：记录初始触摸位置的纵坐标。\n- 监听 touchmove：计算当前手指位置与初始位置的差值。当差值大于 0 时，通过 CSS 的 transform: translateY() 改变容器位置。同时需要通过条件判断（如 scrollTop === 0）确保只有在页面顶部时才触发。\n- 监听 touchend：判断下拉位移是否超过设定的阈值。若超过则进入“刷新中”状态，重置数据并调用接口；若未超过则回弹至初始位置。"
+        },
+        "source_lines": [230, 233, 234, 235]
+      },
+      {
+        "claim": "上拉加载通过判断滚动容器是否接近底部触发，现代方案推荐用 Intersection Observer 监听底部哨兵元素。",
+        "evidence": {
+          "description": "上拉加载 (Infinite Scroll) 核心在于监听滚动条位置，判断是否触达容器底部。\n\n- 判断条件：scrollTop + clientHeight >= scrollHeight - threshold。\n- 现代方案：推荐使用 Intersection Observer API。通过监听列表底部一个“哨兵”元素（Loading 占位符）是否进入可视区域，来自动触发加载函数。"
+        },
+        "source_lines": [245, 246, 247, 248, 251]
+      },
+      {
+        "claim": "在 Vue 3 中，常用 Intersection Observer 监听底部触发加载，并且需要在 mounted 后开始观察哨兵元素。",
+        "evidence": {
+          "description": "核心代码示例 (Vue 3 逻辑)：\n\n```javascript\nconst observer = new IntersectionObserver(\n  (entries) => {\n    if (entries[0].isIntersecting && !loading.value && hasMore.value) {\n      loadMoreData();\n    }\n  },\n  { threshold: 0.5 },\n);\n\nonMounted(() => {\n  observer.observe(loadMoreTrigger.value);\n});\n```"
         },
         "source_lines": [
-          220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232
+          256, 257, 258, 259, 260, 261, 262, 263, 267, 268, 269, 270
         ]
       },
       {
-        "claim": "上拉加载通过监听滚动容器位置判断是否接近底部，条件通常为 `scrollTop + clientHeight >= scrollHeight - threshold`，也可用 Intersection Observer 监听底部哨兵元素。",
+        "claim": "上拉加载和下拉刷新需要明确 loading、finished、error、pulling 四个状态，避免重复触发、无限加载或错误后无恢复机制。",
         "evidence": {
-          "description": "上拉加载核心判断是否到达容器底部。推荐使用哨兵元素加 Intersection Observer 方式，比直接监听 scroll 事件性能更好。"
+          "description": "为保证逻辑严密，必须严格控制以下四个状态：\n\n- Loading（加载中）：请求发送中，此时应屏蔽重复的上拉或下拉操作。\n- Finished（已完结）：后端返回数据为空或达到总页数，此时停止触发上拉逻辑，并显示“没有更多了”。\n- Error（错误）：请求失败时，需提供点击重新加载的机制。\n- Pulling（下拉程度）：根据位移量实时更新 UI（如：下拉刷新 -> 释放立即刷新 -> 刷新中）。"
         },
-        "source_lines": [
-          233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245
-        ]
+        "source_lines": [276, 277, 278, 279]
       },
       {
-        "claim": "必须维护 loading、finished、error 和 pulling 四个状态，避免重复触发请求并为用户提供重试或无更多数据的明确反馈。",
+        "claim": "性能优化包括对 scroll 监听节流、结合虚拟列表渲染大数据、以及在离线时给出明确提示。",
         "evidence": {
-          "description": "上下拉加载应严格控制状态，防止重复触发。加载中、完成、错误和下拉过程都应由状态机管理，并在 UI 上给出明确提示。"
+          "description": "性能与体验优化：\n\n- 节流控制：如果使用 scroll 监听，必须配合 throttle 函数，减少计算频率。\n- 虚拟列表：如果加载的数据量过大（如超过 500 条），应结合虚拟滚动技术，只渲染可视区节点，防止内存占用过高导致页面闪退。\n- 离线提示：在网络断开时，下拉操作应给出明确的 Toast 提示，而不是让用户无限制等待。"
         },
-        "source_lines": [246, 247, 248, 249, 250, 251, 252, 253]
-      },
-      {
-        "claim": "性能优化应结合节流、虚拟列表和离线提示，避免滚动事件过于频繁或数据量过大时出现卡顿。",
-        "evidence": {
-          "description": "如果使用 scroll 监听，必须节流；大数据量场景宜结合虚拟滚动；网络断开时应给出离线提示，而不是无限等待加载。"
-        },
-        "source_lines": [
-          254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267,
-          268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281,
-          282, 283, 284, 285, 286, 287, 288, 289, 290, 291, 292, 293, 294, 295
-        ]
+        "source_lines": [283, 284, 285]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把上拉加载只靠 `scrollTop + clientHeight === scrollHeight` 判断，容易在弹性滚动或布局变化时误判。",
-        "在下拉刷新过程中不锁定状态，导致用户快速重复操作触发重复请求。"
+        "没有设置 threshold 即触底加载，导致上拉立即触发且体验突兀。",
+        "请求失败后不显示错误状态，用户无法知道何时重试。"
       ]
     },
     "hooks": [],
     "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
+      "no_hook_reason": "已执行 Hooks Pass，但当前未找到高置信度跨笔记关系。"
     }
   }
 }

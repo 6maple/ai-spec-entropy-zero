@@ -1,7 +1,7 @@
 {
   "note_id": "note_js_memoization",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "javascript"
   },
   "cards": [
@@ -9,31 +9,28 @@
       "card_id": "card_0",
       "claim_ref": "note_js_memoization:0",
       "type": "qa",
-      "question": "What does function memoization store to speed up repeated calls?",
-      "answer": "函数缓存把函数输入作为 key、执行结果作为 value 存储在闭包内。相同参数的后续调用直接返回缓存值，而不重新执行复杂逻辑。",
-      "explanation": "这种空间换时间的优化适合纯函数。它能减少重复计算，但会引入额外内存开销。",
-      "source_lines": [14, 15, 16, 17]
+      "question": "函数缓存的核心思想是什么？",
+      "answer": "将函数输入作为键、输出作为值缓存下来，下一次使用相同参数调用时直接返回缓存结果，避免重复计算。",
+      "explanation": "函数缓存通过牺牲内存换取执行速度，适用于纯函数且参数可作为缓存键的场景。",
+      "source_lines": [16]
     },
     {
       "card_id": "card_1",
       "claim_ref": "note_js_memoization:1",
-      "type": "qa",
-      "question": "How is a generic memoize function usually implemented in JavaScript?",
-      "answer": "通用 memoize 函数通常用 Map 存储缓存，并把参数通过 `JSON.stringify` 序列化为唯一 key。若命中缓存，则返回存储结果，否则执行原函数并写入缓存。\\n\\n```javascript\\nfunction memoize(fn) {\\n  const cache = new Map();\\n  return function (...args) {\\n    const key = JSON.stringify(args);\\n    if (cache.has(key)) {\\n      return cache.get(key);\\n    }\\n    const result = fn.apply(this, args);\\n    cache.set(key, result);\\n    return result;\\n  };\\n}\\n```",
-      "explanation": "这是一种简单实现，适合参数可序列化的纯函数。对于复杂参数或大量缓存，需注意序列化成本和内存占用。",
-      "source_lines": [
-        18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
-        36
-      ]
+      "type": "fill_in_blank",
+      "question": "在通用 memoize 实现中，通常使用什么结构存储缓存？",
+      "answer": "使用 Map 存储缓存，并通过 JSON.stringify 将参数序列化为唯一键。",
+      "explanation": "Map 支持更多类型键，JSON.stringify 可以把函数参数组合为唯一字符串，用于缓存命中判断。",
+      "source_lines": [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35]
     },
     {
       "card_id": "card_2",
       "claim_ref": "note_js_memoization:2",
       "type": "qa",
-      "question": "What conditions make memoization appropriate or inappropriate?",
-      "answer": "函数缓存适用于纯函数，否则副作用会导致不可预测行为。参数多样性极高时还应考虑内存管理，比如使用 LRU 策略或限制缓存大小，以防缓存对象无限增长。",
-      "explanation": "合适的缓存对象必须是可重复计算且无副作用的值，内存边界也必须被控制，否则缓存会成为新的性能问题。",
-      "source_lines": [43, 44, 45, 46, 47, 48]
+      "question": "Vue 场景下，哪些案例最适合使用缓存策略？",
+      "answer": "计算属性、昂贵递归计算和参数相同的 API 请求都适合使用缓存策略。",
+      "explanation": "这些场景执行成本高且结果可复用，缓存能显著减少重复计算或请求次数。",
+      "source_lines": [37, 38, 39, 40, 41, 42]
     }
   ]
 }

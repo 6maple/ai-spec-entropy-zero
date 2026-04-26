@@ -1,61 +1,58 @@
 {
   "id": "note_css_bfc",
-  "title": "BFC",
+  "title": "CSS BFC 原理与应用",
   "metadata": {
-    "created_at": "2026-04-25",
+    "created_at": "2026-04-26",
     "domain": "css"
   },
   "source": {
     "input_path": "docs/raw/css.md",
-    "line_range": [34, 66]
+    "line_range": [36, 66]
   },
   "content": {
     "core_claims": [
       {
-        "claim": "BFC 是一个独立的布局容器，其内部子元素的布局不会影响外部，外部元素也不会影响其内部。",
+        "claim": "BFC 是一个独立的布局环境，内部元素的布局不会影响外部，外部元素也不会干扰 BFC 内部。",
         "evidence": {
-          "description": "BFC（块格式化上下文）可以理解为一个隔离的布局环境，内部元素的排列和尺寸计算与外部文档流相互独立。"
+          "description": "BFC 是 Web 页面的 CSS 渲染控制蓝图中的一个环境。可以将它理解为一个独立的容器，容器内部的子元素布局不会影响到外部，外部元素也不会影响到 BFC 内部。"
         },
-        "source_lines": [36, 37, 38, 39]
+        "source_lines": [38]
       },
       {
-        "claim": "BFC 可以由根元素、浮动元素、绝对或固定定位、inline-block/flex/grid 等显示模式，或者 `overflow` 不为 `visible` 的元素触发。",
+        "claim": "常见触发 BFC 的条件包括根元素、浮动元素、绝对/固定定位、inline-block/flex/grid/table-cell、以及 overflow 不为 visible 的元素。",
         "evidence": {
-          "description": "触发 BFC 的条件包括：\n\n- **根元素**：`<html>` 默认是一个 BFC。\n- **浮动元素**：`float` 值不为 `none`。\n- **绝对/固定定位**：`position: absolute` 或 `fixed`。\n- **特定显示模式**：`display: inline-block`、`flex`、`grid`、`table-cell` 等。\n- **overflow 非 visible**：`overflow: hidden`、`auto` 或 `scroll`。"
+          "description": "在实际开发中，最常用的触发方式包括：\n\n- **根元素**：即 `<html>`。\n- **浮动元素**：`float` 值不为 `none`。\n- **定位元素**：`position` 值为 `absolute` 或 `fixed`。\n- **显示模式**：`display` 值为 `inline-block`、`flex`、`grid`、`table-cell` 等。\n- **溢出处理**：`overflow` 值不为 `visible`（如 `hidden`、`auto`、`scroll`）。"
         },
-        "source_lines": [40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+        "source_lines": [42, 44, 45, 46, 47, 48]
       },
       {
-        "claim": "在 BFC 内部，子元素会垂直排列，相邻上下 margin 会发生重叠，且每个元素的左外边距会与包含块的左边界接触。",
+        "claim": "BFC 内部会垂直排列子元素、允许相邻 margin 重叠、左外边距与包含块左边界贴合，并且浮动元素参与父容器高度计算。",
         "evidence": {
-          "description": "BFC 的渲染规则包括垂直排列元素、相邻上下 margin 重叠，以及子元素左外边距与包含块左边界直接相接触的布局行为。"
+          "description": "BFC 渲染规则包括：\n\n- **垂直排列**：内部的 Box 会在垂直方向一个接一个地放置。\n- **外边距重叠**：属于同一个 BFC 的两个相邻 Box 的上下 `margin` 会发生重叠。\n- **空间占位**：每个元素的左外边距与包含块的左边界相接触（即使存在浮动）。\n- **独立隔离**：BFC 的区域不会与 `float` box 重叠。\n- **高度计算**：计算 BFC 的高度时，浮动元素也参与计算。"
         },
-        "source_lines": [50, 51, 52, 53]
+        "source_lines": [52, 53, 54, 55, 56]
       },
       {
-        "claim": "BFC 区域不会与 float box 重叠，且在计算自身高度时会包含浮动元素，从而可以用来清除浮动并避免父容器高度塌陷。",
+        "claim": "实战中常用 BFC 来避免 margin 重叠、清除内部浮动并实现与 float 元素隔离的布局效果。",
         "evidence": {
-          "description": "BFC 具有独立隔离性，不会与浮动元素重叠，并且其高度计算会纳入浮动子元素，这使得通过触发 BFC 可以解决浮动导致的高度塌陷问题。"
+          "description": "BFC 的实际应用场景包括：\n\n- **防止外边距重叠（Margin Collapse）**：当上下相邻元素 `margin` 合并导致布局异常时，可以将其中一个元素包裹在新的 BFC 容器中。\n- **清除内部浮动（解决高度塌陷）**：父元素设置 `overflow: hidden` 触发 BFC，使其在计算高度时包含浮动的子元素，从而撑开父容器，替代传统的 `clearfix` 方案。\n- **实现自适应两栏布局**：左侧元素 `float: left`，右侧主区域通过触发 BFC（如 `overflow: hidden`），利用“BFC 区域不与 float box 重叠”的规则，实现右侧宽度根据剩余空间自适应，且不会环绕到浮动元素下方。"
         },
-        "source_lines": [54, 55, 56, 57]
-      },
-      {
-        "claim": "在实际开发中，触发 BFC 常用于防止外边距重叠、清除内部浮动，以及实现右侧主区域不会环绕左侧浮动元素的两栏自适应布局。",
-        "evidence": {
-          "description": "BFC 的实际应用场景包括：防止 margin 合并导致布局异常、使父元素包含浮动子元素以避免高度塌陷，以及在浮动布局中保持主区域不被环绕。"
-        },
-        "source_lines": [58, 59, 60, 61, 62, 63, 64, 65, 66]
+        "source_lines": [60, 61, 62, 63, 64, 65]
       }
     ],
     "refinement": {
       "anti_patterns": [
-        "把 `overflow: hidden` 仅当成内容裁剪手段，而忽略它也会触发 BFC 并改变布局。",
-        "仅依赖传统 clearfix 样式，而不理解导致父容器撑高的核心机制是 BFC 的高度计算。"
+        "误以为 BFC 只用于清除浮动，而忽略了它还可以解决外边距重叠和浮动元素与普通流元素的隔离问题。",
+        "在没有触发 BFC 的容器上使用 `overflow: hidden` 来尝试修复布局，但忽略了这种方式会裁切溢出内容。"
       ]
     },
-    "hooks": [],
-    "hooks_meta": {
-      "no_hook_reason": "Hooks will be generated in the Hooks Pass after docs/index.json is updated."
-    }
+    "hooks": [
+      {
+        "type": "supplement",
+        "target_note_id": "note_css_box_model",
+        "claim_ref": "note_css_bfc:0",
+        "description": "BFC 的布局行为与盒模型中 margin/collapsing 和定位规则密切相关。"
+      }
+    ]
   }
 }
