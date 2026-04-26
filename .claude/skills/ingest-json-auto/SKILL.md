@@ -61,7 +61,7 @@ Do not use this skill for UI tasks, app refactors, or unrelated data pipelines.
 
 ## Workflow
 
-1. **Read [Entropy Reduction Rules](./references/entropy-reduction.md) and [Output Schemas](./references/output-schemas.md) in full before this step.** Run `python scripts/ingest/parse_source.py <source>` to get `parse` (section_ranges, code_fence_ranges — no line content). Use `parse` for section boundaries and code-fence checks. Section content is fetched per-section via `get_section.py` in Step 4.
+1. **Read [Entropy Reduction Rules](./references/entropy-reduction.md) and [Output Schemas](./references/output-schemas.md) in full before this step.** Run `python ./scripts/parse_source.py <source>` to get `parse` (section_ranges, code_fence_ranges — no line content). Use `parse` for section boundaries and code-fence checks. Section content is fetched per-section via `get_section.py` in Step 4.
 2. Deconstruct into atomic concepts with traceable line ranges.
 3. Split into `1..N` notes by topic cohesion, following the partitioning decision table in entropy-reduction.md.
 4. Build note `core_claims` and `anti_patterns` per entropy-reduction.md procedure. Set `hooks: []` as placeholder for all notes — hooks are resolved after writing.
@@ -69,11 +69,11 @@ Do not use this skill for UI tasks, app refactors, or unrelated data pipelines.
 6. Run quality gates (Gates 1–4, 6); rerun only failed stage.
 7. **Write note and card files using `create_file`.** Write all note files first, then all card files. Then run:
    ```powershell
-   python scripts/ingest/update_index.py --source <source> --notes <note_paths> --cards <card_paths>
+   python ./scripts/update_index.py --source <source> --notes <note_paths> --cards <card_paths>
    ```
 8. **Hooks Pass.** After index is updated, execute the Hooks Pass in entropy-reduction.md: scan cross-note relationships, then for each note run:
    ```powershell
-   '<hooks_json>' | python scripts/ingest/update_note_hooks.py docs/notes/<slug>.json
+   '<hooks_json>' | python ./scripts/update_note_hooks.py docs/notes/<slug>.json
    ```
 9. **Clean up.** After all outputs are verified, scan the workspace for any files created during this run that are NOT in `docs/notes/`, `docs/note-cards/`, or `docs/index.json`. Delete them. Intermediate files left in the workspace — temp JSON, draft files, scratch outputs — will confuse users into thinking they are part of the knowledge base.
 
@@ -136,13 +136,13 @@ Before saving outputs, verify all items:
 
 **Mechanical file operations**: use the provided Python scripts. Do not implement these manually:
 
-| Operation         | Script                                | When                               |
-| ----------------- | ------------------------------------- | ---------------------------------- |
-| Source parsing    | `scripts/ingest/parse_source.py`      | Workflow Step 1                    |
-| Section content   | `scripts/ingest/get_section.py`       | Workflow Step 4 (once per section) |
-| Anti-pattern scan | `scripts/ingest/scan_antipatterns.py` | Workflow Step 4 (once per source)  |
-| Index update      | `scripts/ingest/update_index.py`      | Workflow Step 7 (after write)      |
-| Hooks patch       | `scripts/ingest/update_note_hooks.py` | Workflow Step 8                    |
+| Operation         | Script                           | When                               |
+| ----------------- | -------------------------------- | ---------------------------------- |
+| Source parsing    | `./scripts/parse_source.py`      | Workflow Step 1                    |
+| Section content   | `./scripts/get_section.py`       | Workflow Step 4 (once per section) |
+| Anti-pattern scan | `./scripts/scan_antipatterns.py` | Workflow Step 4 (once per source)  |
+| Index update      | `./scripts/update_index.py`      | Workflow Step 7 (after write)      |
+| Hooks patch       | `./scripts/update_note_hooks.py` | Workflow Step 8                    |
 
 All scripts run from project root. Do not create additional scripts, temp files, or intermediate files. Do not modify unrelated files.
 

@@ -3,6 +3,7 @@
 1. 提取端(skill): 
 2. 展示端(codes): 
 
+用 openspec
 
 你需要通过 playwright 工具打开 /notes/js-tail_recursion 路径去分析页面在UI细节上存在哪些问题，并提供3种修改方案供我选择。
 
