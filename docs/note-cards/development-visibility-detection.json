@@ -10,7 +10,7 @@
       "claim_ref": "note_development_visibility_detection:0",
       "type": "qa",
       "question": "Why is Intersection Observer recommended for visibility detection?",
-      "answer": "Intersection Observer 是现代推荐方案，因为它通过异步回调检测元素与视口或祖先容器的交叉状态，不依赖 scroll 事件，且可通过 threshold 调整触发比例。\\n\\n```javascript\\nconst observer = new IntersectionObserver(\\n  (entries) => {\\n    entries.forEach((entry) => {\\n      if (entry.isIntersecting) {\\n        console.log('Element is visible');\\n      }\\n    });\\n  },\\n  { threshold: 0.1 },\\n);\\nobserver.observe(targetElement);\\n```",
+      "answer": "Intersection Observer 是现代推荐方案，因为它通过异步回调检测元素与视口或祖先容器的交叉状态，不依赖 scroll 事件，且可通过 threshold 调整触发比例。\n\n```javascript\nconst observer = new IntersectionObserver(\n  (entries) => {\n    entries.forEach((entry) => {\n      if (entry.isIntersecting) {\n        console.log('Element is visible');\n      }\n    });\n  },\n  { threshold: 0.1 },\n);\nobserver.observe(targetElement);\n```",
       "explanation": "异步回调避免了 scroll 事件的高频执行，使可见性检测更高效且更适合长列表或懒加载场景。",
       "source_lines": [
         116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,

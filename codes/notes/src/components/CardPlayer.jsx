@@ -86,9 +86,12 @@ export default function CardPlayer({ cardsData, noteData }) {
                   className='text-sm font-bold prose prose-sm dark:prose-invert max-w-none'
                 />
               </div>
-              <p className='text-[10px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed italic'>
-                {currentCard.explanation}
-              </p>
+              <div className='text-[10px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed italic'>
+                <MarkdownContent
+                  content={currentCard.explanation || ''}
+                  className='prose prose-sm dark:prose-invert max-w-none'
+                />
+              </div>
 
               {/* 关联语义节点 */}
               {noteData &&

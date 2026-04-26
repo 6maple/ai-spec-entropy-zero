@@ -20,6 +20,52 @@ The following string fields in all output files are **markdown strings** and wil
 
 ---
 
+## Language Policy
+
+**Rule:** All generated text must use the same language as the source document. Do not mix languages within a field.
+
+### Detection
+
+Before generating any output, determine the source language from the raw file content:
+
+- If the source contains predominantly Chinese (CJK) characters in its prose → **source language is Chinese**
+- If the source is predominantly English prose → **source language is English**
+- Mixed sources: use the language of the majority of prose sentences (not headings or code)
+
+Store this as `source_lang` and apply it consistently to all output fields for this run.
+
+### Application by Field
+
+| Field                                            | Rule                                                                                                              |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| `claim`                                          | Source language only                                                                                              |
+| `evidence.description` (prose portions)          | Source language only                                                                                              |
+| `anti_patterns[]`                                | Source language only                                                                                              |
+| `hooks[].description`                            | Source language only                                                                                              |
+| `question`                                       | Source language only — **this is the most commonly violated field**                                               |
+| `answer` (prose portions)                        | Source language only                                                                                              |
+| `explanation`                                    | Source language only                                                                                              |
+| Technical identifiers, API names, CSS properties | Always in their natural technical form (e.g., `IntersectionObserver`, `box-sizing`) regardless of source language |
+| Code blocks                                      | Always in the programming language of the source code — never translated                                          |
+
+### Common Violation
+
+The most frequent mistake: source is Chinese, but `question` is written in English because the skill examples use English question patterns.
+
+**❌ Wrong — question in English, source is Chinese:**
+
+```json
+{ "question": "What is the role of `box-sizing` in CSS layout?" }
+```
+
+**✅ Correct — question in Chinese, matching source language:**
+
+```json
+{ "question": "`box-sizing` 如何影响 CSS 元素的宽度计算方式？" }
+```
+
+---
+
 ## JSON String Escaping Rules
 
 These rules govern backslash usage inside JSON string values. Applying them incorrectly is a silent failure — the JSON remains valid but renders wrong.

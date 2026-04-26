@@ -61,21 +61,20 @@ Do not use this skill for UI tasks, app refactors, or unrelated data pipelines.
 
 ## Workflow
 
-1. **Read [Entropy Reduction Rules](./references/entropy-reduction.md) and [Output Schemas](./references/output-schemas.md) in full before this step.** Run `python ./scripts/parse_source.py <source>` to get `parse` (section_ranges, code_fence_ranges — no line content). Use `parse` for section boundaries and code-fence checks. Section content is fetched per-section via `get_section.py` in Step 4.
+1. **Read [Entropy Reduction Rules](./references/entropy-reduction.md) and [Output Schemas](./references/output-schemas.md) in full before this step.** Run `python ./scripts/parse_source.py <source>` to get `parse` (section_ranges, code_fence_ranges — no line content). Use `parse` for section boundaries and code-fence checks. Section content is fetched per-section via `get_section.py` in Step 4. **Detect source language now** (see Language Policy in output-schemas.md) — store as `source_lang` and apply to all generated text fields.
 2. Deconstruct into atomic concepts with traceable line ranges.
 3. Split into `1..N` notes by topic cohesion, following the partitioning decision table in entropy-reduction.md.
 4. Build note `core_claims` and `anti_patterns` per entropy-reduction.md procedure. Set `hooks: []` as placeholder for all notes — hooks are resolved after writing.
 5. **Read [Card Generation Rules](./references/card-generation.md) in full before this step.** Build cards from `core_claims` with strict 1:1 mapping, following Question Rules exactly.
-6. Run quality gates (Gates 1–4, 6); rerun only failed stage.
-7. **Write note and card files using `create_file`.** Write all note files first, then all card files. Then run:
+6. **Write note and card files using `create_file`.** Write all note files first, then all card files. Then run:
    ```powershell
    python ./scripts/update_index.py --source <source> --notes <note_paths> --cards <card_paths>
    ```
-8. **Hooks Pass.** After index is updated, execute the Hooks Pass in entropy-reduction.md: scan cross-note relationships, then for each note run:
+7. **Hooks Pass.** After index is updated, execute the Hooks Pass in entropy-reduction.md: scan cross-note relationships, then for each note run:
    ```powershell
    '<hooks_json>' | python ./scripts/update_note_hooks.py docs/notes/<slug>.json
    ```
-9. **Clean up.** After all outputs are verified, scan the workspace for any files created during this run that are NOT in `docs/notes/`, `docs/note-cards/`, or `docs/index.json`. Delete them. Intermediate files left in the workspace — temp JSON, draft files, scratch outputs — will confuse users into thinking they are part of the knowledge base.
+8. **Clean up.** After all outputs are verified, scan the workspace for any files created during this run that are NOT in `docs/notes/`, `docs/note-cards/`, or `docs/index.json`. Delete them. Intermediate files left in the workspace — temp JSON, draft files, scratch outputs — will confuse users into thinking they are part of the knowledge base.
 
 ## Input Contract
 
@@ -110,12 +109,13 @@ Before saving outputs, verify all items:
 - Card type was determined by mechanical check (contrast markers → `error_correction`; code-block source lines → `fill_in_blank`; otherwise `qa`).
 - `anti_patterns` was generated after an active source scan for signal words — not left empty by default.
 - `hooks` was generated in the Hooks Pass (after writing files), scanning `docs/index.json` including this run's notes.
-- `hooks` were populated in the Hooks Pass (Step 8), not during note generation. Note files were rewritten after the Hooks Pass if hooks were found.
+- `hooks` were populated in the Hooks Pass (Step 7), not during note generation. Note files were rewritten after the Hooks Pass if hooks were found.
 - If `hooks` is empty, `content.hooks_meta.no_hook_reason` is present and non-empty.
 - No fixed target counts are used for `anti_patterns`, `hooks`, or cards.
 - Every note has `metadata.created_at` and `metadata.domain`.
 - Every card file has `metadata` matching its corresponding note.
 - Every card `question` was written from `topic` only; key content words from `assertion` do not appear in `question`.
+- All generated text fields (`claim`, `evidence.description`, `question`, `answer`, `explanation`, `anti_patterns`) use the same language as the source document. Technical identifiers and code blocks are exempt.
 - `docs/index.json` was updated after writing all output files.
 - Every markdown text field passes the Typography Layout Self-Check in output-schemas.md: no wall-of-text paragraphs (max 3 sentences before `\n\n`), no semicolon-chained parallel items, code blocks flanked by `\n\n`, `claim` field contains no line breaks or lists.
 - No temp, draft, or intermediate files remain in the workspace. The only new files from this run are in `docs/notes/`, `docs/note-cards/`, and `docs/index.json`.
@@ -128,7 +128,6 @@ Before saving outputs, verify all items:
 - If deconstruction coverage fails: rerun deconstruction once for missing sections only.
 - If card mapping fails: regenerate cards only, keep notes unchanged.
 - If conflict detected (Gate 5): apply [Conflict Policy](./references/conflict-policy.md) immediately — do not retry. Stop if no action is applied.
-- If any other gate still fails after one targeted retry: stop and report exact failing gate and offending field per [Quality Gates](./references/quality-gates.md).
 
 ## Output Discipline
 

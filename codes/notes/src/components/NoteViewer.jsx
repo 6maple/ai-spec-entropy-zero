@@ -5,6 +5,7 @@ import {
   Link,
   BrainCircuit,
   CheckCircle2,
+  Info,
 } from 'lucide-react';
 import HookItem from './HookItem';
 import MarkdownContent from './MarkdownContent';
@@ -18,10 +19,10 @@ export default function NoteViewer({ noteData, cardsData }) {
         {evidenceList.map((ev, index) => (
           <div
             key={index}
-            className='p-3 rounded-lg border text-[11px] leading-relaxed bg-slate-50 dark:bg-slate-900/10 border-slate-200 dark:border-slate-700'>
+            className='p-4 rounded-lg border text-sm leading-7 bg-slate-50 dark:bg-slate-900/10 border-slate-200 dark:border-slate-700'>
             <MarkdownContent
               content={ev.description}
-              className='prose prose-sm dark:prose-invert max-w-none opacity-90'
+              className='prose prose-base dark:prose-invert max-w-none opacity-90'
             />
           </div>
         ))}
@@ -43,11 +44,11 @@ export default function NoteViewer({ noteData, cardsData }) {
           </div>
 
           {/* 核心逻辑拆解 - 移出到卡片外部，与其同级 */}
-          <div className='space-y-4'>
+          <div className='space-y-6'>
             <h3 className='text-xs font-bold uppercase tracking-widest text-[#2B8F80] flex items-center gap-2 ml-2'>
               <Hash size={14} /> 核心逻辑拆解
             </h3>
-            <div className='grid grid-cols-1 gap-4'>
+            <div className='grid grid-cols-1 gap-5'>
               {noteData.content.core_claims.map((item, idx) => (
                 <div
                   key={idx}
@@ -60,7 +61,7 @@ export default function NoteViewer({ noteData, cardsData }) {
                       <div className='mb-2'>
                         <MarkdownContent
                           content={item.claim}
-                          className='text-sm font-bold leading-snug prose prose-sm dark:prose-invert max-w-none'
+                          className='text-base font-semibold leading-snug prose prose-base dark:prose-invert max-w-none'
                         />
                       </div>
                       {renderEvidence(item.evidence)}
@@ -73,11 +74,11 @@ export default function NoteViewer({ noteData, cardsData }) {
 
           {/* 关联复习卡 */}
           {cardsData && cardsData.cards && cardsData.cards.length > 0 && (
-            <div className='space-y-4 border-t border-slate-200 dark:border-[#163033] pt-6'>
-              <h3 className='text-xs font-bold uppercase tracking-widest text-[#5A5FB5] flex items-center gap-2'>
+            <div className='space-y-6 border-t border-slate-200 dark:border-[#163033] pt-6'>
+              <h3 className='text-xs font-bold uppercase tracking-widest text-[#5A5FB5] flex items-center gap-2 ml-2'>
                 <BrainCircuit size={14} /> 关联复习卡 (Q&A 视图)
               </h3>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
+              <div className='grid grid-cols-1 gap-3'>
                 {cardsData.cards.map((card, idx) => (
                   <div
                     key={idx}
@@ -116,7 +117,50 @@ export default function NoteViewer({ noteData, cardsData }) {
         </div>
 
         {/* 右侧：反模式和知识语义图谱 */}
-        <div className='lg:col-span-4 space-y-4'>
+        <div className='lg:col-span-4 space-y-6'>
+          {/* 笔记元数据 */}
+          <div className='bg-slate-50 dark:bg-slate-800/30 border border-slate-200 dark:border-[#163033] p-5 rounded-2xl relative overflow-hidden'>
+            <div className='absolute top-0 left-0 w-1.5 h-full bg-[#2B8F80]'></div>
+            <h4 className='text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2'>
+              <Info size={14} /> 笔记元数据
+            </h4>
+            <div className='space-y-3 text-xs'>
+              {noteData.metadata?.domain && (
+                <div className='flex justify-between items-center opacity-80'>
+                  <span className='font-medium'>所属领域</span>
+                  <span className='px-2 py-0.5 bg-[#2B8F80]/10 text-[#2B8F80] dark:bg-[#2B8F80]/20 dark:text-[#52c1b1] rounded-md font-bold'>
+                    {noteData.metadata.domain}
+                  </span>
+                </div>
+              )}
+              {noteData.metadata?.created_at && (
+                <div className='flex justify-between items-center opacity-80'>
+                  <span className='font-medium'>创建时期</span>
+                  <span className='font-mono'>
+                    {noteData.metadata.created_at}
+                  </span>
+                </div>
+              )}
+              {noteData.source?.input_path && (
+                <div className='flex justify-between items-center opacity-80 pt-3 mt-1 border-t border-slate-200 dark:border-[#163033]'>
+                  <span className='font-medium'>溯源文件</span>
+                  <span className='font-mono text-[10px] bg-slate-200/50 dark:bg-slate-800/50 px-1.5 py-0.5 rounded'>
+                    {noteData.source.input_path.split('/').pop()}
+                  </span>
+                </div>
+              )}
+              {noteData.source?.line_range && (
+                <div className='flex justify-between items-center opacity-80'>
+                  <span className='font-medium'>解析行段</span>
+                  <span className='font-mono text-[10px]'>
+                    L{noteData.source.line_range[0]} - L
+                    {noteData.source.line_range[1]}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* 反模式 */}
           {noteData.content.refinement?.anti_patterns &&
             noteData.content.refinement.anti_patterns.length > 0 && (
@@ -136,7 +180,7 @@ export default function NoteViewer({ noteData, cardsData }) {
 
           {/* 知识语义图谱 (Hooks) */}
           {noteData.content.hooks && noteData.content.hooks.length > 0 && (
-            <div className='space-y-4'>
+            <div className='space-y-6'>
               <h4 className='text-[10px] font-bold text-[#2B8F80] uppercase tracking-widest flex items-center gap-2 ml-2'>
                 <Link size={14} /> 知识语义图谱 (Hooks)
               </h4>

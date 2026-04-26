@@ -1,6 +1,10 @@
 # Quality Gates
 
-Run gates after note and card generation is complete. **Gate 5 (Conflict) runs during the Hooks Pass** — it is triggered only when a `contradiction` hook is produced, not before.
+**Gates 1–4 and 6 are enforced inline during generation** — by the Note-level review (entropy-reduction.md Step 7) and the card Pre-output self-test (card-generation.md Step 4g). They do not require a separate post-generation pass.
+
+**Gate 5 (Conflict) is the only gate that requires explicit action.** It triggers during the Hooks Pass when a `contradiction` hook is produced.
+
+This file is reference documentation for what each gate checks. Consult it when a gate is reported as failing.
 
 ## Gate 1: Traceability
 
