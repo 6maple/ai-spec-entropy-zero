@@ -2,6 +2,18 @@
 
 ## 1. 文档目标与范围
 
+### 1.1 文档定位（单一权威来源）
+
+- **本文档是 Phase 1 产品与实现的唯一权威规格**：范围、模块、API、界面、验收标准以本节及后续章节为准。
+- **开发实施只需遵循本文档 + 仓库内代码约束（见 `projects/entropy-zero/CLAUDE.md`）**，无需再依赖 `工作台/项目文档/project.md` 或其它索引类文档。
+- 历史资料（如 `Entropy Zero 需求-phase-1.md`、`技术实现方案文档.md`）若与本文冲突，**以本文为准**；细节已并入本文者不另维护平行需求。
+
+### 1.2 仓库与代码路径
+
+- 本产品中应用代码位于 monorepo 路径：**`projects/entropy-zero/`**（前端 `frontend/`、后端 `backend/`、数据库脚本 `database/migrations/` 等，与仓库实际目录一致）。
+- 数据库初始化脚本：**`projects/entropy-zero/database/migrations/`**（如 `001_init.sql`，具体文件名以仓库为准）。
+- OpenAPI/Swagger：本地开发时后端 **`http://localhost:8000/docs`**（实现完成后用于对照接口）。
+
 本设计基于 `phase-1` 功能文档与当前项目约束，输出可直接落地的全站级方案，覆盖：
 - 网站应包含的模块与边界
 - 模块内功能点与模块间交互
@@ -14,8 +26,13 @@ Phase 1 明确约束：
 - 必须完成“知识录入 -> 处理 -> 展示 -> 复习”主流程闭环
 - **知识录入仅支持上传 Markdown 文件（`.md`）**：不提供站内 Markdown 文本编辑区、粘贴正文入库、或 JSON 直传正文等替代录入方式；用户须选择本地 `.md` 文件（可配合拖拽到上传区）。
 - 处理链路需可运行、可观察、可重试
-- 暂不实现真实外部 AI API 调用（采用 mock/rule processor）
+- **禁止实现真实外部大模型 HTTP 调用**：不得在代码中编写对 OpenAI / OpenRouter 等供应商的实际请求逻辑；处理链路使用 **规则实现或可替换的占位处理器（非真实 LLM）**，与既有「暂不实现 AI 调用模块真实 API」的项目约束一致。
 - 数据必须入库，支持用户数据隔离（RLS/JWT/`user_id` 约束）
+
+### 1.3 界面语言与国际化（与实现对齐）
+
+- **仅中文用户**：用户可见文案（按钮、校验、Toast、对话框、空状态等）须为**简体中文**；技术标识、日志字段、URL 除外。
+- **须支持 i18n 扩展**（如文案 key、`zh-CN` 资源）；**交付范围仅中文**，不得引入英文语言包作为默认交付物（细则见 `projects/entropy-zero/CLAUDE.md`）。
 
 ---
 
@@ -596,6 +613,23 @@ Phase 1 所有已登录页面共享 **顶部固定导航栏（Sticky TopNav，�
 
 ## 9. 非功能性要求
 
+## 9.0 工具链、包管理与本地命令（必修）
+
+以下约定与仓库实践一致，实现 Phase 1 时应遵守，避免因工具不一致导致无法运行或 CI 失败。
+
+| 层级 | 要求 |
+|------|------|
+| 前端 | **pnpm** 作为包管理器（Node.js **20+**）；依赖安装 `pnpm install`，脚本以 `package.json` 为准 |
+| 后端 | **Python 3.12**，使用 **uv** 管理虚拟环境与依赖（`uv sync` / `uv run …`）；勿与项目约定的其它 Python 版本混用 |
+| 数据库（本地） | **PostgreSQL**（版本以 `CLAUDE.md` / 仓库说明为准，通常 14+）；本地库名、连接串见 **本地** `.env`，**勿提交**密钥 |
+| Redis（本地） | 异步队列开发时使用 **本地 Redis**；生产可用 **Upstash Redis**（环境变量区分） |
+
+**本地启动（示意，路径相对于 `projects/entropy-zero/`）**
+
+- 后端：`cd backend && uv run uvicorn app.main:app --reload --port 8000`
+- 前端：`cd frontend && pnpm dev`
+- 数据库：执行迁移 SQL 初始化 schema（命令以仓库 README / `CLAUDE.md` 为准）
+
 ## 9.1 性能
 - 上传与列表接口 P95 < 500ms（不含大文件上传）
 - 轮询间隔建议 2~5 秒，终态立即停止
@@ -615,6 +649,20 @@ Phase 1 所有已登录页面共享 **顶部固定导航栏（Sticky TopNav，�
 - 关键事件日志：上传、触发、状态转换、失败原因
 - `request_id/task_id/raw_id` 可串联排障
 - 部署前检查：env、RLS、CORS、迁移一致性
+
+## 9.5 部署目标与环境区分
+
+| 环境 | 用途 | 说明 |
+|------|------|------|
+| **生产** | 线上用户 | **Vercel**（前端静态资源 + Serverless Python API 入口）+ **Supabase**（PostgreSQL、Auth 等）；队列/Redis 按项目使用 **Upstash** 等；连接信息仅来自部署平台环境变量，**禁止**在源码中硬编码生产连接串 |
+| **本地开发** | 工程师本机 | 使用**本地 PostgreSQL** 与 **本地 Redis**；`backend/.env`、`frontend/.env` 分别配置 **`DATABASE_URL`、`REDIS_URL`、`VITE_API_BASE_URL`** 等，**不得**将含密钥的 `.env` 提交到版本库 |
+
+实现时须在配置层区分 `development` / `production`（或等价变量），避免本地误连线上或线上误用本地默认地址。
+
+## 9.6 Mock、占位实现与最小影响修改
+
+- **非必要不使用 mock**：与 `projects/entropy-zero/CLAUDE.md` 一致；若必须使用可删除的 mock，须在 **`CLAUDE.md` 的 Mock registry** 中登记路径与清理计划。
+- **功能修改范围**：只改当前需求涉及的模块与函数；修改公共模块时尽量缩小影响面，避免顺带改动无关功能（同上见 `CLAUDE.md`）。
 
 ---
 
@@ -648,4 +696,18 @@ Phase 1 所有已登录页面共享 **顶部固定导航栏（Sticky TopNav，�
 - FSRS 从简化版演进到完整参数模型
 - 增加任务表与运营后台提升可观测性
 
-本规格可作为 Phase 1 的产品、前端、后端、测试统一执行基线。
+## 12. 相对 `project.md` 的覆盖说明（可废弃索引文档）
+
+原 `工作台/项目文档/project.md` 中的要点已吸纳如下，**Phase 1 开发可不再打开 `project.md`**：
+
+| `project.md` 原内容 | 在本文中的位置 |
+|---------------------|----------------|
+| 代码目录 `projects/entropy-zero/` | **§1.2** |
+| 需求/技术文档路径引用 | **§1.1**（权威归一，冲突以本文为准） |
+| Python 用 **uv** | **§9.0** |
+| 前端用 **pnpm** | **§9.0** |
+| **不实现真实 AI API 调用** | **§1** 约束列表 + **§6.4–6.5** 编排与处理器边界 |
+
+---
+
+本规格可作为 Phase 1 的产品、前端、后端、测试统一执行基线；**扩展工程纪律与 Mock 登记表以 `projects/entropy-zero/CLAUDE.md` 为准**。
