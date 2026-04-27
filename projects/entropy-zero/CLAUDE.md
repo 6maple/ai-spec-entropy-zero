@@ -16,6 +16,52 @@ Entropy Zero is a knowledge management system that transforms chaotic notes into
 
 ---
 
+## Important Constraints
+
+These rules are as binding as functional requirements. Review them before changing code.
+
+### 1. UI language (Chinese-only audience)
+
+- The product has **only Chinese users**. All **user-facing** copy must be **Simplified Chinese** by default: labels, placeholders, validation messages, toasts, dialogs, empty states, and similar.
+- Exceptions: technical identifiers, log field names, code symbols, and API paths may follow existing conventions; do **not** ship English as the default user-visible language.
+
+### 2. Internationalization (i18n)
+
+- The codebase **must support i18n** (e.g. message keys, a single source for UI strings; library choice follows project standards).
+- **Current scope: Chinese only**. Maintain **only** a Chinese locale (e.g. `zh-CN`). Do **not** add English (or other non-Chinese) locale bundles as part of routine delivery, and do **not** use English as the default or sole fallback for user-visible text.
+- Adding more languages must be a deliberate, scoped change—not an silent expansion.
+
+### 3. Mocks and placeholders
+
+- **Do not use mocks** (fake data, demo-only paths, dummy dependencies, etc.) unless **strictly necessary**.
+- If a mock **is** required, **register it** in the **Mock / placeholder registry** below with: **path**, **reason**, and **removal plan or target phase** so it can be audited and removed later.
+- Reviews should verify the registry matches the codebase.
+
+#### Mock / placeholder registry (audit & cleanup)
+
+| Location (path) | Reason | Removal plan / notes |
+|-----------------|--------|----------------------|
+| *None yet* | | |
+
+### 4. Fallbacks and pointless defensive code
+
+- **Avoid meaningless fallbacks**, especially when failure **cannot** happen by construction or contract—e.g. swallowing errors with defaults, hiding type mistakes, or masking exceptions that should propagate.
+- Defensive code is appropriate at real boundaries: I/O, network, user input, third-party APIs.
+
+### 5. Environment separation
+
+- **Production**: **Vercel** (static frontend + serverless API) + **Supabase** (PostgreSQL, Auth, etc.); queue/redis per project config (e.g. **Upstash Redis**). Never hardcode production connection strings in source; use deployment env vars.
+- **Local development**: **local PostgreSQL** and **local Redis** (see `.env` below). Keep secrets in local `.env` files; **do not commit** keys or private connection strings.
+- When wiring config, DB clients, CORS, `VITE_API_BASE_URL`, etc., **explicitly distinguish** environments (e.g. `development` vs `production` or equivalent) so local and production behavior never mix or misconnect.
+
+### 6. Scope of change (minimal blast radius)
+
+- Change **only** what the current task requires. Do **not** refactor or touch unrelated modules “while you’re there.”
+- **Examples**: when changing module **A**, do not change module **B**; when changing function **X**, do not change function **Y**—unless changing **Y** is **strictly necessary** for **A**, and that must be stated in the PR or change notes.
+- If a shared module or shared function must change: **minimize surface area**, assess impact on **non-target** callers, and prefer narrow additions (new helpers, split interfaces, backward-compatible behavior) so other features keep working.
+
+---
+
 ## 💻 Development Environment
 
 ### Prerequisites
@@ -387,5 +433,5 @@ When joining the project:
 
 ---
 
-**Last Updated**: 2026-04-26  
+**Last Updated**: 2026-04-27  
 **Status**: Phase 1 Active Development
