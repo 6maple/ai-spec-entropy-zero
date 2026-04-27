@@ -1,13 +1,14 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Shown to AI when creating OpenSpec artifacts (no secrets; paths relative to repo root).
+context: |
+  Phase 1 权威引用（产品冲突时以 spec-design 为准）：
+  - 工作台/项目文档/phase-1/phase-1-propose-01.md
+  - 工作台/项目文档/phase-1/spec-design.md
+  - projects/entropy-zero/CLAUDE.md
+  应用与迁移根目录：projects/entropy-zero/（含 database/migrations/）。
+  OpenSpec 基线能力规格：openspec/changes/phase-1-engineering-baseline/specs/phase-1-baseline/spec.md
+  下游建议变更 id：phase-1-backend-ingest-orchestration、phase-1-frontend-shell-ingest-ui、phase-1-notes-cards-review
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
