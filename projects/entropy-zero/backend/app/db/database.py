@@ -7,6 +7,7 @@ Supports:
 """
 
 import os
+from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -16,7 +17,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-load_dotenv()
+# 加载环境变量：.env.local 优先级高于 .env
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+load_dotenv(Path(__file__).resolve().parents[2] / ".env.local", override=True)
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")

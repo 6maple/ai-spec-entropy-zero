@@ -31,7 +31,8 @@ export const zhCN = {
     title: '上传知识文件',
     subtitle: '仅支持 UTF-8 编码的 Markdown 文件',
     needMd: '请选择 .md 文件',
-    needAuth: '未登录或缺少令牌：请配置 VITE_DEV_ACCESS_TOKEN（开发）或登录后使用',
+    needAuth:
+      '未登录或缺少令牌：请配置 VITE_DEV_ACCESS_TOKEN（开发）或登录后使用',
     dropHint: '将 Markdown 文件拖到此处，或',
     pickFile: '选择文件',
     uploadBtn: '上传',
@@ -57,6 +58,9 @@ export const zhCN = {
     noteCount: '笔记数',
     cardCount: '复习卡数',
     pollStopped: '已停止自动刷新，可手动点击刷新',
+    missingId: '缺少原始知识 ID',
+    backList: '返回原始知识库',
+    loadError: '无法加载原始知识',
   },
   rawStatus: {
     pending: '待处理',

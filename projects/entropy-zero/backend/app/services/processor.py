@@ -25,6 +25,9 @@ class CardPayload(BaseModel):
     point_id: str
     question: str
     answer: str
+    card_type: Literal["qa", "error_correction", "fill_in_blank"] = "qa"
+    explanation: str | None = None
+    claim_ref: str | None = None
 
 
 class ProcessingSummary(BaseModel):

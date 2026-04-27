@@ -8,6 +8,7 @@ import ReviewPage from '@/pages/ReviewPage';
 import UploadPage from '@/pages/UploadPage';
 import LoginPage from '@/pages/LoginPage';
 import RawLibraryPage from '@/pages/RawLibraryPage';
+import RawDetailPage from '@/pages/RawDetailPage';
 import TasksPage from '@/pages/TasksPage';
 import NotesListPage from '@/pages/NotesListPage';
 
@@ -29,6 +30,7 @@ function AppRoutes() {
         <Routes>
           <Route path='/' element={<HomePage />} />
           <Route path='/raw' element={<RawLibraryPage />} />
+          <Route path='/raw/:id' element={<RawDetailPage />} />
           <Route path='/tasks' element={<TasksPage />} />
           <Route path='/notes' element={<NotesListPage />} />
           <Route path='/notes/:id' element={<NoteDetailPage />} />

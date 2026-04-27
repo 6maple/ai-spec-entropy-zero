@@ -136,6 +136,9 @@ class Flashcard(Base):
     point_id = Column(String(100), nullable=False)
     question = Column(Text, nullable=False)
     answer = Column(Text, nullable=False)
+    card_type = Column(String(20), nullable=False, default="qa")
+    explanation = Column(Text, nullable=True)
+    claim_ref = Column(String(100), nullable=True)
     fsrs_state = Column(
         Text, nullable=False, default='{"stability": 0.0, "difficulty": 0.0, "reps": 0}'
     )
@@ -152,6 +155,7 @@ class Flashcard(Base):
         Index("idx_flashcards_note_id", "note_id"),
         Index("idx_flashcards_next_review", "next_review"),
         Index("idx_flashcards_user_next_review", "user_id", "next_review"),
+        Index("idx_flashcards_claim_ref", "claim_ref"),
     )
 
     def get_fsrs_state(self):

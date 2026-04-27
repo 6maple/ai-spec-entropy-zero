@@ -4,3 +4,6 @@ build
 coverage
 
 *.pyc
+
+.env.local
+.env.local.*

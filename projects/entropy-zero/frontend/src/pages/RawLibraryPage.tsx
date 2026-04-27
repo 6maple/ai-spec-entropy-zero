@@ -4,7 +4,11 @@ import rawApi, { type RawListItem, type RawStatus } from '@/lib/api/rawApi';
 import { useI18n } from '@/contexts/I18nContext';
 import { ApiError } from '@/lib/api/client';
 import { isApiEnabled } from '@/lib/api/getAccessToken';
-import { POLL_INTERVAL_MS, POLL_MAX_MS, isRawPendingPoll } from '@/constants/polling';
+import {
+  POLL_INTERVAL_MS,
+  POLL_MAX_MS,
+  isRawPendingPoll,
+} from '@/constants/polling';
 import { clsx } from 'clsx';
 
 function statusClass(s: string) {
@@ -21,7 +25,6 @@ export default function RawLibraryPage() {
   const [statusFilter, setStatusFilter] = useState<'' | RawStatus>('');
   const [keyword, setKeyword] = useState('');
   const [kw, setKw] = useState('');
-  const [selected, setSelected] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
   const [pollTimeout, setPollTimeout] = useState(false);
 
@@ -102,8 +105,9 @@ export default function RawLibraryPage() {
           <select
             className='rounded-lg border border-[#E6ECE6] bg-white px-2 py-1.5 text-sm dark:border-[#2A4144] dark:bg-[#0F1A1A]'
             value={statusFilter}
-            onChange={(e) => setStatusFilter((e.target.value as RawStatus | '') || '')}
-          >
+            onChange={(e) =>
+              setStatusFilter((e.target.value as RawStatus | '') || '')
+            }>
             <option value=''>{t('raw.all')}</option>
             <option value='pending'>{t('rawStatus.pending')}</option>
             <option value='processing'>{t('rawStatus.processing')}</option>
@@ -122,8 +126,7 @@ export default function RawLibraryPage() {
             <button
               type='button'
               className='rounded-lg bg-slate-200 px-2 text-sm dark:bg-[#2A4144]'
-              onClick={() => setKw(keyword)}
-            >
+              onClick={() => setKw(keyword)}>
               {t('common.refresh')}
             </button>
           </div>
@@ -131,12 +134,15 @@ export default function RawLibraryPage() {
         <button
           type='button'
           onClick={() => void load()}
-          className='rounded-lg border border-[#2B8F80] px-3 py-1.5 text-sm text-[#2B8F80]'
-        >
+          className='rounded-lg border border-[#2B8F80] px-3 py-1.5 text-sm text-[#2B8F80]'>
           {t('common.refresh')}
         </button>
       </div>
-      {pollTimeout && <p className='mt-2 text-sm text-amber-800 dark:text-amber-200'>{t('raw.pollStopped')}</p>}
+      {pollTimeout && (
+        <p className='mt-2 text-sm text-amber-800 dark:text-amber-200'>
+          {t('raw.pollStopped')}
+        </p>
+      )}
       {err && <p className='mt-2 text-sm text-rose-600'>{err}</p>}
       {loading && (
         <div className='mt-8 flex justify-center' aria-label='loading'>
@@ -160,27 +166,31 @@ export default function RawLibraryPage() {
             {rows.map((r) => (
               <tr
                 key={r.raw_id}
-                className='border-b border-slate-100 last:border-0 dark:border-[#1a2c2c]'
-              >
+                className='border-b border-slate-100 last:border-0 dark:border-[#1a2c2c]'>
                 <td className='p-2 font-mono text-xs'>{r.file_name}</td>
-                <td className={clsx('p-2', statusClass(r.status))}>{t('rawStatus.' + r.status)}</td>
-                <td className='p-2 text-slate-500'>{new Date(r.created_at).toLocaleString()}</td>
+                <td className={clsx('p-2', statusClass(r.status))}>
+                  {t('rawStatus.' + r.status)}
+                </td>
+                <td className='p-2 text-slate-500'>
+                  {new Date(r.created_at).toLocaleString()}
+                </td>
                 <td className='p-2 flex flex-wrap gap-1'>
-                  <button
-                    type='button'
-                    className='text-[#2B8F80] underline'
-                    onClick={() => setSelected(r.raw_id)}
-                  >
+                  <Link
+                    to={`/raw/${r.raw_id}`}
+                    className='text-[#2B8F80] underline'>
                     {t('raw.openDetail')}
-                  </button>
+                  </Link>
                   {(r.status === 'pending' || r.status === 'failed') && (
                     <button
                       type='button'
                       className='text-[#2B8F80] text-xs disabled:opacity-50'
                       disabled={actionBusy}
-                      onClick={() => void onProcess(r.raw_id, r.status === 'failed')}
-                    >
-                      {r.status === 'failed' ? t('raw.reprocess') : t('raw.process')}
+                      onClick={() =>
+                        void onProcess(r.raw_id, r.status === 'failed')
+                      }>
+                      {r.status === 'failed'
+                        ? t('raw.reprocess')
+                        : t('raw.process')}
                     </button>
                   )}
                 </td>
@@ -190,111 +200,6 @@ export default function RawLibraryPage() {
         </table>
         {!loading && rows.length === 0 && isApiEnabled() && (
           <p className='p-4 text-slate-500 text-center'>{t('raw.all')}</p>
-        )}
-      </div>
-
-      {selected && (
-        <DetailDrawer
-          rawId={selected}
-          onClose={() => setSelected(null)}
-          onReprocess={onProcess}
-          busy={actionBusy}
-        />
-      )}
-    </div>
-  );
-}
-
-function DetailDrawer({
-  rawId,
-  onClose,
-  onReprocess,
-  busy,
-}: {
-  rawId: string;
-  onClose: () => void;
-  onReprocess: (id: string, fr: boolean) => Promise<void>;
-  busy: boolean;
-}) {
-  const { t } = useI18n();
-  const [detail, setDetail] = useState<Awaited<ReturnType<typeof rawApi.get>> | null>(null);
-  const [e, setE] = useState<string | null>(null);
-  const load = useCallback(() => {
-    if (!isApiEnabled()) return;
-    void rawApi
-      .get(rawId)
-      .then(setDetail)
-      .catch((err) => setE((err as ApiError).message));
-  }, [rawId]);
-  useEffect(() => {
-    load();
-  }, [load]);
-  const isPending = detail && isRawPendingPoll(detail.status);
-  useEffect(() => {
-    if (!isPending) return;
-    const id = window.setInterval(() => {
-      void load();
-    }, POLL_INTERVAL_MS);
-    return () => window.clearInterval(id);
-  }, [isPending, load]);
-  if (!isApiEnabled()) return null;
-  return (
-    <div className='fixed inset-0 z-50 flex justify-end' role='dialog'>
-      <div className='absolute inset-0 bg-black/30' onClick={onClose} aria-hidden />
-      <div className='relative z-10 flex h-full w-full max-w-md flex-col bg-white p-4 shadow-xl dark:bg-[#0F1A1A] overflow-y-auto'>
-        <div className='mb-2 flex items-center justify-between'>
-          <h2 className='font-semibold'>{t('raw.detailTitle')}</h2>
-          <button
-            type='button'
-            onClick={onClose}
-            className='text-slate-500'
-          >
-            {t('common.close')}
-          </button>
-        </div>
-        {e && <p className='text-sm text-rose-600'>{e}</p>}
-        {detail && (
-          <div className='space-y-2 text-sm'>
-            <p>
-              <span className='text-slate-500'>ID</span>{' '}
-              <span className='font-mono'>{detail.raw_id}</span>
-            </p>
-            <p className={statusClass(detail.status)}>{t('rawStatus.' + detail.status)}</p>
-            {detail.error_summary && (
-              <p className='text-rose-600'>{detail.error_summary}</p>
-            )}
-            <p>
-              {t('raw.noteCount')}: {detail.notes_count} · {t('raw.cardCount')}:{' '}
-              {detail.flashcards_count}
-            </p>
-            {detail.notes_count > 0 && (
-              <p>
-                <Link
-                  to='/notes'
-                  className='text-[#2B8F80] underline'
-                >
-                  {t('nav.notes')}
-                </Link>
-              </p>
-            )}
-            <div>
-              <p className='text-slate-500'>{t('raw.contentPreview')}</p>
-              <pre className='mt-1 max-h-40 overflow-auto rounded border border-slate-200 p-2 text-xs dark:border-[#2A4144]'>
-                {detail.content?.slice(0, 2_000)}
-                {(detail.content?.length ?? 0) > 2_000 ? '…' : ''}
-              </pre>
-            </div>
-            {(detail.status === 'pending' || detail.status === 'failed') && (
-              <button
-                type='button'
-                className='rounded-lg bg-[#2B8F80] px-3 py-2 text-white text-sm disabled:opacity-50'
-                disabled={busy}
-                onClick={() => void onReprocess(detail.raw_id, detail.status === 'failed')}
-              >
-                {detail.status === 'failed' ? t('raw.reprocess') : t('raw.process')}
-              </button>
-            )}
-          </div>
         )}
       </div>
     </div>

@@ -18,3 +18,20 @@ def get_max_md_upload_bytes() -> int:
 
 def get_queue_name() -> str:
     return os.getenv("ENTROPY_QUEUE_NAME", "entropy:process_queue")
+
+
+def get_entropy_agent_enabled() -> bool:
+    return os.getenv("ENTROPY_AGENT", "0") == "1"
+
+
+def get_dashscope_api_key() -> str:
+    return os.getenv("DASHSCOPE_API_KEY", "")
+
+
+def get_gemini_api_key() -> str:
+    return os.getenv("GEMINI_API_KEY", "")
+
+
+@lru_cache
+def get_ai_max_tokens() -> int:
+    return _int_env("AI_MAX_TOKENS", 4096)

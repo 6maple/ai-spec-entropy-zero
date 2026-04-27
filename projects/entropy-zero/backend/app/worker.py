@@ -9,8 +9,10 @@ from datetime import datetime, timezone
 
 from sqlalchemy import delete, select
 
+from app.core.config import get_entropy_agent_enabled
 from app.db.database import get_async_session_maker
 from app.db.models import Flashcard, Note, ProcessingTask, RawKnowledge
+from app.agent.orchestrator import run_agent_processor
 from app.services.processor import (
     ProcessorError,
     ProcessorInput,
@@ -60,7 +62,16 @@ async def process_job(job: ProcessJobPayload) -> None:
             content=raw.content,
             file_name=raw.file_name,
         )
-        result = run_deterministic_processor(inp)
+        progress_state: dict[str, int | str] = {"step": "extracting_points", "percent": 35}
+
+        def update_task_progress(step: str, percent: int) -> None:
+            progress_state["step"] = step
+            progress_state["percent"] = percent
+
+        if get_entropy_agent_enabled():
+            result = run_agent_processor(inp, update_task_progress=update_task_progress)
+        else:
+            result = run_deterministic_processor(inp)
 
         async with session.begin():
             stmt_r2 = (
@@ -110,6 +121,10 @@ async def process_job(job: ProcessJobPayload) -> None:
                     "p_id": p.get("p_id", f"p_{i}"),
                     "title": p.get("title", ""),
                     "body": p.get("body", ""),
+                    "claim": p.get("claim", ""),
+                    "evidence": p.get("evidence", ""),
+                    "anti_patterns": p.get("anti_patterns", []),
+                    "hooks": p.get("hooks", []),
                 }
                 for i, p in enumerate(result.note_payload.points)
             ]
@@ -125,6 +140,9 @@ async def process_job(job: ProcessJobPayload) -> None:
                     point_id=card.point_id,
                     question=card.question,
                     answer=card.answer,
+                    card_type=card.card_type,
+                    explanation=card.explanation,
+                    claim_ref=card.claim_ref,
                 )
                 session.add(fc)
 
@@ -132,11 +150,13 @@ async def process_job(job: ProcessJobPayload) -> None:
             raw2.error_summary = None
             raw2.processed_at = datetime.now(timezone.utc)
             task2.status = "completed"
-            task2.current_step = "done"
-            task2.progress_percent = 100
+            task2.current_step = str(progress_state.get("step", "done"))
+            task2.progress_percent = int(progress_state.get("percent", 100))
             task2.error_msg = None
             task2.note_id = note_id
             task2.flashcard_count = len(result.card_payloads)
+            task2.current_step = "done"
+            task2.progress_percent = 100
 
 
 async def worker_loop() -> None:

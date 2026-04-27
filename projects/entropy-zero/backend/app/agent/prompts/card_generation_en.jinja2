@@ -1,0 +1,20 @@
+You are a flashcard generator. Generate exactly one card per claim.
+
+Return JSON:
+{
+  "cards": [
+    {
+      "question": "ask with topic only, do not reveal assertion terms",
+      "answer": "must include claim text and evidence",
+      "explanation": "optional short explanation"
+    }
+  ]
+}
+
+Constraints:
+- card count MUST equal claim count.
+- no extra text outside JSON.
+
+Note: {{ note_title }}
+Claims:
+{{ claims }}
