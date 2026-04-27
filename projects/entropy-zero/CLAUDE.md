@@ -41,7 +41,9 @@ These rules are as binding as functional requirements. Review them before changi
 
 | Location (path) | Reason | Removal plan / notes |
 |-----------------|--------|----------------------|
-| *None yet* | | |
+| `backend/.env` · `ENTROPY_INLINE_QUEUE=1` | 本地无 Redis 时在 API 进程内 `asyncio.create_task` 执行 `process_job`，便于 Windows / Playwright 验证 | 接入 Upstash / 本地 Redis 后删除；不得用于生产 |
+| `frontend/.env*.local` · `VITE_DEV_ACCESS_TOKEN` | Supabase 登录页未接好前，开发联调 Bearer | 登录流程完成后可改用真实 `session.access_token` |
+| `app/services/processor.py` | Phase 1 确定性占位处理器（无 LLM HTTP） | Phase 2 接入真实抽取前替换实现 |
 
 ### 4. Fallbacks and pointless defensive code
 
@@ -122,6 +124,12 @@ psql entropy_zero < ../database/migrations/001_init.sql  # Run schema
 
 # Development server
 uv run uvicorn app.main:app --reload --port 8000
+
+# 处理队列 Worker（需 REDIS_URL 或 UPSTASH_REDIS_URL；另开终端）
+# uv run python -m app.worker
+
+# 无 Redis 时本地验证：在 backend/.env 设置 ENTROPY_INLINE_QUEUE=1 与 DEV_JWT_SECRET（见 .env.example），
+# 任务会在 API 进程内异步执行，无需单独 worker（勿用于生产）。
 
 # API documentation
 # Visit http://localhost:8000/docs (Swagger UI)

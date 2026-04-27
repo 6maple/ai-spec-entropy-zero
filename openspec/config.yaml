@@ -7,8 +7,8 @@ context: |
   - 工作台/项目文档/phase-1/spec-design.md
   - projects/entropy-zero/CLAUDE.md
   应用与迁移根目录：projects/entropy-zero/（含 database/migrations/）。
-  OpenSpec 基线能力规格：openspec/changes/phase-1-engineering-baseline/specs/phase-1-baseline/spec.md
-  下游建议变更 id：phase-1-backend-ingest-orchestration、phase-1-frontend-shell-ingest-ui、phase-1-notes-cards-review
+  OpenSpec 主规格目录：openspec/specs/（含 phase-1-baseline 及 raw-knowledge-http-api、queue-worker-boundary、deterministic-processor、tasks-observability-api、api-bearer-auth 等）。
+  下游建议变更 id：phase-1-frontend-shell-ingest-ui、phase-1-notes-cards-review
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.

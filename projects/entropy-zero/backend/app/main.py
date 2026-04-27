@@ -7,7 +7,7 @@ Handles knowledge ingestion, note management, and flashcard reviews.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import raw_knowledge, notes, cards
+from app.routers import raw_knowledge, notes, cards, tasks
 
 app = FastAPI(
     title="Entropy Zero API",
@@ -28,6 +28,7 @@ app.add_middleware(
 app.include_router(raw_knowledge.router, prefix="/api/raw", tags=["Raw Knowledge"])
 app.include_router(notes.router, prefix="/api/notes", tags=["Notes"])
 app.include_router(cards.router, prefix="/api/cards", tags=["Flashcards"])
+app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
 
 
 @app.get("/")

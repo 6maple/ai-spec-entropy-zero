@@ -14,7 +14,6 @@ from sqlalchemy import (
     ForeignKey,
     Index,
 )
-from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 import uuid
@@ -31,6 +30,8 @@ class RawKnowledge(Base):
     file_name = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     status = Column(String(20), nullable=False, default="pending")
+    error_summary = Column(Text, nullable=True)
+    processed_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -45,6 +46,43 @@ class RawKnowledge(Base):
         Index("idx_raw_knowledge_user_id", "user_id"),
         Index("idx_raw_knowledge_status", "status"),
         Index("idx_raw_knowledge_user_created", "user_id", "created_at"),
+        Index("idx_raw_knowledge_user_status_created", "user_id", "status", "created_at"),
+    )
+
+
+class ProcessingTask(Base):
+    """Observability row for process jobs; status MUST stay aligned with raw_knowledge in the same transaction."""
+
+    __tablename__ = "processing_tasks"
+
+    task_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String, nullable=False, index=True)
+    raw_id = Column(
+        String,
+        ForeignKey("raw_knowledge.raw_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    task_type = Column(String(64), nullable=False, default="entropy_deconstruction")
+    status = Column(String(20), nullable=False)
+    current_step = Column(String(64), nullable=True)
+    progress_percent = Column(Integer, nullable=False, default=0)
+    error_msg = Column(Text, nullable=True)
+    note_id = Column(String, nullable=True)
+    flashcard_count = Column(Integer, nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index("idx_processing_tasks_user_created", "user_id", "created_at"),
+        Index("idx_processing_tasks_raw_id", "raw_id"),
+        Index("idx_processing_tasks_status", "status"),
     )
 
 

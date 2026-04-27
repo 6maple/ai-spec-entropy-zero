@@ -4,12 +4,11 @@ Notes Router
 Endpoints for managing processed notes
 """
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status
 from typing import List
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models.schemas import NoteCreate, NoteResponse
-from app.db.database import get_db_session, USE_LOCAL_DB
+from app.core.deps import DbSession
 from app.db.models import Note as NoteModel
 
 router = APIRouter()
@@ -30,23 +29,17 @@ async def create_note(data: NoteCreate):
 
 @router.get("/", response_model=List[NoteResponse])
 async def list_notes(
+    db: DbSession,
     tag: str = None,
     search: str = None,
     limit: int = 50,
     offset: int = 0,
-    db: AsyncSession = Depends(get_db_session) if USE_LOCAL_DB else None,
 ):
     """
     List all notes with optional filters
 
     TODO: Support tag filtering and text search
     """
-    if not USE_LOCAL_DB:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail="Note listing not yet implemented for Supabase mode",
-        )
-
     # Query database
     query = (
         select(NoteModel)

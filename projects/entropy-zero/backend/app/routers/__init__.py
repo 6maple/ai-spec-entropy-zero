@@ -1,4 +1,4 @@
 # Initialize routers package
-from app.routers import raw_knowledge, notes, cards
+from app.routers import raw_knowledge, notes, cards, tasks
 
-__all__ = ["raw_knowledge", "notes", "cards"]
+__all__ = ["raw_knowledge", "notes", "cards", "tasks"]
