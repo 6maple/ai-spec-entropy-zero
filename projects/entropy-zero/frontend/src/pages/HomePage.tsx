@@ -40,6 +40,11 @@ export default function HomePage() {
         <div className='rounded-xl border border-[#E6ECE6] bg-white p-4 dark:border-[#2A4144] dark:bg-[#0F1A1A]'>
           <h2 className='text-lg font-semibold'>{t('home.dueReview')}</h2>
           <p className='mt-2 text-sm text-slate-500'>{t('home.dueReviewHint')}</p>
+          <Link
+            to='/review'
+            className='mt-3 inline-block text-sm text-[#2B8F80] font-medium hover:underline'>
+            {t('home.goReview')}
+          </Link>
         </div>
         <div className='rounded-xl border border-[#E6ECE6] bg-white p-4 dark:border-[#2A4144] dark:bg-[#0F1A1A]'>
           <h2 className='text-lg font-semibold'>{t('home.shortcuts')}</h2>

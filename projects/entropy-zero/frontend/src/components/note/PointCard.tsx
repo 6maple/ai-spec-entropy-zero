@@ -1,32 +1,31 @@
 import type { Point } from '@/types';
-
-// TODO: Implement PointCard
-// Features:
-// - Sequence badge (01, 02, etc.)
-// - Title and body (Markdown)
-// - Code block support
-// - Hover effects (border color change)
-// - Watermark sequence number
+import MarkdownPointBody, { type TocItem } from '@/components/note/MarkdownPointBody';
 
 interface PointCardProps {
   point: Point;
   index: number;
+  onCopyError?: (msg: string) => void;
+  onTocPoint?: (pointKey: string, items: TocItem[]) => void;
 }
 
-export default function PointCard({ point, index }: PointCardProps) {
+export default function PointCard({ point, index, onCopyError, onTocPoint }: PointCardProps) {
   return (
-    <div className='relative bg-white rounded-2xl border border-slate-200 p-6 transition-all hover:border-emerald-200'>
-      <div className='absolute top-4 right-4 text-6xl font-bold text-slate-100 pointer-events-none'>
+    <div className='relative rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:border-emerald-200 dark:border-slate-700 dark:bg-slate-900/30'>
+      <div className='absolute right-4 top-4 pointer-events-none text-6xl font-bold text-slate-100 dark:text-slate-800'>
         {String(index + 1).padStart(2, '0')}
       </div>
       <div className='relative z-10'>
-        <div className='inline-flex items-center justify-center h-6 px-3 rounded-lg bg-emerald-100 text-emerald-600 text-xs font-semibold mb-3'>
+        <div className='mb-3 inline-flex h-6 items-center justify-center rounded-lg bg-emerald-100 px-3 text-xs font-semibold text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300'>
           {String(index + 1).padStart(2, '0')}
         </div>
-        <h3 className='text-xl font-semibold mb-3'>{point.title}</h3>
-        <div className='prose prose-slate max-w-none'>
-          {/* TODO: Render Markdown */}
-          <p className='text-slate-600'>{point.body}</p>
+        <h3 className='mb-3 text-xl font-semibold'>{point.title}</h3>
+        <div className='prose-slate max-w-none'>
+          <MarkdownPointBody
+            body={point.body}
+            pointKey={point.p_id}
+            onCopyError={onCopyError}
+            onToc={(items) => onTocPoint?.(point.p_id, items)}
+          />
         </div>
       </div>
     </div>

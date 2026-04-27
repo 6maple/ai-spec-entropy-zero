@@ -19,6 +19,7 @@ export interface Note {
   tags: string[];
   content_json: Point[];
   created_at: string;
+  flashcards_count?: number;
 }
 
 export interface Point {

@@ -39,11 +39,11 @@ These rules are as binding as functional requirements. Review them before changi
 
 #### Mock / placeholder registry (audit & cleanup)
 
-| Location (path) | Reason | Removal plan / notes |
-|-----------------|--------|----------------------|
-| `backend/.env` · `ENTROPY_INLINE_QUEUE=1` | 本地无 Redis 时在 API 进程内 `asyncio.create_task` 执行 `process_job`，便于 Windows / Playwright 验证 | 接入 Upstash / 本地 Redis 后删除；不得用于生产 |
-| `frontend/.env*.local` · `VITE_DEV_ACCESS_TOKEN` | Supabase 登录页未接好前，开发联调 Bearer | 登录流程完成后可改用真实 `session.access_token` |
-| `app/services/processor.py` | Phase 1 确定性占位处理器（无 LLM HTTP） | Phase 2 接入真实抽取前替换实现 |
+| Location (path)                                  | Reason                                                                                                | Removal plan / notes                            |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `backend/.env` · `ENTROPY_INLINE_QUEUE=1`        | 本地无 Redis 时在 API 进程内 `asyncio.create_task` 执行 `process_job`，便于 Windows / Playwright 验证 | 接入 Upstash / 本地 Redis 后删除；不得用于生产  |
+| `frontend/.env*.local` · `VITE_DEV_ACCESS_TOKEN` | Supabase 登录页未接好前，开发联调 Bearer                                                              | 登录流程完成后可改用真实 `session.access_token` |
+| `app/services/processor.py`                      | Phase 1 确定性占位处理器（无 LLM HTTP）                                                               | Phase 2 接入真实抽取前替换实现                  |
 
 ### 4. Fallbacks and pointless defensive code
 
@@ -106,7 +106,7 @@ PYTHONPATH=.
 # frontend/.env (All environments)
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
-VITE_API_BASE_URL=http://localhost:8000/api  # Local dev; Vercel in production
+VITE_API_BASE_URL=http://localhost:8173/api  # Local dev; Vercel in production
 ```
 
 ---
@@ -123,7 +123,7 @@ createdb entropy_zero                        # Create local PostgreSQL database
 psql entropy_zero < ../database/migrations/001_init.sql  # Run schema
 
 # Development server
-uv run uvicorn app.main:app --reload --port 8000
+uv run uvicorn app.main:app --reload --port 8173
 
 # 处理队列 Worker（需 REDIS_URL 或 UPSTASH_REDIS_URL；另开终端）
 # uv run python -m app.worker
@@ -132,7 +132,7 @@ uv run uvicorn app.main:app --reload --port 8000
 # 任务会在 API 进程内异步执行，无需单独 worker（勿用于生产）。
 
 # API documentation
-# Visit http://localhost:8000/docs (Swagger UI)
+# Visit http://localhost:8173/docs (Swagger UI)
 ```
 
 ### Frontend (React + Vite)
@@ -246,7 +246,7 @@ entropy-zero/
    app.include_router(your_router.router, prefix="/api/your", tags=["Your"])
    ```
 
-3. Test with `http://localhost:8000/docs` Swagger UI
+3. Test with `http://localhost:8173/docs` Swagger UI
 
 ### Adding Frontend Component
 
@@ -271,11 +271,11 @@ entropy-zero/
 
 ### Database Strategy
 
-| Environment | Database | Notes |
-|---|---|---|
-| **Local Dev** | PostgreSQL 14+ local | `createdb entropy_zero` + local migrations |
-| **Testing** | PostgreSQL test instance | Same schema as production |
-| **Production** | Supabase (PostgreSQL 16+) | Row-level security required |
+| Environment    | Database                  | Notes                                      |
+| -------------- | ------------------------- | ------------------------------------------ |
+| **Local Dev**  | PostgreSQL 14+ local      | `createdb entropy_zero` + local migrations |
+| **Testing**    | PostgreSQL test instance  | Same schema as production                  |
+| **Production** | Supabase (PostgreSQL 16+) | Row-level security required                |
 
 All schemas use **identical structure** across environments. Environment detection happens in Python via env var checking.
 
@@ -380,14 +380,14 @@ RESET ROLE;
 
 ## 🚨 Common Pitfalls & Solutions
 
-| Issue | Cause | Solution |
-|---|---|---|
-| `ModuleNotFoundError: No module named 'app'` | Wrong working directory | Run from `backend/` folder with `PYTHONPATH=.` |
-| `SUPABASE_URL and SUPABASE_SERVICE_KEY must be set` | Missing `.env` file in backend | Copy `.env.example` and fill in credentials |
-| Frontend 401 Unauthorized on API calls | Wrong `VITE_SUPABASE_ANON_KEY` | Use anon key, not service key (frontend uses anon) |
-| RLS policies blocking all queries | Wrong user_id claim in JWT | Verify token has correct `sub` (user_id) claim |
-| Flashcard `next_review` always null | FSRS algorithm not implemented | Currently endpoints return 501 - phase 2 |
-| React Router not rendering pages | App.tsx BrowserRouter at wrong level | Ensure `<BrowserRouter>` wraps routes, not nested |
+| Issue                                               | Cause                                | Solution                                           |
+| --------------------------------------------------- | ------------------------------------ | -------------------------------------------------- |
+| `ModuleNotFoundError: No module named 'app'`        | Wrong working directory              | Run from `backend/` folder with `PYTHONPATH=.`     |
+| `SUPABASE_URL and SUPABASE_SERVICE_KEY must be set` | Missing `.env` file in backend       | Copy `.env.example` and fill in credentials        |
+| Frontend 401 Unauthorized on API calls              | Wrong `VITE_SUPABASE_ANON_KEY`       | Use anon key, not service key (frontend uses anon) |
+| RLS policies blocking all queries                   | Wrong user_id claim in JWT           | Verify token has correct `sub` (user_id) claim     |
+| Flashcard `next_review` always null                 | FSRS algorithm not implemented       | Currently endpoints return 501 - phase 2           |
+| React Router not rendering pages                    | App.tsx BrowserRouter at wrong level | Ensure `<BrowserRouter>` wraps routes, not nested  |
 
 ---
 
@@ -398,6 +398,7 @@ RESET ROLE;
 - **UI/UX Spec**: `工作台/项目文档/phase-1/design-ui.md`
 - **DB Schema**: `database/migrations/001_init.sql`
 - **API Endpoints**: `backend/app/routers/` (each router fully documented)
+- **FSRS-lite (Phase 1)**: `docs/fsrs-phase1.md`（复习调度简化说明，与完整 FSRS 差异）
 
 ---
 
@@ -409,7 +410,7 @@ When joining the project:
 2. **Set up local dev** following "Quick Development Workflow"
 3. **Run migrations** against local PostgreSQL
 4. **Start frontend + backend** servers
-5. **Explore** `http://localhost:5173` and `http://localhost:8000/docs`
+5. **Explore** `http://localhost:5173` and `http://localhost:8173/docs`
 6. **Pick a TODO** from `backend/app/routers/` or `frontend/src/pages/`
 7. **Ask questions** in comments - all endpoints clearly marked with TODO
 
@@ -435,7 +436,7 @@ When joining the project:
 
 - **Supabase Console**: https://app.supabase.com
 - **Vercel Dashboard**: https://vercel.com/dashboard
-- **API Docs (Local)**: http://localhost:8000/docs
+- **API Docs (Local)**: http://localhost:8173/docs
 - **Frontend (Local)**: http://localhost:5173
 - **Repository Root**: `d:/Workspace/ai-projects/llm-knowledge-lib`
 

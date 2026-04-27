@@ -61,7 +61,7 @@ uv sync
 uv run uvicorn app.main:app --reload
 ```
 
-API docs at `http://localhost:8000/docs`
+API docs at `http://localhost:8173/docs`
 
 ### Database Setup
 

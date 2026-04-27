@@ -115,6 +115,7 @@ class NoteResponse(BaseModel):
     tags: List[str]
     content_json: List[Point]
     created_at: datetime
+    flashcards_count: int = 0
 
 
 # ===== Flashcards =====
@@ -146,6 +147,7 @@ class FlashcardResponse(BaseModel):
 
 class ReviewRating(BaseModel):
     rating: Literal[1, 2, 3, 4]  # Again, Hard, Good, Easy
+    reviewed_at: Optional[datetime] = None
 
 
 class ReviewLogResponse(BaseModel):
@@ -156,3 +158,8 @@ class ReviewLogResponse(BaseModel):
     elapsed_days: int
     scheduled_days: int
     review_at: datetime
+
+
+class ReviewSubmitResponse(BaseModel):
+    log: ReviewLogResponse
+    card: FlashcardResponse
