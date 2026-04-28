@@ -36,8 +36,7 @@ export default function NotesListPage() {
 
   useEffect(() => {
     runList();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅首次挂载
-  }, []);
+  }, [tag, keyword, rawId]);
 
   return (
     <div className='mx-auto max-w-[1200px] px-4 py-8'>
@@ -131,10 +130,12 @@ export default function NotesListPage() {
               {n.title || n.note_id}
             </Link>
             {n.meta_tag &&
-              (n.meta_tag.domain ||
-                (n.meta_tag.topics && n.meta_tag.topics.length > 0)) ? (
+            (n.meta_tag.domain ||
+              (n.meta_tag.topics && n.meta_tag.topics.length > 0)) ? (
               <div className='mt-1 flex flex-wrap gap-1.5'>
-                <span className='text-xs text-slate-500'>{t('notes.metaTag')}：</span>
+                <span className='text-xs text-slate-500'>
+                  {t('notes.metaTag')}：
+                </span>
                 {n.meta_tag.domain ? (
                   <span className='rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200'>
                     {n.meta_tag.domain}
@@ -150,7 +151,9 @@ export default function NotesListPage() {
               </div>
             ) : null}
             <p className='line-clamp-2 text-sm text-slate-500'>{n.abstract}</p>
-            <p className='text-xs text-slate-400'>{new Date(n.created_at).toLocaleString()}</p>
+            <p className='text-xs text-slate-400'>
+              {new Date(n.created_at).toLocaleString()}
+            </p>
           </li>
         ))}
       </ul>

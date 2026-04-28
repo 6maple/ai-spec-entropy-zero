@@ -27,8 +27,11 @@ export default function HomePage() {
       return;
     }
     setPartialErr(false);
-    const a = await rawApi.list({ page: 1, pageSize: 5 }).catch(() => null);
-    const b = await tasksApi.list({ page: 1, pageSize: 5 }).catch(() => null);
+    // 使用 Promise.all 并发请求，提高加载效率
+    const [a, b] = await Promise.all([
+      rawApi.list({ page: 1, pageSize: 5 }).catch(() => null),
+      tasksApi.list({ page: 1, pageSize: 5 }).catch(() => null),
+    ]);
     if (a === null && b === null) setPartialErr(true);
     if (a) setRaw(a);
     if (b) setTaskRows(b);
@@ -41,12 +44,18 @@ export default function HomePage() {
   return (
     <div className='mx-auto max-w-[1200px] px-4 py-8 space-y-8'>
       <h1 className='text-3xl font-bold'>{t('home.title')}</h1>
-      {partialErr && <p className='text-amber-800 dark:text-amber-200'>{t('home.loadError')}</p>}
+      {partialErr && (
+        <p className='text-amber-800 dark:text-amber-200'>
+          {t('home.loadError')}
+        </p>
+      )}
 
       <div className='grid gap-4 md:grid-cols-2'>
         <div className='rounded-xl border border-[#E6ECE6] bg-white p-4 dark:border-[#2A4144] dark:bg-[#0F1A1A]'>
           <h2 className='text-lg font-semibold'>{t('home.dueReview')}</h2>
-          <p className='mt-2 text-sm text-slate-500'>{t('home.dueReviewHint')}</p>
+          <p className='mt-2 text-sm text-slate-500'>
+            {t('home.dueReviewHint')}
+          </p>
           <Link
             to='/review'
             className='mt-3 inline-block text-sm text-[#2B8F80] font-medium hover:underline'>
@@ -77,7 +86,9 @@ export default function HomePage() {
           <h2 className='text-base font-semibold'>{t('home.recentRaw')}</h2>
           <ul className='mt-2 space-y-1 text-sm'>
             {raw.length === 0 && !partialErr && (
-              <li className='text-slate-500'>{isApiEnabled() ? t('notes.empty') : t('home.loadError')}</li>
+              <li className='text-slate-500'>
+                {isApiEnabled() ? t('notes.empty') : t('home.loadError')}
+              </li>
             )}
             {raw.map((r) => (
               <li key={r.raw_id} className='font-mono text-xs'>
@@ -90,7 +101,9 @@ export default function HomePage() {
           <h2 className='text-base font-semibold'>{t('home.recentTasks')}</h2>
           <ul className='mt-2 space-y-1 text-sm'>
             {taskRows.length === 0 && !partialErr && (
-              <li className='text-slate-500'>{isApiEnabled() ? t('notes.empty') : t('home.loadError')}</li>
+              <li className='text-slate-500'>
+                {isApiEnabled() ? t('notes.empty') : t('home.loadError')}
+              </li>
             )}
             {taskRows.map((k) => (
               <li key={k.task_id} className='text-xs font-mono'>

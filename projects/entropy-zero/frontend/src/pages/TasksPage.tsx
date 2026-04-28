@@ -1,11 +1,18 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import tasksApi, { type TaskListItem, type TaskStatus } from '@/lib/api/tasksApi';
+import tasksApi, {
+  type TaskListItem,
+  type TaskStatus,
+} from '@/lib/api/tasksApi';
 import rawApi from '@/lib/api/rawApi';
 import { useI18n } from '@/contexts/I18nContext';
 import { ApiError } from '@/lib/api/client';
 import { isApiEnabled } from '@/lib/api/getAccessToken';
-import { POLL_INTERVAL_MS, POLL_MAX_MS, isTaskPendingPoll } from '@/constants/polling';
+import {
+  POLL_INTERVAL_MS,
+  POLL_MAX_MS,
+  isTaskPendingPoll,
+} from '@/constants/polling';
 import { clsx } from 'clsx';
 
 function statusClass(s: string) {
@@ -24,24 +31,34 @@ export default function TasksPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
   const [pollTimeout, setPollTimeout] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const load = useCallback(async () => {
-    if (!isApiEnabled()) {
-      setRows([]);
-      return;
-    }
-    try {
-      setErr(null);
-      const r = await tasksApi.list({
-        status: statusFilter || undefined,
-        page: 1,
-        pageSize: 50,
-      });
-      setRows(r);
-    } catch (e) {
-      setErr((e as ApiError).message);
-    }
-  }, [statusFilter]);
+  const load = useCallback(
+    async (isPoll = false) => {
+      if (!isApiEnabled()) {
+        setRows([]);
+        return;
+      }
+      // 防止轮询导致的请求堆积
+      if (isPoll && isRefreshing) return;
+
+      try {
+        if (!isPoll) setErr(null);
+        setIsRefreshing(true);
+        const r = await tasksApi.list({
+          status: statusFilter || undefined,
+          page: 1,
+          pageSize: 50,
+        });
+        setRows(r);
+      } catch (e) {
+        setErr((e as ApiError).message);
+      } finally {
+        setIsRefreshing(false);
+      }
+    },
+    [statusFilter, isRefreshing],
+  );
 
   useEffect(() => {
     if (!isApiEnabled()) {
@@ -51,7 +68,7 @@ export default function TasksPage() {
     setLoading(true);
     void (async () => {
       try {
-        await load();
+        await load(false);
       } finally {
         setLoading(false);
       }
@@ -72,7 +89,7 @@ export default function TasksPage() {
         window.clearInterval(id);
         return;
       }
-      void load();
+      void load(true);
     }, POLL_INTERVAL_MS);
     return () => window.clearInterval(id);
   }, [hasNonTerminal, load]);
@@ -100,8 +117,9 @@ export default function TasksPage() {
           <select
             className='rounded-lg border border-[#E6ECE6] bg-white px-2 py-1.5 text-sm dark:border-[#2A4144] dark:bg-[#0F1A1A]'
             value={statusFilter}
-            onChange={(e) => setStatusFilter((e.target.value as TaskStatus | '') || '')}
-          >
+            onChange={(e) =>
+              setStatusFilter((e.target.value as TaskStatus | '') || '')
+            }>
             <option value=''>{t('raw.all')}</option>
             <option value='queued'>{t('taskStatus.queued')}</option>
             <option value='processing'>{t('taskStatus.processing')}</option>
@@ -112,12 +130,13 @@ export default function TasksPage() {
         <button
           type='button'
           onClick={() => void load()}
-          className='rounded-lg border border-[#2B8F80] px-3 py-1.5 text-sm text-[#2B8F80]'
-        >
+          className='rounded-lg border border-[#2B8F80] px-3 py-1.5 text-sm text-[#2B8F80]'>
           {t('common.refresh')}
         </button>
       </div>
-      {pollTimeout && <p className='mt-2 text-sm text-amber-800'>{t('raw.pollStopped')}</p>}
+      {pollTimeout && (
+        <p className='mt-2 text-sm text-amber-800'>{t('raw.pollStopped')}</p>
+      )}
       {err && <p className='mt-2 text-sm text-rose-600'>{err}</p>}
       {loading && (
         <div className='mt-8 flex justify-center' aria-label='loading'>
@@ -140,19 +159,21 @@ export default function TasksPage() {
             {rows.map((r) => (
               <tr
                 key={r.task_id}
-                className='border-b border-slate-100 last:border-0 dark:border-[#1a2c2c]'
-              >
+                className='border-b border-slate-100 last:border-0 dark:border-[#1a2c2c]'>
                 <td className='p-2 font-mono text-xs'>{r.task_type}</td>
-                <td className={clsx('p-2', statusClass(r.status))}>{t('taskStatus.' + r.status)}</td>
+                <td className={clsx('p-2', statusClass(r.status))}>
+                  {t('taskStatus.' + r.status)}
+                </td>
                 <td className='p-2 text-slate-600'>{r.current_step}</td>
                 <td className='p-2'>{r.progress_percent}%</td>
-                <td className='p-2 text-slate-500'>{new Date(r.created_at).toLocaleString()}</td>
+                <td className='p-2 text-slate-500'>
+                  {new Date(r.created_at).toLocaleString()}
+                </td>
                 <td className='p-2'>
                   <button
                     type='button'
                     className='text-[#2B8F80] underline'
-                    onClick={() => setSelected(r.task_id)}
-                  >
+                    onClick={() => setSelected(r.task_id)}>
                     {t('tasks.openDetail')}
                   </button>
                 </td>
@@ -192,7 +213,9 @@ function TaskDetailDrawer({
   nav: ReturnType<typeof useNavigate>;
 }) {
   const { t } = useI18n();
-  const [d, setD] = useState<Awaited<ReturnType<typeof tasksApi.get>> | null>(null);
+  const [d, setD] = useState<Awaited<ReturnType<typeof tasksApi.get>> | null>(
+    null,
+  );
   const [e, setE] = useState<string | null>(null);
   const load = useCallback(() => {
     if (!isApiEnabled()) return;
@@ -230,7 +253,9 @@ function TaskDetailDrawer({
             <p>
               {t('tasks.rawRef')}: <span className='font-mono'>{d.raw_id}</span>
             </p>
-            <p className={statusClass(d.status)}>{t('taskStatus.' + d.status)}</p>
+            <p className={statusClass(d.status)}>
+              {t('taskStatus.' + d.status)}
+            </p>
             <p>
               {d.current_step} · {d.progress_percent}%
             </p>
@@ -250,8 +275,7 @@ function TaskDetailDrawer({
                       void nav('/notes/' + encodeURIComponent(firstNoteId));
                       onClose();
                     }
-                  }}
-                >
+                  }}>
                   {t('tasks.openNote')}
                 </button>
               </p>
@@ -261,8 +285,7 @@ function TaskDetailDrawer({
                 type='button'
                 className='rounded-lg bg-[#2B8F80] px-3 py-2 text-white text-sm disabled:opacity-50'
                 disabled={busy}
-                onClick={() => void onRetryRaw(d.raw_id)}
-              >
+                onClick={() => void onRetryRaw(d.raw_id)}>
                 {t('tasks.retryViaRaw')}
               </button>
             )}

@@ -27,26 +27,36 @@ export default function RawLibraryPage() {
   const [kw, setKw] = useState('');
   const [actionBusy, setActionBusy] = useState(false);
   const [pollTimeout, setPollTimeout] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const load = useCallback(async () => {
-    if (!isApiEnabled()) {
-      setRows([]);
-      setErr(null);
-      return;
-    }
-    try {
-      setErr(null);
-      const r = await rawApi.list({
-        status: statusFilter || undefined,
-        keyword: kw || undefined,
-        page: 1,
-        pageSize: 50,
-      });
-      setRows(r);
-    } catch (e) {
-      setErr((e as ApiError).message || (e as Error).message);
-    }
-  }, [statusFilter, kw]);
+  const load = useCallback(
+    async (isPoll = false) => {
+      if (!isApiEnabled()) {
+        setRows([]);
+        setErr(null);
+        return;
+      }
+      // 如果已经在刷新请求中且是轮询触发的，则跳过本次，防止并发堆积
+      if (isPoll && isRefreshing) return;
+
+      try {
+        if (!isPoll) setErr(null);
+        setIsRefreshing(true);
+        const r = await rawApi.list({
+          status: statusFilter || undefined,
+          keyword: kw || undefined,
+          page: 1,
+          pageSize: 50,
+        });
+        setRows(r);
+      } catch (e) {
+        setErr((e as ApiError).message || (e as Error).message);
+      } finally {
+        setIsRefreshing(false);
+      }
+    },
+    [statusFilter, kw, isRefreshing],
+  );
 
   useEffect(() => {
     if (!isApiEnabled()) {
@@ -56,7 +66,7 @@ export default function RawLibraryPage() {
     setLoading(true);
     void (async () => {
       try {
-        await load();
+        await load(false);
       } finally {
         setLoading(false);
       }
@@ -77,7 +87,7 @@ export default function RawLibraryPage() {
         window.clearInterval(id);
         return;
       }
-      void load();
+      void load(true);
     }, POLL_INTERVAL_MS);
     return () => window.clearInterval(id);
   }, [hasNonTerminal, load]);
