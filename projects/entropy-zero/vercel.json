@@ -5,15 +5,11 @@
       "routePrefix": "/"
     },
     "api": {
-      "entrypoint": "backend/main.py",
+      "entrypoint": "backend/app/main.py",
       "routePrefix": "/api"
     }
   },
   "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "backend/api/index.py"
-    },
     {
       "source": "/((?!api).*)",
       "destination": "/index.html"
