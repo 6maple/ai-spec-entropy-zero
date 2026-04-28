@@ -65,6 +65,7 @@ app = FastAPI(
     redirect_slashes=False,
 )
 
+
 # Request path diagnostics for deployment routing issues.
 @app.middleware("http")
 async def request_diagnostics_middleware(request, call_next):
@@ -112,6 +113,7 @@ async def request_diagnostics_middleware(request, call_next):
     )
     return response
 
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
@@ -122,10 +124,10 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(raw_knowledge.router, prefix="/api/raw", tags=["Raw Knowledge"])
-app.include_router(notes.router, prefix="/api/notes", tags=["Notes"])
-app.include_router(cards.router, prefix="/api/cards", tags=["Flashcards"])
-app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
+app.include_router(raw_knowledge.router, prefix="/raw", tags=["Raw Knowledge"])
+app.include_router(notes.router, prefix="/notes", tags=["Notes"])
+app.include_router(cards.router, prefix="/cards", tags=["Flashcards"])
+app.include_router(tasks.router, prefix="/tasks", tags=["Tasks"])
 
 
 @app.get("/")
