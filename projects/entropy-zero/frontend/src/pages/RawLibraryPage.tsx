@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState, useRef } from 'react';
+import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 import rawApi, { type RawListItem, type RawStatus } from '@/lib/api/rawApi';
 import { useI18n } from '@/contexts/I18nContext';
@@ -9,10 +10,9 @@ import {
   POLL_MAX_MS,
   isRawPendingPoll,
 } from '@/constants/polling';
-import { clsx } from 'clsx';
 
 function statusClass(s: string) {
-  if (s === 'processed' || s === 'completed') return 'text-[#2B8F80]';
+  if (s === 'processed') return 'text-[#2B8F80]';
   if (s === 'failed') return 'text-rose-600 dark:text-rose-400';
   return 'text-amber-700 dark:text-amber-300';
 }
@@ -22,22 +22,27 @@ export default function RawLibraryPage() {
   const [rows, setRows] = useState<RawListItem[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<'' | RawStatus>('');
+  const [statusFilter, setStatusFilter] = useState<RawStatus | ''>('');
   const [keyword, setKeyword] = useState('');
   const [kw, setKw] = useState('');
   const [actionBusy, setActionBusy] = useState(false);
   const [pollTimeout, setPollTimeout] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const lastFingerprintRef = useRef('');
+  const failCountRef = useRef(0);
+  const requestIdRef = useRef(0);
+
   const load = useCallback(
     async (isPoll = false) => {
       if (!isApiEnabled()) {
         setRows([]);
-        setErr(null);
+        setLoading(false);
         return;
       }
-      // 如果已经在刷新请求中且是轮询触发的，则跳过本次，防止并发堆积
-      if (isPoll && isRefreshing) return;
+
+      // 生成新的请求 ID，用于追踪最新请求
+      const currentRequestId = ++requestIdRef.current;
 
       try {
         if (!isPoll) setErr(null);
@@ -48,14 +53,42 @@ export default function RawLibraryPage() {
           page: 1,
           pageSize: 50,
         });
+
+        // 只有当这是最新的请求时才更新状态
+        if (currentRequestId !== requestIdRef.current) {
+          return;
+        }
+
+        const newFingerprint = JSON.stringify(
+          r.map((item) => ({ id: item.raw_id, status: item.status })),
+        );
+
+        if (isPoll) {
+          if (newFingerprint === lastFingerprintRef.current) {
+            failCountRef.current = Math.min(failCountRef.current + 1, 4);
+          } else {
+            failCountRef.current = 0;
+          }
+        } else {
+          failCountRef.current = 0;
+        }
+
+        lastFingerprintRef.current = newFingerprint;
         setRows(r);
       } catch (e) {
-        setErr((e as ApiError).message || (e as Error).message);
+        // 只有当这是最新的请求时才更新错误状态
+        if (currentRequestId === requestIdRef.current) {
+          setErr((e as ApiError).message || (e as Error).message);
+        }
       } finally {
-        setIsRefreshing(false);
+        // 只有当这是最新的请求时才清除刷新状态
+        if (currentRequestId === requestIdRef.current) {
+          setIsRefreshing(false);
+        }
+        setLoading(false);
       }
     },
-    [statusFilter, kw, isRefreshing],
+    [statusFilter, kw],
   );
 
   useEffect(() => {
@@ -63,18 +96,11 @@ export default function RawLibraryPage() {
       setLoading(false);
       return;
     }
-    // 仅在当前没有数据时显示全屏加载中，避免轮询时一直转圈
     if (rows.length === 0) {
       setLoading(true);
     }
-    void (async () => {
-      try {
-        await load(false);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
+    void load(false);
+  }, [load]);
 
   const hasNonTerminal = rows.some((r) => isRawPendingPoll(r.status));
 
@@ -85,10 +111,6 @@ export default function RawLibraryPage() {
     }
     const t0 = Date.now();
     let isCancelled = false;
-    let failCount = 0;
-    let lastDataFingerprint = JSON.stringify(
-      rows.map((r) => ({ id: r.id, status: r.status })),
-    );
 
     const runPoll = async () => {
       if (isCancelled) return;
@@ -100,35 +122,22 @@ export default function RawLibraryPage() {
       await load(true);
 
       if (!isCancelled) {
-        // 计算当前数据指纹：比较 ID 和 状态
-        setRows((currentRows) => {
-          const currentFingerprint = JSON.stringify(
-            currentRows.map((r) => ({ id: r.id, status: r.status })),
-          );
-
-          if (currentFingerprint === lastDataFingerprint) {
-            // 数据没变，增加退避间隔
-            failCount = Math.min(failCount + 1, 4);
-          } else {
-            // 数据变了，重置间隔
-            failCount = 0;
-            lastDataFingerprint = currentFingerprint;
-          }
-          return currentRows;
-        });
-
-        const nextInterval = POLL_INTERVAL_MS * (1 + failCount);
-        setTimeout(runPoll, nextInterval);
+        const nextInterval = POLL_INTERVAL_MS * (1 + failCountRef.current);
+        setTimeout(() => {
+          if (!isCancelled) void runPoll();
+        }, nextInterval);
       }
     };
 
-    const timerId = setTimeout(runPoll, POLL_INTERVAL_MS);
+    const timerId = setTimeout(() => {
+      if (!isCancelled) void runPoll();
+    }, POLL_INTERVAL_MS);
 
     return () => {
       isCancelled = true;
       clearTimeout(timerId);
     };
-  }, [hasNonTerminal, load]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hasNonTerminal, load]);
 
   const onProcess = async (rawId: string, forceRetry: boolean) => {
     if (!isApiEnabled()) return;
@@ -145,7 +154,7 @@ export default function RawLibraryPage() {
   };
 
   return (
-    <div className='mx-auto max-w-[1200px] px-4 py-8'>
+    <div className='mx-auto max-w-300 px-4 py-8'>
       <h1 className='text-2xl font-bold'>{t('raw.title')}</h1>
       <div className='mt-4 flex flex-wrap items-end gap-3'>
         <label className='flex flex-col text-sm gap-1'>
@@ -204,7 +213,7 @@ export default function RawLibraryPage() {
         <p className='mt-4 text-sm text-slate-600'>{t('home.loadError')}</p>
       )}
       <div className='mt-4 overflow-x-auto rounded-xl border border-[#E6ECE6] dark:border-[#2A4144]'>
-        <table className='w-full min-w-[640px] text-left text-sm'>
+        <table className='w-full min-w-160 text-left text-sm'>
           <thead>
             <tr className='border-b border-slate-200 dark:border-[#2A4144] bg-white/50 dark:bg-[#0F1A1A]'>
               <th className='p-2'>{t('raw.fileName')}</th>
@@ -227,7 +236,7 @@ export default function RawLibraryPage() {
                 </td>
                 <td className='p-2 flex flex-wrap gap-1'>
                   <Link
-                    to={`/raw/${r.raw_id}`}
+                    to={'/raw/' + r.raw_id}
                     className='text-[#2B8F80] underline'>
                     {t('raw.openDetail')}
                   </Link>

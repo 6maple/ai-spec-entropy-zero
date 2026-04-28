@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import tasksApi, {
   type TaskListItem,
@@ -28,19 +28,24 @@ export default function TasksPage() {
   const [err, setErr] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<'' | TaskStatus>('');
-  const [selected, setSelected] = useState<string | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
   const [pollTimeout, setPollTimeout] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const lastFingerprintRef = useRef('');
+  const failCountRef = useRef(0);
+  const requestIdRef = useRef(0);
 
   const load = useCallback(
     async (isPoll = false) => {
       if (!isApiEnabled()) {
         setRows([]);
+        setLoading(false);
         return;
       }
-      // 防止轮询导致的请求堆积
-      if (isPoll && isRefreshing) return;
+
+      // 生成新的请求 ID，用于追踪最新请求
+      const currentRequestId = ++requestIdRef.current;
 
       try {
         if (!isPoll) setErr(null);
@@ -50,14 +55,42 @@ export default function TasksPage() {
           page: 1,
           pageSize: 50,
         });
+
+        // 只有当这是最新的请求时才更新状态
+        if (currentRequestId !== requestIdRef.current) {
+          return;
+        }
+
+        const newFingerprint = JSON.stringify(
+          r.map((item) => ({ id: item.task_id, status: item.status })),
+        );
+
+        if (isPoll) {
+          if (newFingerprint === lastFingerprintRef.current) {
+            failCountRef.current = Math.min(failCountRef.current + 1, 4);
+          } else {
+            failCountRef.current = 0;
+          }
+        } else {
+          failCountRef.current = 0;
+        }
+
+        lastFingerprintRef.current = newFingerprint;
         setRows(r);
       } catch (e) {
-        setErr((e as ApiError).message);
+        // 只有当这是最新的请求时才更新错误状态
+        if (currentRequestId === requestIdRef.current) {
+          setErr((e as ApiError).message);
+        }
       } finally {
-        setIsRefreshing(false);
+        // 只有当这是最新的请求时才清除刷新状态
+        if (currentRequestId === requestIdRef.current) {
+          setIsRefreshing(false);
+        }
+        setLoading(false);
       }
     },
-    [statusFilter, isRefreshing],
+    [statusFilter],
   );
 
   useEffect(() => {
@@ -65,18 +98,11 @@ export default function TasksPage() {
       setLoading(false);
       return;
     }
-    // 仅在当前没有数据时显示全屏加载中，避免轮询时一直转圈
     if (rows.length === 0) {
       setLoading(true);
     }
-    void (async () => {
-      try {
-        await load(false);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
+    void load(false);
+  }, [load]);
 
   const hasNonTerminal = rows.some((r) => isTaskPendingPoll(r.status));
 
@@ -87,10 +113,6 @@ export default function TasksPage() {
     }
     const t0 = Date.now();
     let isCancelled = false;
-    let failCount = 0;
-    let lastDataFingerprint = JSON.stringify(
-      rows.map((r) => ({ id: r.id, status: r.status })),
-    );
 
     const runPoll = async () => {
       if (isCancelled) return;
@@ -102,35 +124,29 @@ export default function TasksPage() {
       await load(true);
 
       if (!isCancelled) {
-        // 计算当前数据指纹：比较 ID 和 状态
-        setRows((currentRows) => {
-          const currentFingerprint = JSON.stringify(
-            currentRows.map((r) => ({ id: r.id, status: r.status })),
-          );
-
-          if (currentFingerprint === lastDataFingerprint) {
-            // 数据没变，增加退避间隔
-            failCount = Math.min(failCount + 1, 4);
-          } else {
-            // 数据变了，重置间隔
-            failCount = 0;
-            lastDataFingerprint = currentFingerprint;
-          }
-          return currentRows;
-        });
-
-        const nextInterval = POLL_INTERVAL_MS * (1 + failCount);
-        setTimeout(runPoll, nextInterval);
+        const nextInterval = POLL_INTERVAL_MS * (1 + failCountRef.current);
+        console.debug(
+          '[Poll] Next interval: ' +
+            nextInterval +
+            'ms (failCount: ' +
+            failCountRef.current +
+            ')',
+        );
+        setTimeout(() => {
+          if (!isCancelled) void runPoll();
+        }, nextInterval);
       }
     };
 
-    const timerId = setTimeout(runPoll, POLL_INTERVAL_MS);
+    const timerId = setTimeout(() => {
+      if (!isCancelled) void runPoll();
+    }, POLL_INTERVAL_MS);
 
     return () => {
       isCancelled = true;
       clearTimeout(timerId);
     };
-  }, [hasNonTerminal, load]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hasNonTerminal, load]);
 
   const retryViaRaw = async (rawId: string) => {
     if (!isApiEnabled()) return;
@@ -147,8 +163,10 @@ export default function TasksPage() {
   };
 
   return (
-    <div className='mx-auto max-w-[1200px] px-4 py-8'>
-      <h1 className='text-2xl font-bold'>{t('tasks.title')}</h1>
+    <div className='mx-auto max-w-300 px-4 py-8'>
+      <h1 className='text-2xl font-bold' onClick={() => nav('/tasks')}>
+        {t('tasks.title')}
+      </h1>
       <div className='mt-4 flex flex-wrap items-end gap-3'>
         <label className='flex flex-col text-sm gap-1'>
           <span>{t('raw.filterStatus')}</span>
@@ -185,14 +203,13 @@ export default function TasksPage() {
         </div>
       )}
       <div className='mt-4 overflow-x-auto rounded-xl border border-[#E6ECE6] dark:border-[#2A4144]'>
-        <table className='w-full min-w-[800px] text-left text-sm'>
+        <table className='w-full min-w-200 text-left text-sm'>
           <thead>
             <tr className='border-b border-slate-200 dark:border-[#2A4144] bg-white/50 dark:bg-[#0F1A1A]'>
               <th className='p-2'>{t('tasks.type')}</th>
-              <th className='p-2'>{t('tasks.status')}</th>
-              <th className='p-2'>{t('tasks.step')}</th>
+              <th className='p-2'>{t('raw.status')}</th>
               <th className='p-2'>{t('tasks.progress')}</th>
-              <th className='p-2'>{t('tasks.time')}</th>
+              <th className='p-2'>{t('raw.time')}</th>
               <th className='p-2' />
             </tr>
           </thead>
@@ -201,136 +218,51 @@ export default function TasksPage() {
               <tr
                 key={r.task_id}
                 className='border-b border-slate-100 last:border-0 dark:border-[#1a2c2c]'>
-                <td className='p-2 font-mono text-xs'>{r.task_type}</td>
+                <td className='p-2'>
+                  <div className='font-medium'>
+                    {t('taskType.' + r.task_type)}
+                  </div>
+                  <div className='text-xs text-slate-500 font-mono'>
+                    {r.task_id}
+                  </div>
+                </td>
                 <td className={clsx('p-2', statusClass(r.status))}>
                   {t('taskStatus.' + r.status)}
                 </td>
-                <td className='p-2 text-slate-600'>{r.current_step}</td>
-                <td className='p-2'>{r.progress_percent}%</td>
+                <td className='p-2'>
+                  <div className='flex items-center gap-2'>
+                    <div className='w-24 h-2 bg-slate-100 rounded-full overflow-hidden dark:bg-[#1a2c2c]'>
+                      <div
+                        className='h-full bg-[#2B8F80] transition-all duration-300'
+                        style={{ width: r.progress_percent + '%' }}
+                      />
+                    </div>
+                    <span>{r.progress_percent}%</span>
+                  </div>
+                  {r.current_step && (
+                    <div className='text-[10px] text-slate-400 mt-1'>
+                      {r.current_step}
+                    </div>
+                  )}
+                </td>
                 <td className='p-2 text-slate-500'>
                   {new Date(r.created_at).toLocaleString()}
                 </td>
                 <td className='p-2'>
                   <button
                     type='button'
-                    className='text-[#2B8F80] underline'
-                    onClick={() => setSelected(r.task_id)}>
-                    {t('tasks.openDetail')}
+                    disabled={actionBusy || r.status !== 'failed'}
+                    className='text-[#2B8F80] underline disabled:opacity-0'
+                    onClick={() => void retryViaRaw(r.raw_id)}>
+                    {t('raw.reprocess')}
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {!loading && rows.length === 0 && isApiEnabled() && (
+        {!loading && rows.length === 0 && (
           <p className='p-4 text-slate-500 text-center'>{t('raw.all')}</p>
-        )}
-      </div>
-
-      {selected && (
-        <TaskDetailDrawer
-          taskId={selected}
-          onClose={() => setSelected(null)}
-          onRetryRaw={retryViaRaw}
-          busy={actionBusy}
-          nav={nav}
-        />
-      )}
-    </div>
-  );
-}
-
-function TaskDetailDrawer({
-  taskId,
-  onClose,
-  onRetryRaw,
-  busy,
-  nav,
-}: {
-  taskId: string;
-  onClose: () => void;
-  onRetryRaw: (rawId: string) => Promise<void>;
-  busy: boolean;
-  nav: ReturnType<typeof useNavigate>;
-}) {
-  const { t } = useI18n();
-  const [d, setD] = useState<Awaited<ReturnType<typeof tasksApi.get>> | null>(
-    null,
-  );
-  const [e, setE] = useState<string | null>(null);
-  const load = useCallback(() => {
-    if (!isApiEnabled()) return;
-    void tasksApi
-      .get(taskId)
-      .then(setD)
-      .catch((err) => setE((err as ApiError).message));
-  }, [taskId]);
-  useEffect(() => {
-    load();
-  }, [load]);
-  const isPending = d && isTaskPendingPoll(d.status);
-  useEffect(() => {
-    if (!isPending) return;
-    const id = window.setInterval(() => {
-      void load();
-    }, POLL_INTERVAL_MS);
-    return () => window.clearInterval(id);
-  }, [isPending, load]);
-  if (!isApiEnabled()) return null;
-  return (
-    <div className='fixed inset-0 z-50 flex justify-end' role='dialog'>
-      <div className='absolute inset-0 bg-black/30' onClick={onClose} />
-      <div className='relative z-10 flex h-full w-full max-w-md flex-col bg-white p-4 shadow-xl dark:bg-[#0F1A1A] overflow-y-auto'>
-        <div className='mb-2 flex items-center justify-between'>
-          <h2 className='font-semibold'>{t('tasks.detailTitle')}</h2>
-          <button type='button' onClick={onClose} className='text-slate-500'>
-            {t('common.close')}
-          </button>
-        </div>
-        {e && <p className='text-sm text-rose-600'>{e}</p>}
-        {d && (
-          <div className='space-y-2 text-sm'>
-            <p className='font-mono text-xs'>{d.task_id}</p>
-            <p>
-              {t('tasks.rawRef')}: <span className='font-mono'>{d.raw_id}</span>
-            </p>
-            <p className={statusClass(d.status)}>
-              {t('taskStatus.' + d.status)}
-            </p>
-            <p>
-              {d.current_step} · {d.progress_percent}%
-            </p>
-            {d.error_msg && <p className='text-rose-600'>{d.error_msg}</p>}
-            {d.note_id && (
-              <p>
-                <button
-                  type='button'
-                  className='text-[#2B8F80] underline'
-                  onClick={() => {
-                    const firstNoteId =
-                      d.note_id
-                        ?.split(',')
-                        .map((s) => s.trim())
-                        .find(Boolean) ?? null;
-                    if (firstNoteId) {
-                      void nav('/notes/' + encodeURIComponent(firstNoteId));
-                      onClose();
-                    }
-                  }}>
-                  {t('tasks.openNote')}
-                </button>
-              </p>
-            )}
-            {d.status === 'failed' && (
-              <button
-                type='button'
-                className='rounded-lg bg-[#2B8F80] px-3 py-2 text-white text-sm disabled:opacity-50'
-                disabled={busy}
-                onClick={() => void onRetryRaw(d.raw_id)}>
-                {t('tasks.retryViaRaw')}
-              </button>
-            )}
-          </div>
         )}
       </div>
     </div>
