@@ -85,6 +85,10 @@ export default function RawLibraryPage() {
     }
     const t0 = Date.now();
     let isCancelled = false;
+    let failCount = 0;
+    let lastDataFingerprint = JSON.stringify(
+      rows.map((r) => ({ id: r.id, status: r.status })),
+    );
 
     const runPoll = async () => {
       if (isCancelled) return;
@@ -96,7 +100,25 @@ export default function RawLibraryPage() {
       await load(true);
 
       if (!isCancelled) {
-        setTimeout(runPoll, POLL_INTERVAL_MS);
+        // 计算当前数据指纹：比较 ID 和 状态
+        setRows((currentRows) => {
+          const currentFingerprint = JSON.stringify(
+            currentRows.map((r) => ({ id: r.id, status: r.status })),
+          );
+
+          if (currentFingerprint === lastDataFingerprint) {
+            // 数据没变，增加退避间隔
+            failCount = Math.min(failCount + 1, 4);
+          } else {
+            // 数据变了，重置间隔
+            failCount = 0;
+            lastDataFingerprint = currentFingerprint;
+          }
+          return currentRows;
+        });
+
+        const nextInterval = POLL_INTERVAL_MS * (1 + failCount);
+        setTimeout(runPoll, nextInterval);
       }
     };
 
@@ -106,7 +128,7 @@ export default function RawLibraryPage() {
       isCancelled = true;
       clearTimeout(timerId);
     };
-  }, [hasNonTerminal, load]);
+  }, [hasNonTerminal, load]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onProcess = async (rawId: string, forceRetry: boolean) => {
     if (!isApiEnabled()) return;
