@@ -67,7 +67,7 @@ API docs at `http://localhost:8173/docs`
 
 1. Create a Supabase project
 2. Run `database/migrations/001_init.sql` in SQL Editor
-3. Copy `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` to `.env` files
+3. 后端：`DATABASE_URL`（本地常用 SQLite；连线上库用 Dashboard **Connect** 复制 URI，`postgresql://`→`postgresql+asyncpg://`）；以及 `SUPABASE_URL`、`SUPABASE_SECRET_KEY`、`SUPABASE_JWT_SECRET`。Data API 仅需 URL+Secret（[Python](https://supabase.com/docs/reference/python/initializing)）；SQLAlchemy 直连需 `DATABASE_URL`（[Postgres 连接串](https://supabase.com/docs/guides/database/connecting-to-postgres)）。前端 `.env` 见 `frontend/.env.example`。
 
 ## 📝 Implementation Status
 

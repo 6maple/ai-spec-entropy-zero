@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import rawApi, { type RawListItem } from '@/lib/api/rawApi';
 import type { TaskListItem } from '@/lib/api/tasksApi';
 import tasksApi from '@/lib/api/tasksApi';
-import { isApiEnabled } from '@/lib/api/getAccessToken';
+import { getAccessToken, isApiEnabled } from '@/lib/api/getAccessToken';
 
 export default function HomePage() {
   const { t } = useI18n();
@@ -17,6 +17,13 @@ export default function HomePage() {
     if (!isApiEnabled()) {
       setRaw([]);
       setTaskRows([]);
+      return;
+    }
+    const tok = await getAccessToken();
+    if (!tok) {
+      setRaw([]);
+      setTaskRows([]);
+      setPartialErr(false);
       return;
     }
     setPartialErr(false);

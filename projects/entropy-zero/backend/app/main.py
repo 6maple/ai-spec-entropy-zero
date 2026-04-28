@@ -35,6 +35,7 @@ app = FastAPI(
     description="Backend API for Entropy Zero - Phase 1",
     version="0.1.0",
     lifespan=lifespan,
+    redirect_slashes=False,
 )
 
 # CORS configuration

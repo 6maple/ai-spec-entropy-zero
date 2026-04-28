@@ -100,7 +100,7 @@ async def upload_raw_markdown(
     )
 
 
-@router.get("/", response_model=list[RawKnowledgeListItem])
+@router.get("", response_model=list[RawKnowledgeListItem])
 async def list_raw_knowledge(
     db: DbSession,
     user_id: CurrentUserId,
@@ -196,9 +196,7 @@ async def trigger_processing(
     task_id_str: str
     async with db.begin():
         stmt = (
-            select(RawKnowledge)
-            .where(RawKnowledge.raw_id == raw_id)
-            .with_for_update()
+            select(RawKnowledge).where(RawKnowledge.raw_id == raw_id).with_for_update()
         )
         row = (await db.execute(stmt)).scalar_one_or_none()
         if not row or row.user_id != user_id:

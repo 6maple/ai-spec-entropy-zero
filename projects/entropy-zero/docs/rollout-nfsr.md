@@ -3,7 +3,7 @@
 ## 发布前
 
 1. 在目标环境跑 `database/migrations/001_init.sql`（或等价迁移），确认 `flashcards`、`review_logs` 与索引存在。  
-2. 设置后端 `SUPABASE_JWT_SECRET` 或 `DEV_JWT_SECRET`，配置 `DATABASE_URL`；前端 `VITE_API_BASE_URL` 指向同一 API 前缀。  
+2. 设置后端 `SUPABASE_URL`、`SUPABASE_SECRET_KEY`、`SUPABASE_JWT_SECRET` 或（开发态）`DEV_JWT_SECRET`；配置 **`DATABASE_URL`**（SQLAlchemy 唯一数据源）；前端 `VITE_SUPABASE_*`/`VITE_API_BASE_URL` 就绪。  
 3. 本地/CI：`cd frontend && pnpm build`；`cd backend && uv run python -c "from app.main import app"`。  
 4. 可选 E2E：`cd frontend && pnpm exec playwright install` 后 `pnpm e2e`。
 

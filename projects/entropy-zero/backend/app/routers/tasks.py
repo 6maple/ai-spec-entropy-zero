@@ -23,7 +23,7 @@ def _summary(task: ProcessingTask) -> str | None:
     return ";".join(parts) if parts else None
 
 
-@router.get("/", response_model=list[TaskListItem])
+@router.get("", response_model=list[TaskListItem])
 async def list_tasks(
     db: DbSession,
     user_id: CurrentUserId,

@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useI18n } from '@/contexts/I18nContext';
 import AppShell from '@/components/layout/AppShell';
+import { RequireAuth, RequireGuest } from '@/components/auth/RouteGuards';
+import { UnauthorizedNavigatorBridge } from '@/components/auth/UnauthorizedNavigatorBridge';
 import HomePage from '@/pages/HomePage';
 import NoteDetailPage from '@/pages/NoteDetailPage';
 import ReviewPage from '@/pages/ReviewPage';
@@ -26,17 +28,74 @@ function AppRoutes() {
 
   return (
     <BrowserRouter>
+      <UnauthorizedNavigatorBridge />
       <AppShell>
         <Routes>
           <Route path='/' element={<HomePage />} />
-          <Route path='/raw' element={<RawLibraryPage />} />
-          <Route path='/raw/:id' element={<RawDetailPage />} />
-          <Route path='/tasks' element={<TasksPage />} />
-          <Route path='/notes' element={<NotesListPage />} />
-          <Route path='/notes/:id' element={<NoteDetailPage />} />
-          <Route path='/review' element={<ReviewPage />} />
-          <Route path='/upload' element={<UploadPage />} />
-          <Route path='/auth/login' element={<LoginPage />} />
+          <Route
+            path='/auth/login'
+            element={
+              <RequireGuest>
+                <LoginPage />
+              </RequireGuest>
+            }
+          />
+          <Route
+            path='/raw'
+            element={
+              <RequireAuth>
+                <RawLibraryPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/raw/:id'
+            element={
+              <RequireAuth>
+                <RawDetailPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/tasks'
+            element={
+              <RequireAuth>
+                <TasksPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/notes'
+            element={
+              <RequireAuth>
+                <NotesListPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/notes/:id'
+            element={
+              <RequireAuth>
+                <NoteDetailPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/review'
+            element={
+              <RequireAuth>
+                <ReviewPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path='/upload'
+            element={
+              <RequireAuth>
+                <UploadPage />
+              </RequireAuth>
+            }
+          />
           <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
       </AppShell>

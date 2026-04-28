@@ -86,7 +86,7 @@ async def list_due_cards(
     return [_to_card_response(r) for r in rows]
 
 
-@router.post("/", response_model=FlashcardResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=FlashcardResponse, status_code=status.HTTP_201_CREATED)
 async def create_flashcard(data: FlashcardCreate):
     """
     Create a new flashcard (usually done by AI service)
@@ -100,7 +100,7 @@ async def create_flashcard(data: FlashcardCreate):
     )
 
 
-@router.get("/", response_model=List[FlashcardResponse])
+@router.get("", response_model=List[FlashcardResponse])
 async def list_flashcards(
     note_id: str = None,
     filter: str = Query("today", pattern="^(all|today|overdue)$"),

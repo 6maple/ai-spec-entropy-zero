@@ -14,6 +14,7 @@ from sqlalchemy import (
     ForeignKey,
     Index,
 )
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 import uuid
@@ -21,12 +22,15 @@ import json
 
 Base = declarative_base()
 
+# UUID 列类型：PostgreSQL 用原生 UUID 类型（避免 uuid = varchar 类型错误），Python 侧用字符串
+_UUID = PG_UUID(as_uuid=False)
+
 
 class RawKnowledge(Base):
     __tablename__ = "raw_knowledge"
 
-    raw_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, nullable=False, index=True)
+    raw_id = Column(_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(_UUID, nullable=False, index=True)
     file_name = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     status = Column(String(20), nullable=False, default="pending")
@@ -47,7 +51,9 @@ class RawKnowledge(Base):
         Index("idx_raw_knowledge_user_id", "user_id"),
         Index("idx_raw_knowledge_status", "status"),
         Index("idx_raw_knowledge_user_created", "user_id", "created_at"),
-        Index("idx_raw_knowledge_user_status_created", "user_id", "status", "created_at"),
+        Index(
+            "idx_raw_knowledge_user_status_created", "user_id", "status", "created_at"
+        ),
     )
 
 
@@ -56,10 +62,10 @@ class ProcessingTask(Base):
 
     __tablename__ = "processing_tasks"
 
-    task_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, nullable=False, index=True)
+    task_id = Column(_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(_UUID, nullable=False, index=True)
     raw_id = Column(
-        String,
+        _UUID,
         ForeignKey("raw_knowledge.raw_id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -68,7 +74,7 @@ class ProcessingTask(Base):
     current_step = Column(String(64), nullable=True)
     progress_percent = Column(Integer, nullable=False, default=0)
     error_msg = Column(Text, nullable=True)
-    note_id = Column(String, nullable=True)
+    note_id = Column(_UUID, nullable=True)
     flashcard_count = Column(Integer, nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
@@ -90,10 +96,10 @@ class ProcessingTask(Base):
 class Note(Base):
     __tablename__ = "notes"
 
-    note_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, nullable=False, index=True)
+    note_id = Column(_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(_UUID, nullable=False, index=True)
     raw_id = Column(
-        String, ForeignKey("raw_knowledge.raw_id", ondelete="SET NULL"), nullable=True
+        _UUID, ForeignKey("raw_knowledge.raw_id", ondelete="SET NULL"), nullable=True
     )
     title = Column(String(500), nullable=False)
     abstract = Column(Text)
@@ -131,10 +137,10 @@ class Note(Base):
 class Flashcard(Base):
     __tablename__ = "flashcards"
 
-    card_id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, nullable=False, index=True)
+    card_id = Column(_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(_UUID, nullable=False, index=True)
     note_id = Column(
-        String, ForeignKey("notes.note_id", ondelete="CASCADE"), nullable=False
+        _UUID, ForeignKey("notes.note_id", ondelete="CASCADE"), nullable=False
     )
     point_id = Column(String(100), nullable=False)
     question = Column(Text, nullable=False)
@@ -175,9 +181,9 @@ class ReviewLog(Base):
 
     log_id = Column(Integer, primary_key=True, autoincrement=True)
     card_id = Column(
-        String, ForeignKey("flashcards.card_id", ondelete="CASCADE"), nullable=False
+        _UUID, ForeignKey("flashcards.card_id", ondelete="CASCADE"), nullable=False
     )
-    user_id = Column(String, nullable=False, index=True)
+    user_id = Column(_UUID, nullable=False, index=True)
     rating = Column(SmallInteger, nullable=False)
     elapsed_days = Column(Integer, nullable=False)
     scheduled_days = Column(Integer, nullable=False)

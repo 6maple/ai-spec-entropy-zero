@@ -40,7 +40,7 @@ def _meta_from_raw_json(json_str: str | None) -> MetaTagResponse | None:
     return MetaTagResponse(domain=domain, topics=topics)
 
 
-@router.post("/", response_model=NoteResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=NoteResponse, status_code=status.HTTP_201_CREATED)
 async def create_note(data: NoteCreate):
     """
     Create a new note (usually done by AI service)
@@ -74,7 +74,7 @@ def _note_to_response(
     )
 
 
-@router.get("/", response_model=list[NoteResponse])
+@router.get("", response_model=list[NoteResponse])
 async def list_notes(
     db: DbSession,
     user_id: CurrentUserId,
@@ -134,9 +134,7 @@ async def get_note(note_id: str, db: DbSession, user_id: CurrentUserId):
     )
     note = r.scalar_one_or_none()
     if not note:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="笔记不存在"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="笔记不存在")
     c = await db.execute(
         select(func.count())
         .select_from(Flashcard)
@@ -146,9 +144,7 @@ async def get_note(note_id: str, db: DbSession, user_id: CurrentUserId):
     meta_json = None
     if note.raw_id:
         mr = await db.execute(
-            select(RawKnowledge.meta_tag_json).where(
-                RawKnowledge.raw_id == note.raw_id
-            )
+            select(RawKnowledge.meta_tag_json).where(RawKnowledge.raw_id == note.raw_id)
         )
         meta_json = mr.scalar_one_or_none()
     return _note_to_response(

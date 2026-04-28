@@ -202,6 +202,25 @@ Worker 将结果写回数据库：
 
 密钥全部走环境变量，不写入代码仓库。
 
+### 认证与环境切换（Supabase）
+
+本项目使用 **Supabase Auth** 完成注册与登录，后端仅校验 JWT（`sub` 为用户 ID），不提供自建账号接口。
+
+- **模式 A：本地 PostgreSQL/SQLite + Supabase Auth**  
+  - 前端：`VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`；`VITE_API_BASE_URL` 指向本地 API（如 `http://localhost:8173/api`）。  
+  - 后端：按需设置 **`DATABASE_URL`**（SQLite 或本地 Postgres）；**`SUPABASE_URL`**、**`SUPABASE_SECRET_KEY`**（[`create_client` Data API](https://supabase.com/docs/reference/python/initializing)，无需单独 `*_DB_PASSWORD` 环境变量）、**`SUPABASE_JWT_SECRET`**（与控制台 JWT Signing Secret 一致，用于 Bearer）。  
+
+- **模式 B：后端直连 Supabase 托管 Postgres**  
+  - 按 [Connecting to Postgres](https://supabase.com/docs/guides/database/connecting-to-postgres) 从 Dashboard → **Connect** 复制 Postgres **连接字符串**，将 `postgresql://` 写成 `postgresql+asyncpg://` 后填入 **`DATABASE_URL`**（密码在该 URI 内，不要求额外环境变量）。  
+  - **`SUPABASE_URL` + `SUPABASE_SECRET_KEY`** 仍按需用于服务端 Data API（`create_client`，与 Postgres 直连是两条通路）。  
+
+- **模式 C：开发者令牌（仅联调）**  
+  - 后端可设 `AUTH_MODE=dev_token` 与 `DEV_JWT_SECRET`；前端开发态可配置 `VITE_DEV_ACCESS_TOKEN`。  
+
+**说明（与官方文档一致）**：经 **REST Data API** 访问数据时，`create_client` 仅需项目 **`SUPABASE_URL` + Secret**；本仓库 **`SQLAlchemy` 走的是 Postgres 协议**，需单独提供 **`DATABASE_URL`**（常为 Connect 里的完整 URI，密码在 URI 内）。二者不要混为一谈。
+
+**排障**：受保护路由依赖 SQLAlchemy 时请配置 **`DATABASE_URL`**；仅用 `SUPABASE_JWT_SECRET` 不能充当数据库连接。401 时请核对 JWT Secret 与 Bearer。
+
 ---
 
 ## 11. 给新同学的阅读顺序（推荐）

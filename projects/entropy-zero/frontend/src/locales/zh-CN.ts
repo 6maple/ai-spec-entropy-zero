@@ -16,7 +16,22 @@ export const zhCN = {
   auth: {
     login: '登录',
     signOut: '退出登录',
-    loginSub: 'Supabase Auth 尚未集成；开发请使用 VITE_DEV_ACCESS_TOKEN',
+    subtitle: '使用 Supabase 账号登录或注册以访问知识库与复习',
+    tabLogin: '登录',
+    tabRegister: '注册',
+    email: '邮箱',
+    password: '密码（至少 6 位）',
+    submitLogin: '登录',
+    submitRegister: '注册账号',
+    submitting: '提交中…',
+    signupSuccessHint:
+      '注册请求已提交。若项目启用了邮箱验证，请查收邮件后再登录；也可直接尝试登录（若已自动登录可忽略此提示）。',
+    missingSupabase:
+      '缺少 Supabase 前端配置：请在 frontend/.env 中设置 VITE_SUPABASE_URL 与 VITE_SUPABASE_ANON_KEY。',
+    errInvalidCredential: '邮箱或密码不正确',
+    errEmailNotConfirmed: '邮箱尚未完成验证，请先查收验证邮件或联系管理员',
+    errAlreadyRegistered: '该邮箱已注册，请改用登录',
+    errWeakPassword: '密码不符合策略，请设置更长或更复杂的密码',
   },
   home: {
     title: '仪表盘',
