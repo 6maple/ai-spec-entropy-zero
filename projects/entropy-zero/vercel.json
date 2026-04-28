@@ -5,7 +5,7 @@
       "routePrefix": "/"
     },
     "api": {
-      "entrypoint": "backend",
+      "entrypoint": "backend/main.py",
       "routePrefix": "/api"
     }
   },
@@ -14,5 +14,8 @@
       "source": "/((?!api).*)",
       "destination": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "ENABLE_INTEGRATED_WORKER": "1"
+  }
 }

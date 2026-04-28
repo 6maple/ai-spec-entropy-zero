@@ -65,7 +65,10 @@ export default function TasksPage() {
       setLoading(false);
       return;
     }
-    setLoading(true);
+    // 仅在当前没有数据时显示全屏加载中，避免轮询时一直转圈
+    if (rows.length === 0) {
+      setLoading(true);
+    }
     void (async () => {
       try {
         await load(false);
@@ -73,7 +76,7 @@ export default function TasksPage() {
         setLoading(false);
       }
     })();
-  }, [load]);
+  }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const hasNonTerminal = rows.some((r) => isTaskPendingPoll(r.status));
 
@@ -83,15 +86,28 @@ export default function TasksPage() {
       return;
     }
     const t0 = Date.now();
-    const id = window.setInterval(() => {
+    let isCancelled = false;
+
+    const runPoll = async () => {
+      if (isCancelled) return;
       if (Date.now() - t0 > POLL_MAX_MS) {
         setPollTimeout(true);
-        window.clearInterval(id);
         return;
       }
-      void load(true);
-    }, POLL_INTERVAL_MS);
-    return () => window.clearInterval(id);
+
+      await load(true);
+
+      if (!isCancelled) {
+        setTimeout(runPoll, POLL_INTERVAL_MS);
+      }
+    };
+
+    const timerId = setTimeout(runPoll, POLL_INTERVAL_MS);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timerId);
+    };
   }, [hasNonTerminal, load]);
 
   const retryViaRaw = async (rawId: string) => {
@@ -130,7 +146,10 @@ export default function TasksPage() {
         <button
           type='button'
           onClick={() => void load()}
-          className='rounded-lg border border-[#2B8F80] px-3 py-1.5 text-sm text-[#2B8F80]'>
+          className='rounded-lg border border-[#2B8F80] px-3 py-1.5 text-sm text-[#2B8F80] flex items-center gap-2'>
+          {isRefreshing && (
+            <div className='h-3 w-3 animate-spin rounded-full border-2 border-[#2B8F80] border-t-transparent' />
+          )}
           {t('common.refresh')}
         </button>
       </div>

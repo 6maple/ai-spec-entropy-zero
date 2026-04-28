@@ -35,3 +35,8 @@ def get_gemini_api_key() -> str:
 @lru_cache
 def get_ai_max_tokens() -> int:
     return _int_env("AI_MAX_TOKENS", 4096)
+
+
+def get_worker_enabled() -> bool:
+    """Whether to run the background worker within the FastAPI process."""
+    return os.getenv("ENABLE_INTEGRATED_WORKER", "0") == "1"

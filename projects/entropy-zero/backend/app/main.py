@@ -6,13 +6,19 @@ Handles knowledge ingestion, note management, and flashcard reviews.
 """
 
 import logging
+import asyncio
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.config import get_dashscope_api_key, get_entropy_agent_enabled
+from app.core.config import (
+    get_dashscope_api_key,
+    get_entropy_agent_enabled,
+    get_worker_enabled,
+)
 from app.routers import raw_knowledge, notes, cards, tasks
+from app.worker import worker_loop
 
 log = logging.getLogger("entropy.api")
 
@@ -27,7 +33,27 @@ async def lifespan(_app: FastAPI):
         log.warning(
             "ENTROPY_AGENT 非 1：与 .env.example 默认不一致；当前处理管线固定走 Agent，建议设为 1"
         )
+
+    worker_task = None
+    if get_worker_enabled():
+        log.info("ENABLE_INTEGRATED_WORKER=1: 正在生命周期中启动内置 Worker 协程...")
+        worker_task = asyncio.create_task(worker_loop())
+    else:
+        log.info(
+            "ENABLE_INTEGRATED_WORKER=0: 不启动内置 Worker (如果需要背景处理，请确保有独立进程运行 app.worker)"
+        )
+
     yield
+
+    if worker_task:
+        log.info("正在停止内置 Worker 协程...")
+        worker_task.cancel()
+        try:
+            await worker_task
+        except asyncio.CancelledError:
+            log.info("内置 Worker 协程已取消")
+        except Exception:
+            log.exception("内置 Worker 停机时发生异常")
 
 
 app = FastAPI(
