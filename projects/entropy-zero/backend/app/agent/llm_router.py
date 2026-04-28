@@ -49,15 +49,25 @@ class LLMRouter:
 
         self.primary_client = OpenAI(
             base_url=self.primary_profile.api_base,
-            api_key=self._resolve_api_key(self.primary_profile.api_key_env, required=True),
+            api_key=self._resolve_api_key(
+                self.primary_profile.api_key_env, required=True
+            ),
         )
-        fallback_key = self._resolve_api_key(self.fallback_profile.api_key_env, required=False)
+        fallback_key = self._resolve_api_key(
+            self.fallback_profile.api_key_env, required=False
+        )
         self.fallback_client = (
-            OpenAI(base_url=self.fallback_profile.api_base, api_key=fallback_key) if fallback_key else None
+            OpenAI(base_url=self.fallback_profile.api_base, api_key=fallback_key)
+            if fallback_key
+            else None
         )
 
     def _resolve_api_key(self, key_name: str, required: bool) -> str | None:
-        key = config.get_dashscope_api_key() if key_name == "DASHSCOPE_API_KEY" else config.get_gemini_api_key()
+        key = (
+            config.get_dashscope_api_key()
+            if key_name == "DASHSCOPE_API_KEY"
+            else config.get_gemini_api_key()
+        )
         if required and not key:
             raise RuntimeError(f"Missing required API key: {key_name}")
         return key or None
@@ -65,34 +75,41 @@ class LLMRouter:
     def call(self, prompt_name: str, variables: dict[str, Any]) -> dict[str, Any]:
         try:
             rendered = self._render_prompt(prompt_name, self.source_lang, variables)
-            text = self._call_with_retries(self.primary_client, self.primary_profile, rendered)
+            text = self._call_with_retries(
+                self.primary_client, self.primary_profile, rendered
+            )
             return json.loads(text)
         except (APIError, RuntimeError, json.JSONDecodeError) as primary_error:
             if self.fallback_client is None:
                 raise RuntimeError("LLM_UNAVAILABLE") from primary_error
             log.warning("Primary LLM failed, fallback triggered: %s", primary_error)
             rendered = self._render_prompt(prompt_name, self.fallback_lang, variables)
-            text = self._call_with_retries(self.fallback_client, self.fallback_profile, rendered)
+            text = self._call_with_retries(
+                self.fallback_client, self.fallback_profile, rendered
+            )
             return json.loads(text)
 
-    def _render_prompt(self, prompt_name: str, lang: str, variables: dict[str, Any]) -> str:
+    def _render_prompt(
+        self, prompt_name: str, lang: str, variables: dict[str, Any]
+    ) -> str:
         prompt_path = _PROMPTS_DIR / f"{prompt_name}_{lang}.jinja2"
         template = Template(prompt_path.read_text(encoding="utf-8"))
         return template.render(**variables)
 
-    def _call_with_retries(self, client: OpenAI, profile: LLMProfile, prompt: str) -> str:
+    def _call_with_retries(
+        self, client: OpenAI, profile: LLMProfile, prompt: str
+    ) -> str:
         for attempt in range(3):
             try:
-                response = client.responses.create(
+                response = client.chat.completions.create(
                     model=profile.model,
                     temperature=profile.temperature,
-                    max_output_tokens=config.get_ai_max_tokens(),
-                    input=prompt,
+                    max_tokens=config.get_ai_max_tokens(),
+                    messages=[{"role": "user", "content": prompt}],
                 )
-                return response.output_text
+                return response.choices[0].message.content
             except RateLimitError:
                 if attempt == 2:
                     raise
                 time.sleep(2**attempt)
         raise RuntimeError("LLM_UNAVAILABLE")
-

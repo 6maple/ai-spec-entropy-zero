@@ -11,18 +11,31 @@ log = logging.getLogger("entropy.agent.lang_detector")
 
 _LANG_DETECT_MODEL = "qwen3.5-35b-a3b"
 _DASHSCOPE_BASE = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-_MAX_SAMPLE_CHARS = 3600
-_SLICE_CHARS = 1200
+# 轻量三段采样：前/中/各约 100 字，总长约 300，降低语言检测 token 消耗
+_MAX_SAMPLE_CHARS = 300
+_SLICE_CHARS = 100
 
 _CJK_RE = re.compile(r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]")
 
 
 def detect_language(markdown_text: str) -> str:
     sampled_text = _sample_body_text(markdown_text)
+    sample_chars = len(sampled_text)
     llm_result = _detect_with_llm(sampled_text)
     if llm_result in {"zh", "en"}:
+        log.info(
+            "语言检测: method=llm lang=%s sample_chars=%s",
+            llm_result,
+            sample_chars,
+        )
         return llm_result
-    return _detect_with_ratio(sampled_text)
+    ratio_result = _detect_with_ratio(sampled_text)
+    log.info(
+        "语言检测: method=ratio_fallback lang=%s sample_chars=%s",
+        ratio_result,
+        sample_chars,
+    )
+    return ratio_result
 
 
 def _detect_with_llm(sampled_text: str) -> str | None:
@@ -31,16 +44,21 @@ def _detect_with_llm(sampled_text: str) -> str | None:
         return None
     try:
         client = OpenAI(base_url=_DASHSCOPE_BASE, api_key=api_key)
-        response = client.responses.create(
+        response = client.chat.completions.create(
             model=_LANG_DETECT_MODEL,
             temperature=0.0,
-            max_output_tokens=8,
-            input=(
-                "判断以下文本主要语言，只返回 `zh` 或 `en`，不要返回其它内容。\n\n"
-                f"{sampled_text}"
-            ),
+            max_tokens=8,
+            messages=[
+                {
+                    "role": "user",
+                    "content": (
+                        "判断以下文本主要语言，只返回 `zh` 或 `en`，不要返回其它内容。\n\n"
+                        f"{sampled_text}"
+                    ),
+                }
+            ],
         )
-        result = (response.output_text or "").strip().lower()
+        result = (response.choices[0].message.content or "").strip().lower()
         if "zh" in result:
             return "zh"
         if "en" in result:
@@ -88,4 +106,3 @@ def _detect_with_ratio(text: str) -> str:
     total_chars = len(text)
     cjk_chars = len(_CJK_RE.findall(text))
     return "zh" if (cjk_chars / total_chars) >= 0.2 else "en"
-

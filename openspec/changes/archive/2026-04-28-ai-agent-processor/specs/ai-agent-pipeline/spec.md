@@ -117,7 +117,7 @@
 #### Scenario: Fallback to deterministic processor
 
 - **WHEN** `ENTROPY_AGENT=0` 或未设置
-- **THEN** Worker 调用原 `run_deterministic_processor`，行为与 Phase 1 完全一致
+- **THEN** Worker 調用原 `run_deterministic_processor`，行为与 Phase 1 完全一致
 
 ---
 

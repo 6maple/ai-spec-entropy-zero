@@ -4,7 +4,7 @@ Phase 1 的 `processor.py` 是一个确定性占位处理器（`run_deterministi
 
 Worker → Queue → Processor → DB 的整体边界已在 `queue-worker-boundary` 和 `tasks-observability-api` spec 中稳定，本变更只替换 Processor 内部实现，不改变接口契约。
 
-现行约束（来自 `deterministic-processor` spec）："MUST NOT 包含向大模型供应商发起的 HTTP 客户端调用"。Phase 2 通过环境变量 `ENTROPY_AGENT` 区分两条路径，保持原约束在 `=0` 时依然成立。
+现行约束（来自 `deterministic-processor` spec）:"MUST NOT 包含向大模型供应商发起的 HTTP 客户端调用"。Phase 2 通过环境变量 `ENTROPY_AGENT` 区分两条路径，保持原约束在 `=0` 时依然成立。
 
 ## Goals / Non-Goals
 
@@ -12,7 +12,7 @@ Worker → Queue → Processor → DB 的整体边界已在 `queue-worker-bounda
 - 将 Markdown 文档分解为原子化知识主张（`core_claims`），每个 claim 具备完整的 topic、assertion、evidence 和 source_lines
 - 每个 claim 严格对应一张 Flashcard，覆盖率 100%
 - 支持一份文档产出 1..N 个 Note（按主题内聚性分割）
-- 支持中英双语文档，自动检测语言并路由到对应模型（中文→阿里云百炼 qwen-plus；英文→Gemini 3 Flash）
+- 支持中英双语文档，自动检测语言并路由到对应模型（中文→阿里云百炼 deepseek-v4-pro；英文→Gemini 3 Flash）
 - 通过 `ENTROPY_AGENT=1` 激活 Agent 路径，原占位实现作 fallback，不破坏现有 Phase 1 测试
 
 **Non-Goals:**
@@ -59,7 +59,7 @@ Worker → Queue → Processor → DB 的整体边界已在 `queue-worker-bounda
 
 **备选方案**：单一 Prompt 文件内部通过 `{% if lang == 'zh' %}` 条件分支。
 
-**理由**：中英文 Prompt 在语气、术语结构、规则描述上差异显著（阿里 qwen-plus 更适合中文指令风格，Gemini 更适合英文指令风格），独立文件便于各自迭代优化，不产生耦合。
+**理由**：中英文 Prompt 在语气、术语结构、规则描述上差异显著（阿里 deepseek-v4-pro 更适合中文指令风格，Gemini 更适合英文指令风格），独立文件便于各自迭代优化，不产生耦合。
 
 ## Risks / Trade-offs
 
@@ -80,5 +80,5 @@ Worker → Queue → Processor → DB 的整体边界已在 `queue-worker-bounda
 
 ## Open Questions
 
-- `qwen-plus` 是否是百炼当前有免费额度的最优文本模型？（需在百炼控制台确认，若有更优选项可在实现时替换 `model` 字符串）
+- `deepseek-v4-pro` 是否是百炼当前有免费额度的最优文本模型？（需在百炼控制台确认，若有更优选项可在实现时替换 `model` 字符串）
 - `NotePartitioner` 是否需要 LLM 辅助聚类，还是纯规则决策表即可满足质量要求？（可先用规则，实测后决定）

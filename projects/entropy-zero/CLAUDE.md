@@ -39,11 +39,11 @@ These rules are as binding as functional requirements. Review them before changi
 
 #### Mock / placeholder registry (audit & cleanup)
 
-| Location (path)                                  | Reason                                                                                                | Removal plan / notes                            |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `backend/.env` · `ENTROPY_INLINE_QUEUE=1`        | 本地无 Redis 时在 API 进程内 `asyncio.create_task` 执行 `process_job`，便于 Windows / Playwright 验证 | 接入 Upstash / 本地 Redis 后删除；不得用于生产  |
-| `frontend/.env*.local` · `VITE_DEV_ACCESS_TOKEN` | Supabase 登录页未接好前，开发联调 Bearer                                                              | 登录流程完成后可改用真实 `session.access_token` |
-| `app/services/processor.py`                      | Phase 1 确定性占位处理器（无 LLM HTTP）                                                               | Phase 2 接入真实抽取前替换实现                  |
+| Location (path)                                  | Reason                                                                                                                                                          | Removal plan / notes                            |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `backend/.env` · `ENTROPY_INLINE_QUEUE=1`        | 本地无 Redis 时在 API 进程内 `asyncio.create_task` 执行 `process_job`，便于 Windows / Playwright 验证                                                           | 接入 Upstash / 本地 Redis 后删除；不得用于生产  |
+| `frontend/.env*.local` · `VITE_DEV_ACCESS_TOKEN` | Supabase 登录页未接好前，开发联调 Bearer                                                                                                                        | 登录流程完成后可改用真实 `session.access_token` |
+| `app/services/processor.py`                      | 与 Agent 共用的 `ProcessorInput` / `ProcessorError` 等契约；`run_deterministic_processor` 不再产出占位数据，仅返回 `DETERMINISTIC_PROCESSOR_RETIRED` 等明确错误 | 无（保留契约供类型与受控回调查询）              |
 
 ### 4. Fallbacks and pointless defensive code
 
@@ -391,7 +391,170 @@ RESET ROLE;
 
 ---
 
-## 📚 Documentation Links
+## � Testing & Debugging Best Practices
+
+### Lessons from Agent Processing Pipeline Implementation (2026-04-27)
+
+#### **1. Test Strategy: Start Small**
+
+**错误实践**: 直接用完整文件（1000+行）测试复杂流程
+**正确实践**: 使用分层测试策略
+```
+10行样本 → 100行样本 → 完整文件
+```
+
+**实战经验**:
+- 小样本测试周期：10-30秒
+- 完整文件测试周期：60-90秒
+- 早期用小样本能快速定位80%的bug
+- 完整测试留到架构验证完成后
+
+#### **2. Diagnostic Logging: Preemptive is Better**
+
+**关键原则**: 在关键数据流节点提前加日志，而不是事后补救
+
+**必须记录的检查点**:
+```python
+# 数据转换节点
+log.info(f"📊 输入: {len(input_items)} 个，输出: {len(output_items)} 个")
+
+# 架构关键决策
+log.info(f"🔀 生成了 {len(note_payloads)} 个 notes（期望: {expected_count}）")
+
+# 性能瓶颈
+start = time.time()
+result = await expensive_operation()
+log.info(f"⏱️ 操作耗时: {time.time() - start:.2f}秒")
+```
+
+**教训**: 我们创建了10+个临时诊断脚本才定位到根因，如果初始代码就有诊断日志，可节省70%的调试时间。
+
+#### **3. Architecture Before Optimization**
+
+**错误顺序**: 发现性能慢 → 立即优化并行化 → 发现输出错误 → 才发现架构设计缺陷
+
+**正确顺序**:
+1. ✅ 验证数据流正确性（单note vs 多notes）
+2. ✅ 确认架构支持需求（`ProcessorSuccess`支持多笔记）
+3. ✅ 端到端功能验证（6个bundles → 6个notes）
+4. ✅ 性能优化（并行化、缓存等）
+
+**实战案例**:
+```
+Bug链: API兼容 → Worker阻塞 → 性能慢 → 输出错误 → 架构单note限制
+正确: 应先发现架构问题（单note设计），再做性能优化
+```
+
+#### **4. Performance Bottleneck Analysis**
+
+**Worker性能剖析** (test_sample.md 2.75KB):
+```
+语言检测:      2秒   (1次LLM调用, 无法并行)
+结构分析:      2秒   (1次LLM调用, 无法并行)
+Claims提取:   10秒   (6次并行调用, 受最慢的限制)
+Cards生成:    10秒   (6次并行调用)
+数据库写入:    1秒
+──────────────────────
+总计:       ~27秒
+```
+
+**优化成果**:
+- 串行实现：90秒
+- 并行优化：60秒（3x提速）
+- 瓶颈：LLM API延迟（1.5-3秒/次）
+
+**进一步优化方向**:
+- ✅ 已实现：ThreadPoolExecutor并行化（max_workers=6）
+- 🔄 可选：orchestrator改为真async（避免阻塞事件循环）
+- 🔄 可选：使用更快的模型（qwen-turbo vs qwen3.5-35b）
+- 🔄 可选：增加并行度（max_workers=10-15）
+- ⚠️ 限制：模型推理时间无法突破（1-2秒/次是底线）
+
+#### **5. Temporary Files Management**
+
+**清理原则**: 测试/诊断脚本应该在验证完成后立即删除
+
+**应清理的临时文件**:
+```
+✓ check_*.py       # 诊断脚本
+✓ test_*.py        # 临时测试脚本（保留正式的）
+✓ diagnose_*.py    # 问题定位脚本
+✓ __pycache__/     # Python缓存（216个目录！）
+✓ *.db             # 废弃的SQLite文件
+```
+
+**应保留的工具**:
+```
+✓ test_upload.py   # 正式测试脚本
+✓ verify_output.py # 输出验证工具
+✓ clear_database.py# 数据库清理工具
+```
+
+#### **6. Bug Dependency Chain Awareness**
+
+**实战案例**:
+```
+1. API兼容问题（DashScope参数错误）
+   ↓ 导致
+2. Worker无法完成处理
+   ↓ 看起来像
+3. 性能问题（实际是阻塞）
+   ↓ 并行化后发现
+4. 输出质量问题（1个note vs 6个）
+   ↓ 深入分析发现
+5. 架构设计缺陷（ProcessorSuccess单note限制）
+```
+
+**教训**: 
+- 不要孤立地修复每个症状
+- 寻找根本原因（root cause）
+- 修复根因能同时解决多个症状
+
+#### **7. Testing Environment Best Practices**
+
+**环境配置检查清单**:
+```bash
+# 1. 数据库状态清晰
+psql entropy_zero -c "SELECT COUNT(*) FROM notes;"
+
+# 2. Redis队列干净
+redis-cli LLEN entropy:process_jobs
+
+# 3. Worker进程状态
+ps aux | grep "app.worker"
+
+# 4. 端口占用检查
+netstat -ano | findstr :8173
+```
+
+**测试隔离原则**:
+- 每次重要测试前清空数据库
+- 确认Redis队列为空
+- 确认只有一个Worker进程在运行
+- 使用小样本避免浪费token
+
+#### **8. Documentation During Development**
+
+**不要做**: 事后整理大量散乱的笔记
+**应该做**: 在关键决策点即时记录
+
+**记录模板**:
+```markdown
+## 问题: [简短描述]
+根因: [技术原因]
+方案: [修复方法]
+验证: [测试结果]
+影响: [改动范围]
+```
+
+**本次实战**: 整个调试过程如果有即时记录，可避免：
+- 重复尝试相同的诊断方法
+- 忘记之前发现的线索
+- 混淆不同版本的修复尝试
+
+---
+
+## �📚 Documentation Links
 
 - **Requirements**: `工作台/项目文档/phase-1/Entropy Zero 需求-phase-1.md`
 - **Technical Design**: `工作台/项目文档/phase-1/技术实现方案文档.md`
@@ -442,5 +605,5 @@ When joining the project:
 
 ---
 
-**Last Updated**: 2026-04-27  
-**Status**: Phase 1 Active Development
+**Last Updated**: 2026-04-27 (添加Agent处理管道测试经验)  
+**Status**: Phase 1 Active Development - Agent Pipeline Validated

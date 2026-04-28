@@ -2,3 +2,37 @@
 2. 需要补充知识文件上传功能，是上传文件不是输入文本。
 3. 需要基于 phase1 功能文档从整体上设计好整个网站要包含哪些模块，在分析文档的时候不得遗漏任何细节。
 4. 需要基于 phase1 功能文档从整体上设计好整个网站的前端页面结构，包括导航栏。
+
+
+输入：{Input}=原始知识的Markdown文本
+处理：
+1. 快速阅读一遍{Input}，了解其中都讲了哪些类型{KnowledgeClaimType}的知识点，每个类型{KnowledgeClaimType}生成 1 个笔记{Note}。同时记录这个原始知识的元数据，知识涉及的领域类型和主题数组 {MetaTag[]}。
+2. 将属于同一个类型{KnowledgeClaimType}的知识点{KnowledgeClaim}，放到对应的笔记{Note}中。
+3. 对于每一个知识点{KnowledgeClaim}，需要生成一个复习时专用的提问{KnowledgeCardQuestion}，并将{KnowledgeClaim}微调为适合作为这个提问{KnowledgeCardQuestion}的答案的描述。
+
+输出：
+{MetaTag[]}
+1...N 个 笔记 {Note}
+每个笔记 {Note}，包含 1...M 个知识点 {KnowledgeClaim}
+每个知识点 {KnowledgeClaim}，包含 1 个复习卡提问 {KnowledgeCardQuestion}
+
+
+
+<<角色>>
+你是资深AI Agent架构师，需要帮我重新设计Agent。
+
+<<背景>>
+当前agent设计参考agent-design.md，我现在有一些重新设计的思路，参考propose-3.md。
+
+<<关键思路概述>>
+输入：{Input}=原始知识的Markdown文本
+处理：
+1. 快速阅读一遍{Input}，了解其中都讲了哪些类型{KnowledgeClaimType}的知识点，每个类型{KnowledgeClaimType}生成 1 个笔记{Note}。同时记录这个原始知识的元数据，知识涉及的领域类型和主题数组 {MetaTag[]}。
+2. 将属于同一个类型{KnowledgeClaimType}的知识点{KnowledgeClaim}，放到对应的笔记{Note}中。
+3. 对于每一个知识点{KnowledgeClaim}，需要生成一个复习时专用的提问{KnowledgeCardQuestion}，并将{KnowledgeClaim}微调为适合作为这个提问{KnowledgeCardQuestion}的答案的描述。
+
+输出：
+{MetaTag[]}
+1...N 个 笔记 {Note}
+每个笔记 {Note}，包含 1...M 个知识点 {KnowledgeClaim}
+每个知识点 {KnowledgeClaim}，包含 1 个复习卡提问 {KnowledgeCardQuestion}

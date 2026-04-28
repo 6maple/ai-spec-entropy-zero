@@ -1,4 +1,4 @@
-"""Standalone worker: dequeue → deterministic processor → persist notes/cards."""
+"""Standalone worker: dequeue → Agent processor → persist notes/cards."""
 
 from __future__ import annotations
 
@@ -9,7 +9,6 @@ from datetime import datetime, timezone
 
 from sqlalchemy import delete, select
 
-from app.core.config import get_entropy_agent_enabled
 from app.db.database import get_async_session_maker
 from app.db.models import Flashcard, Note, ProcessingTask, RawKnowledge
 from app.agent.orchestrator import run_agent_processor
@@ -17,7 +16,6 @@ from app.services.processor import (
     ProcessorError,
     ProcessorInput,
     ProcessorSuccess,
-    run_deterministic_processor,
 )
 from app.services.queue_service import ProcessJobPayload, dequeue_process_job
 
@@ -55,23 +53,31 @@ async def process_job(job: ProcessJobPayload) -> None:
             task.status = "processing"
             task.current_step = "extracting_points"
             task.progress_percent = 35
+            log.info(
+                "更新任务状态: task_id=%s, status=processing, progress=35%%",
+                job.task_id,
+            )
 
+        log.info("第一个事务已提交，开始调用 Agent 处理器: raw_id=%s", job.raw_id)
         inp = ProcessorInput(
             raw_id=raw.raw_id,
             user_id=raw.user_id,
             content=raw.content,
             file_name=raw.file_name,
         )
-        progress_state: dict[str, int | str] = {"step": "extracting_points", "percent": 35}
+        progress_state: dict[str, int | str] = {
+            "step": "extracting_points",
+            "percent": 35,
+        }
 
         def update_task_progress(step: str, percent: int) -> None:
             progress_state["step"] = step
             progress_state["percent"] = percent
+            log.info("进度更新: step=%s, percent=%d%%", step, percent)
 
-        if get_entropy_agent_enabled():
-            result = run_agent_processor(inp, update_task_progress=update_task_progress)
-        else:
-            result = run_deterministic_processor(inp)
+        log.info("开始执行 run_agent_processor...")
+        result = run_agent_processor(inp, update_task_progress=update_task_progress)
+        log.info("Agent 处理器完成，结果类型: %s", type(result).__name__)
 
         async with session.begin():
             stmt_r2 = (
@@ -100,43 +106,71 @@ async def process_job(job: ProcessJobPayload) -> None:
                 return
 
             assert isinstance(result, ProcessorSuccess)
+
+            # 调试日志：检查生成了几个 note_payload
+            log.info(
+                f"📊 ProcessorSuccess 包含 {len(result.note_payloads)} 个 note_payloads"
+            )
+            for i, np in enumerate(result.note_payloads, 1):
+                log.info(f"   {i}. {np.title} ({len(np.points)} points)")
+
             await session.execute(
                 delete(Note).where(
                     Note.raw_id == job.raw_id,
                     Note.user_id == job.user_id,
                 )
             )
-            note_id = str(uuid.uuid4())
-            note = Note(
-                note_id=note_id,
-                user_id=job.user_id,
-                raw_id=job.raw_id,
-                title=result.note_payload.title,
-                abstract=result.note_payload.abstract,
-                content_json="[]",
-            )
-            note.set_tags(result.note_payload.tags)
-            points = [
-                {
-                    "p_id": p.get("p_id", f"p_{i}"),
-                    "title": p.get("title", ""),
-                    "body": p.get("body", ""),
-                    "claim": p.get("claim", ""),
-                    "evidence": p.get("evidence", ""),
-                    "anti_patterns": p.get("anti_patterns", []),
-                    "hooks": p.get("hooks", []),
-                }
-                for i, p in enumerate(result.note_payload.points)
-            ]
-            note.set_content_json(points)
-            session.add(note)
+
+            # 为每个 note_payload 创建一个 Note 记录
+            note_ids = []
+            point_to_note_map = {}  # point_id -> note_id mapping
+
+            for note_payload in result.note_payloads:
+                note_id = str(uuid.uuid4())
+                note_ids.append(note_id)
+
+                note = Note(
+                    note_id=note_id,
+                    user_id=job.user_id,
+                    raw_id=job.raw_id,
+                    title=note_payload.title,
+                    abstract=note_payload.abstract,
+                    content_json="[]",
+                )
+                note.set_tags(note_payload.tags)
+
+                points = [
+                    {
+                        "p_id": getattr(p, "p_id", f"p_{i}"),
+                        "title": getattr(p, "title", ""),
+                        "body": getattr(p, "body", ""),
+                        "claim": getattr(p, "claim", ""),
+                        "evidence": getattr(p, "evidence", ""),
+                        "anti_patterns": getattr(p, "anti_patterns", []),
+                        "hooks": getattr(p, "hooks", []),
+                    }
+                    for i, p in enumerate(note_payload.points)
+                ]
+                note.set_content_json(points)
+                session.add(note)
+
+                # 记录这个 note 中所有 point 的映射
+                for p in note_payload.points:
+                    point_id = getattr(p, "p_id", None)
+                    if point_id:
+                        point_to_note_map[point_id] = note_id
+
             await session.flush()
 
+            # 创建 flashcards，使用 point_id 找到对应的 note_id
             for card in result.card_payloads:
+                note_id_for_card = point_to_note_map.get(
+                    card.point_id, note_ids[0] if note_ids else str(uuid.uuid4())
+                )
                 fc = Flashcard(
                     card_id=str(uuid.uuid4()),
                     user_id=job.user_id,
-                    note_id=note_id,
+                    note_id=note_id_for_card,
                     point_id=card.point_id,
                     question=card.question,
                     answer=card.answer,
@@ -153,7 +187,9 @@ async def process_job(job: ProcessJobPayload) -> None:
             task2.current_step = str(progress_state.get("step", "done"))
             task2.progress_percent = int(progress_state.get("percent", 100))
             task2.error_msg = None
-            task2.note_id = note_id
+            task2.note_id = (
+                ",".join(note_ids) if note_ids else None
+            )  # 逗号分隔的多个 note_ids
             task2.flashcard_count = len(result.card_payloads)
             task2.current_step = "done"
             task2.progress_percent = 100

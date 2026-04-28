@@ -5,7 +5,7 @@ Phase 1 使用无 LLM 的确定性占位处理器，仅能提取文件名作为�
 ## What Changes
 
 - **新增** `LanguageDetector`：检测原始文档语言（zh/en），决定后续使用的模型与 Prompt 版本
-- **新增** `LLMRouter`：持有 `source_lang`，将 LLM 调用路由至对应的模型配置（中文→阿里云百炼 qwen-plus；英文→Gemini 3 Flash）与 Prompt 模板
+- **新增** `LLMRouter`：持有 `source_lang`，将 LLM 调用路由至对应的模型配置（中文→阿里云百炼 deepseek-v4-pro；英文→Gemini 3 Flash）与 Prompt 模板
 - **新增** `StructureAnalyzer`：纯文本解析 Markdown 章节结构（标题层级、行范围、代码围栏），无 LLM
 - **新增** `ClaimExtractor`：每个 section 调用一次 LLM，提取原子化 `core_claims`（含 evidence、source_lines、anti_patterns）
 - **新增** `NotePartitioner`：按主题内聚性将 claims 聚合为 1..N 个 Note，一份文档可产出多个笔记
@@ -21,7 +21,7 @@ Phase 1 使用无 LLM 的确定性占位处理器，仅能提取文件名作为�
 ### New Capabilities
 
 - `ai-agent-pipeline`：完整的 AI Agent 处理流水线（LanguageDetector → LLMRouter → StructureAnalyzer → ClaimExtractor → NotePartitioner → CardGenerator），将 Markdown 转换为原子化知识主张和高质量复习卡
-- `bilingual-llm-routing`：双语模型路由能力，中文文档使用阿里云百炼 qwen-plus，英文文档使用 Gemini 3 Flash，两者均通过 OpenAI 兼容接口调用
+- `bilingual-llm-routing`：双语模型路由能力，中文文档使用阿里云百炼 deepseek-v4-pro，英文文档使用 Gemini 3 Flash，两者均通过 OpenAI 兼容接口调用
 
 ### Modified Capabilities
 

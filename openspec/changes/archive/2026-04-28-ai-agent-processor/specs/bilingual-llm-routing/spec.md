@@ -2,12 +2,12 @@
 
 ### Requirement: Language-keyed LLM routing
 
-系统 SHALL 通过 `LLMRouter` 将 LLM 调用按 `source_lang` 路由到对应平台：`zh` 路由至阿里云百炼（`qwen-plus`，API Base `https://dashscope.aliyuncs.com/compatible-mode/v1`），`en` 路由至 Gemini（`gemini-3-flash-preview`，API Base `https://generativelanguage.googleapis.com/v1beta/openai/`）。两个平台均通过 OpenAI 兼容接口调用，共享重试与超时逻辑。
+系统 SHALL 通过 `LLMRouter` 将 LLM 调用按 `source_lang` 路由到对应平台：`zh` 路由至阿里云百炼（`deepseek-v4-pro`，API Base `https://dashscope.aliyuncs.com/compatible-mode/v1`），`en` 路由至 Gemini（`gemini-3-flash-preview`，API Base `https://generativelanguage.googleapis.com/v1beta/openai/`）。两个平台均通过 OpenAI 兼容接口调用，共享重试与超时逻辑。
 
 #### Scenario: Chinese document routes to Bailian
 
 - **WHEN** `source_lang = "zh"` 且 `DASHSCOPE_API_KEY` 已配置
-- **THEN** LLMRouter 使用阿里云百炼 API Base 和 `qwen-plus` 模型发起调用
+- **THEN** LLMRouter 使用阿里云百炼 API Base 和 `deepseek-v4-pro` 模型发起调用
 
 #### Scenario: English document routes to Gemini
 

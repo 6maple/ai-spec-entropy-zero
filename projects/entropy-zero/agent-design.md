@@ -343,7 +343,7 @@ You are a flashcard design expert. Generate review cards for the following knowl
 当检测语言为 `zh` 但阿里云百炼 API 不可用时（Key 未配置 / 服务故障），`LLMRouter` 按以下顺序降级：
 
 ```
-Bailian/Qwen (zh prompt) → Gemini (en prompt) → ProcessorError("LLM_UNAVAILABLE")
+Bailian/Deepseek (zh prompt) → Gemini (en prompt) → ProcessorError("LLM_UNAVAILABLE")
 ```
 
 降级到 Gemini 时自动切换为英文 Prompt（`*_en.jinja2`），因为 Gemini 英文 Prompt 质量优于中文。日志记录降级原因，供运维排查。反向（英文降级到 Bailian）同理。

@@ -20,7 +20,7 @@
 ## 4. LLM 路由层
 
 - [x] 4.1 在 `backend/app/agent/llm_router.py` 中定义 `LLMProfile` dataclass（`api_base`、`api_key_env`、`model`、`temperature`）
-- [x] 4.2 定义 `LANG_PROFILES` 字典，中文配置阿里云百炼（`qwen-plus`，`https://dashscope.aliyuncs.com/compatible-mode/v1`），英文配置 Gemini（`gemini-3-flash-preview`，`https://generativelanguage.googleapis.com/v1beta/openai/`）
+- [x] 4.2 定义 `LANG_PROFILES` 字典，中文配置阿里云百炼（`deepseek-v4-pro`，`https://dashscope.aliyuncs.com/compatible-mode/v1`），英文配置 Gemini（`gemini-3-flash-preview`，`https://generativelanguage.googleapis.com/v1beta/openai/`）
 - [x] 4.3 实现 `LLMRouter.__init__(source_lang)`：校验 API Key 存在，Key 缺失时抛出明确配置错误
 - [x] 4.4 实现 `LLMRouter.call(prompt_name, variables) -> dict`：渲染对应语言 Prompt，调用 OpenAI 兼容接口，解析 JSON 响应
 - [x] 4.5 实现指数退避重试逻辑（最多 3 次，HTTP 429 触发）
@@ -39,7 +39,7 @@
 - [x] 6.2 实现 `backend/app/agent/structure_analyzer.py`：正则提取 `## ` 标题（含层级）与代码围栏行范围，返回 `List[SectionMeta]`
 - [x] 6.3 实现 `backend/app/agent/claim_extractor.py`：接收单个 `SectionMeta` 和原文切片，调用 `LLMRouter`，验证输出 schema（每条 claim 含 topic+assertion、evidence、source_lines），JSON 解析失败重试一次
 - [x] 6.4 实现 `backend/app/agent/note_partitioner.py`：按规则决策表（单一主题→1 Note；多主题独立标题→N Notes）将 claims 聚合为 `List[NoteBundle]`
-- [x] 6.5 实现 `backend/app/agent/card_generator.py`：按 Note 批量调用 `LLMRouter`，严格 1:1 生成 `FlashcardPayload`，验证 card 数量等于 claim 数量；`card_type` 在 Python 层机械判定（含对比词→`error_correction`；含代码围栏→`fill_in_blank`；否则→`qa`）
+- [x] 6.5 实现 `backend/app/agent/card_generator.py`：按 Note 批量调用 `LLMRouter`，严格 1:1 生成 `FlashcardPayload`，验证 card 数量等于 claim 数量；`card_type` 在 Python 层机械判定（含对比词→`error_correction`；含代码围栏→`fill_in_blank`；否则→`qa`)
 - [x] 6.6 创建 `backend/app/agent/hooks_resolver.py`：定义接口签名，暂返回空 hooks 列表（Phase 2.1 实现）
 
 ## 7. Orchestrator 与 Worker 集成

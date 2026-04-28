@@ -1,10 +1,10 @@
-"""Deterministic processor — no outbound LLM HTTP (Phase 1)."""
+"""Legacy processor interface。确定性占位实现已退役，受控后备仅返回结构化错误。"""
 
 from __future__ import annotations
 
-from typing import Any, List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ProcessorInput(BaseModel):
@@ -14,11 +14,45 @@ class ProcessorInput(BaseModel):
     file_name: str
 
 
+class PointPayload(BaseModel):
+    p_id: str
+    title: str
+    body: str
+    claim: str
+    evidence: str
+    anti_patterns: list[str] = Field(default_factory=list)
+    hooks: list[dict] = Field(default_factory=list)
+
+    @field_validator("anti_patterns", mode="before")
+    @classmethod
+    def _validate_anti_patterns(cls, value):
+        if value is None:
+            return []
+        if isinstance(value, str):
+            return [value]
+        if isinstance(value, list):
+            return [str(item) for item in value]
+        raise TypeError("anti_patterns must be a string or list of strings")
+
+    @field_validator("hooks", mode="before")
+    @classmethod
+    def _validate_hooks(cls, value):
+        if value is None:
+            return []
+        if isinstance(value, dict):
+            return [value]
+        if isinstance(value, list):
+            return value
+        if isinstance(value, str):
+            return [{"value": value}]
+        raise TypeError("hooks must be a dict, list of dicts, or string")
+
+
 class NotePayload(BaseModel):
     title: str
     abstract: str
     tags: List[str] = Field(default_factory=list)
-    points: List[dict[str, str]]
+    points: List[PointPayload]
 
 
 class CardPayload(BaseModel):
@@ -37,7 +71,7 @@ class ProcessingSummary(BaseModel):
 
 
 class ProcessorSuccess(BaseModel):
-    note_payload: NotePayload
+    note_payloads: List[NotePayload]  # Changed from single to multiple
     card_payloads: List[CardPayload]
     processing_summary: ProcessingSummary
 
@@ -51,47 +85,14 @@ class ProcessorError(BaseModel):
 ProcessorResult = Union[ProcessorSuccess, ProcessorError]
 
 
-def _slug_title(file_name: str) -> str:
-    base = file_name.rsplit(".", 1)[0] if "." in file_name else file_name
-    return base[:500] if base else "未命名"
-
-
 def run_deterministic_processor(inp: ProcessorInput) -> ProcessorResult:
+    """受控后备：不产出占位标签、截断式正文或伪问答；调用方将收到明确错误码。"""
     if not inp.content.strip():
         return ProcessorError(
             error_code="EMPTY_CONTENT",
             error_message="Markdown 内容为空",
         )
-
-    title = _slug_title(inp.file_name)
-    preview = inp.content.strip()[:280] + ("…" if len(inp.content.strip()) > 280 else "")
-    p_id = "p_0"
-    note = NotePayload(
-        title=title,
-        abstract=preview,
-        tags=["占位", "phase1"],
-        points=[
-            {
-                "p_id": p_id,
-                "title": "摘录",
-                "body": inp.content.strip()[:2000],
-            }
-        ],
-    )    
-    cards = [
-        CardPayload(
-            point_id=p_id,
-            question=f"《{title}》中摘录的主要文本是什么？",
-            answer=inp.content.strip()[:500] + ("…" if len(inp.content.strip()) > 500 else ""),
-        )
-    ]
-    summary = ProcessingSummary(
-        point_count=len(note.points),
-        card_count=len(cards),
-        source_file=inp.file_name,
-    )
-    return ProcessorSuccess(
-        note_payload=note,
-        card_payloads=cards,
-        processing_summary=summary,
+    return ProcessorError(
+        error_code="DETERMINISTIC_PROCESSOR_RETIRED",
+        error_message="确定性占位处理已移除。Worker 现固定使用 AI Agent，请配置 ENTROPY_AGENT=1 与 DASHSCOPE_API_KEY 后重试。",
     )
