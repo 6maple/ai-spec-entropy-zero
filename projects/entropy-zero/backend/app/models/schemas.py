@@ -116,6 +116,7 @@ class NoteResponse(BaseModel):
     content_json: List[Point]
     created_at: datetime
     flashcards_count: int = 0
+    claim_type: str | None = None
 
 
 # ===== Flashcards =====

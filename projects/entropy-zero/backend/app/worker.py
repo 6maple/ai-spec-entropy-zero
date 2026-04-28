@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import uuid
 from datetime import datetime, timezone
@@ -12,10 +13,12 @@ from sqlalchemy import delete, select
 from app.db.database import get_async_session_maker
 from app.db.models import Flashcard, Note, ProcessingTask, RawKnowledge
 from app.agent.orchestrator import run_agent_processor
+from app.core.config import get_entropy_agent_enabled
 from app.services.processor import (
     ProcessorError,
     ProcessorInput,
     ProcessorSuccess,
+    run_deterministic_processor,
 )
 from app.services.queue_service import ProcessJobPayload, dequeue_process_job
 
@@ -75,8 +78,16 @@ async def process_job(job: ProcessJobPayload) -> None:
             progress_state["percent"] = percent
             log.info("进度更新: step=%s, percent=%d%%", step, percent)
 
-        log.info("开始执行 run_agent_processor...")
-        result = run_agent_processor(inp, update_task_progress=update_task_progress)
+        log.info(
+            "开始执行处理器 ENTROPY_AGENT=%s …",
+            get_entropy_agent_enabled(),
+        )
+        if not get_entropy_agent_enabled():
+            result = run_deterministic_processor(inp)
+        else:
+            result = run_agent_processor(
+                inp, update_task_progress=update_task_progress
+            )
         log.info("Agent 处理器完成，结果类型: %s", type(result).__name__)
 
         async with session.begin():
@@ -135,6 +146,7 @@ async def process_job(job: ProcessJobPayload) -> None:
                     raw_id=job.raw_id,
                     title=note_payload.title,
                     abstract=note_payload.abstract,
+                    claim_type=note_payload.claim_type,
                     content_json="[]",
                 )
                 note.set_tags(note_payload.tags)
@@ -181,11 +193,15 @@ async def process_job(job: ProcessJobPayload) -> None:
                 session.add(fc)
 
             raw2.status = "processed"
+            if result.meta_tag is not None:
+                raw2.meta_tag_json = json.dumps(
+                    result.meta_tag.model_dump(), ensure_ascii=False
+                )
+            else:
+                raw2.meta_tag_json = None
             raw2.error_summary = None
             raw2.processed_at = datetime.now(timezone.utc)
             task2.status = "completed"
-            task2.current_step = str(progress_state.get("step", "done"))
-            task2.progress_percent = int(progress_state.get("percent", 100))
             task2.error_msg = None
             task2.note_id = (
                 ",".join(note_ids) if note_ids else None

@@ -1,24 +1,21 @@
+"""单次 LLM 调用：claim_type + meta_tag + 协同提问。"""
+
 from __future__ import annotations
 
-from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import json
 import logging
+from collections.abc import Callable
 
-from app.agent.card_generator import generate_cards_for_note
-from app.agent.claim_extractor import extract_claims_for_section
-from app.agent.hooks_resolver import resolve_hooks
-from app.agent.lang_detector import detect_language
+from pydantic import ValidationError
+
+from app.agent.local_lang import detect_language_local
 from app.agent.llm_router import LLMRouter
-from app.agent.note_partitioner import partition_notes
-from app.agent.structure_analyzer import analyze_structure
+from app.agent.post_process import build_processor_success
+from app.agent.structured_schemas import LLMAgentOutput
 from app.services.processor import (
-    CardPayload,
-    NotePayload,
-    ProcessingSummary,
     ProcessorError,
     ProcessorInput,
     ProcessorResult,
-    ProcessorSuccess,
 )
 
 ProgressFn = Callable[[str, int], None]
@@ -38,161 +35,83 @@ class AgentOrchestrator:
     def run(self) -> ProcessorResult:
         if not self.inp.content.strip():
             return ProcessorError(
-                error_code="EMPTY_CONTENT", error_message="Markdown 内容为空"
+                error_code="EMPTY_CONTENT",
+                error_message="Markdown 内容为空",
             )
 
-        self.update_task_progress("analyzing_structure", 10)
-        lang = detect_language(self.inp.content)
+        self.update_task_progress("detecting_language", 8)
+        lang = detect_language_local(self.inp.content)
         log.info(
             "Agent 路由: file=%s source_lang=%s",
             self.inp.file_name,
             lang,
         )
-        sections, code_fences = analyze_structure(self.inp.content)
-        router = LLMRouter(lang)
 
-        # 并行提取 claims
-        all_claims = []
-        self.update_task_progress("extracting_claims", 30)
-
-        with ThreadPoolExecutor(max_workers=6) as executor:
-            # 提交所有 section 的任务，保持顺序
-            futures_list = []
-            for i, section in enumerate(sections, start=1):
-                slice_text = _slice_lines(
-                    self.inp.content, section.line_start, section.line_end
-                )
-                future = executor.submit(
-                    extract_claims_for_section, section, slice_text, router, code_fences
-                )
-                futures_list.append((future, i, section.heading))
-
-            # 按提交顺序收集结果
-            for future, section_idx, heading in futures_list:
-                percent = 30 + int(30 * section_idx / len(sections))
-                self.update_task_progress("extracting_claims", percent)
-
-                try:
-                    claims = future.result()  # 阻塞等待结果
-                    log.info(f"Section '{heading}' 提取了 {len(claims)} 个 claims")
-                    all_claims.extend(claims)
-                except Exception as err:
-                    log.warning(f"提取 section '{heading}' 的 claims 失败: {err}")
-
-        self.update_task_progress("partitioning_notes", 65)
-        note_bundles = partition_notes(all_claims)
-        _ = resolve_hooks(all_claims)
-
-        # 并行生成卡片
-        self.update_task_progress("generating_cards", 80)
-
-        # 为每个 bundle 生成卡片，并维护 bundle -> cards 的映射
-        bundle_cards_map: dict[str, list] = {}
-
-        with ThreadPoolExecutor(max_workers=6) as executor:
-            futures_cards = {
-                executor.submit(generate_cards_for_note, bundle, router): bundle
-                for bundle in note_bundles
-            }
-
-            for future in as_completed(futures_cards):
-                bundle = futures_cards[future]
-                try:
-                    cards = future.result()
-                    bundle_cards_map[bundle.title] = cards
-                except (RuntimeError, ValueError, TypeError, KeyError) as err:
-                    log.warning(
-                        "Card generation failed for note '%s': %s", bundle.title, err
-                    )
-                    bundle_cards_map[bundle.title] = _fallback_cards_for_bundle(bundle)
-
-        # 为每个 bundle 创建独立的 NotePayload
-        note_payloads = []
-        all_card_payloads = []
-
-        for bundle in note_bundles:
-            bundle_cards = bundle_cards_map.get(bundle.title, [])
-
-            # 为这个 bundle 创建 points
-            points = []
-            for card in bundle_cards:
-                claim = next(
-                    (c for c in bundle.claims if c.claim_id == card.claim_ref), None
-                )
-                points.append(
-                    {
-                        "p_id": card.point_id,
-                        "title": claim.topic if claim else "Claim",
-                        "body": claim.assertion if claim else card.answer,
-                        "claim": claim.claim_text if claim else "",
-                        "evidence": claim.evidence.description if claim else "",
-                        "anti_patterns": claim.anti_patterns if claim else [],
-                        "hooks": [],
-                    }
-                )
-
-            # 创建这个 bundle 的 note
-            note = NotePayload(
-                title=bundle.title,
-                abstract=(
-                    f"{bundle.title}\n\n{bundle.claims[0].assertion if bundle.claims else ''}"[
-                        :280
-                    ]
-                    + (
-                        "…"
-                        if len(
-                            f"{bundle.title}\n\n{bundle.claims[0].assertion if bundle.claims else ''}"
-                        )
-                        > 280
-                        else ""
-                    )
-                ),
-                tags=["agent", lang],
-                points=points,
-            )
-            note_payloads.append(note)
-
-            # 收集所有卡片
-            all_card_payloads.extend(
-                [
-                    CardPayload(
-                        point_id=c.point_id,
-                        question=c.question,
-                        answer=c.answer,
-                        card_type=c.card_type,
-                        explanation=c.explanation,
-                        claim_ref=c.claim_ref,
-                    )
-                    for c in bundle_cards
-                ]
+        self.update_task_progress("extracting_claims", 25)
+        try:
+            router = LLMRouter(lang)
+        except RuntimeError as err:
+            return ProcessorError(
+                error_code="LLM_UNAVAILABLE",
+                error_message=str(err) or "缺少大模型密钥",
+                debug_hint="在 backend/.env 设置 DASHSCOPE_API_KEY 或 GEMINI_API_KEY",
             )
 
-        return ProcessorSuccess(
-            note_payloads=note_payloads,
-            card_payloads=all_card_payloads,
-            processing_summary=ProcessingSummary(
-                point_count=sum(len(n.points) for n in note_payloads),
-                card_count=len(all_card_payloads),
-                source_file=self.inp.file_name,
-            ),
+        raw_out = self._extract_with_retry(router)
+        if isinstance(raw_out, ProcessorError):
+            return raw_out
+
+        self.update_task_progress("generating_cards", 78)
+        success = build_processor_success(
+            raw_out, source_lang=lang, source_file=self.inp.file_name
         )
 
-
-def _fallback_cards_for_bundle(bundle) -> list[CardPayload]:
-    cards: list[CardPayload] = []
-    for i, claim in enumerate(bundle.claims, start=1):
-        answer = f"{claim.assertion}\n\n{claim.evidence.description}".strip()
-        cards.append(
-            CardPayload(
-                point_id=f"p_{i}",
-                question=f"{claim.topic} 的关键机制是什么？",
-                answer=answer,
-                card_type="qa",
-                explanation="该卡片由系统在 LLM 失败时根据提炼结论自动生成。",
-                claim_ref=claim.claim_id,
+        if not success.note_payloads:
+            return ProcessorError(
+                error_code="NO_VALID_CONTENT",
+                error_message="未能从文档中提炼出有效知识点（无有效 Claim）",
+                debug_hint="请检查 Markdown 是否为可提炼的技术内容",
             )
+
+        self.update_task_progress("persisting", 95)
+        return success
+
+    def _extract_with_retry(
+        self, router: LLMRouter
+    ) -> LLMAgentOutput | ProcessorError:
+        last_exc: BaseException | None = None
+        for attempt in range(2):
+            try:
+                data = router.call("extract", {"content": self.inp.content})
+                return LLMAgentOutput.model_validate(data)
+            except json.JSONDecodeError as err:
+                last_exc = err
+                log.warning("模型返回非合法 JSON attempt=%s: %s", attempt + 1, err)
+            except ValidationError as err:
+                last_exc = err
+                log.warning("LLM 输出 schema 校验失败 attempt=%s: %s", attempt + 1, err)
+            except RuntimeError as err:
+                if "LLM_UNAVAILABLE" in str(err) or "Missing required API key" in str(
+                    err
+                ):
+                    return ProcessorError(
+                        error_code="LLM_UNAVAILABLE",
+                        error_message=str(err) or "大模型不可用",
+                        debug_hint="检查 DASHSCOPE_API_KEY / GEMINI_API_KEY 与网络",
+                    )
+                last_exc = err
+                log.warning("LLM 调用异常 attempt=%s: %s", attempt + 1, err)
+
+        msg = (
+            str(last_exc)
+            if last_exc is not None
+            else "无法解析模型返回的结构化 JSON"
         )
-    return cards
+        return ProcessorError(
+            error_code="AGENT_OUTPUT_INVALID",
+            error_message=msg[:2000],
+            debug_hint="可重试处理任务；若持续失败请检查模型输出是否为合法 JSON",
+        )
 
 
 def run_agent_processor(
@@ -201,13 +120,9 @@ def run_agent_processor(
     try:
         return AgentOrchestrator(inp, update_task_progress=update_task_progress).run()
     except Exception as exc:
+        log.error("Agent orchestrator failed: %s", exc)
         return ProcessorError(
             error_code="LLM_UNAVAILABLE",
             error_message=str(exc) or "Agent 处理失败",
-            debug_hint="检查 LLM API Key 与网络连通性",
+            debug_hint="检查 LLM API Key、网络连通性与输入大小",
         )
-
-
-def _slice_lines(markdown_text: str, line_start: int, line_end: int) -> str:
-    lines = markdown_text.splitlines()
-    return "\n".join(lines[max(0, line_start - 1) : max(line_start, line_end)])

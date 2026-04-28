@@ -48,11 +48,19 @@ class PointPayload(BaseModel):
         raise TypeError("hooks must be a dict, list of dicts, or string")
 
 
+class MetaTagPayload(BaseModel):
+    """文档级语义标签，持久化至 raw_knowledge.meta_tag_json。"""
+
+    domain: str = ""
+    topics: list[str] = Field(default_factory=list)
+
+
 class NotePayload(BaseModel):
     title: str
     abstract: str
     tags: List[str] = Field(default_factory=list)
     points: List[PointPayload]
+    claim_type: Optional[str] = None
 
 
 class CardPayload(BaseModel):
@@ -71,6 +79,7 @@ class ProcessingSummary(BaseModel):
 
 
 class ProcessorSuccess(BaseModel):
+    meta_tag: MetaTagPayload | None = None
     note_payloads: List[NotePayload]  # Changed from single to multiple
     card_payloads: List[CardPayload]
     processing_summary: ProcessingSummary

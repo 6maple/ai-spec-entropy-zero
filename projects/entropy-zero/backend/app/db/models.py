@@ -32,6 +32,7 @@ class RawKnowledge(Base):
     status = Column(String(20), nullable=False, default="pending")
     error_summary = Column(Text, nullable=True)
     processed_at = Column(DateTime(timezone=True), nullable=True)
+    meta_tag_json = Column(Text, nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -97,6 +98,7 @@ class Note(Base):
     title = Column(String(500), nullable=False)
     abstract = Column(Text)
     tags = Column(Text, default="[]")  # JSON string for SQLite compatibility
+    claim_type = Column(String(128), nullable=True)
     content_json = Column(Text, nullable=False)  # JSON string for SQLite compatibility
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
@@ -106,6 +108,7 @@ class Note(Base):
         Index("idx_notes_user_id", "user_id"),
         Index("idx_notes_raw_id", "raw_id"),
         Index("idx_notes_user_created", "user_id", "created_at"),
+        Index("idx_notes_user_claim_type", "user_id", "claim_type"),
     )
 
     def get_tags(self):

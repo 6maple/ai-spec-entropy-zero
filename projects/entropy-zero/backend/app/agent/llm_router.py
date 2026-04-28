@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -36,6 +37,17 @@ LANG_PROFILES = {
         model="gemini-3-flash-preview",
     ),
 }
+
+
+def _parse_llm_json(text: str | None) -> dict[str, Any]:
+    """解析模型输出，剥离 ```json ``` 围栏。"""
+    s = (text or "").strip()
+    if not s:
+        raise json.JSONDecodeError("Expecting value", "", 0)
+    if s.startswith("```"):
+        s = re.sub(r"^```(?:json)?\s*", "", s, flags=re.IGNORECASE)
+        s = re.sub(r"\s*```\s*$", "", s)
+    return json.loads(s)
 
 
 class LLMRouter:
@@ -78,7 +90,7 @@ class LLMRouter:
             text = self._call_with_retries(
                 self.primary_client, self.primary_profile, rendered
             )
-            return json.loads(text)
+            return _parse_llm_json(text)
         except (APIError, RuntimeError, json.JSONDecodeError) as primary_error:
             if self.fallback_client is None:
                 raise RuntimeError("LLM_UNAVAILABLE") from primary_error
@@ -87,7 +99,7 @@ class LLMRouter:
             text = self._call_with_retries(
                 self.fallback_client, self.fallback_profile, rendered
             )
-            return json.loads(text)
+            return _parse_llm_json(text)
 
     def _render_prompt(
         self, prompt_name: str, lang: str, variables: dict[str, Any]
@@ -107,7 +119,7 @@ class LLMRouter:
                     max_tokens=config.get_ai_max_tokens(),
                     messages=[{"role": "user", "content": prompt}],
                 )
-                return response.choices[0].message.content
+                return (response.choices[0].message.content or "").strip()
             except RateLimitError:
                 if attempt == 2:
                     raise

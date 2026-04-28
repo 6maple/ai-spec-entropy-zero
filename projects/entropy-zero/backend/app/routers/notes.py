@@ -42,6 +42,7 @@ def _note_to_response(
         content_json=note.get_content_json(),
         created_at=note.created_at,
         flashcards_count=flashcards_count,
+        claim_type=note.claim_type,
     )
 
 
@@ -53,6 +54,7 @@ async def list_notes(
     search: str | None = None,
     keyword: str | None = None,
     raw_id: str | None = None,
+    claim_type: str | None = None,
     limit: int = Query(50, ge=1, le=200),
     offset: int = Query(0, ge=0),
 ):
@@ -63,6 +65,8 @@ async def list_notes(
     q = select(NoteModel).where(NoteModel.user_id == user_id)
     if raw_id:
         q = q.where(NoteModel.raw_id == raw_id)
+    if claim_type and claim_type.strip():
+        q = q.where(NoteModel.claim_type == claim_type.strip())
     if tag and tag.strip():
         t = tag.strip()
         # tags 为 JSON 数组字符串/JSONB，用子串匹配兼容两种存储
