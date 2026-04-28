@@ -6,14 +6,38 @@ Endpoints for managing processed notes
 
 from __future__ import annotations
 
+import json
+
 from fastapi import APIRouter, HTTPException, Query, status
 from sqlalchemy import func, or_, select
 
 from app.core.deps import CurrentUserId, DbSession
-from app.db.models import Flashcard, Note as NoteModel
-from app.models.schemas import NoteCreate, NoteResponse
+from app.db.models import Flashcard, Note as NoteModel, RawKnowledge
+from app.models.schemas import MetaTagResponse, NoteCreate, NoteResponse
 
 router = APIRouter()
+
+
+def _meta_from_raw_json(json_str: str | None) -> MetaTagResponse | None:
+    """从原始知识库的 meta_tag_json 解析文档级语义标签。"""
+    if not json_str or not json_str.strip():
+        return None
+    try:
+        d = json.loads(json_str)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(d, dict):
+        return None
+    domain = str(d.get("domain") or "").strip()
+    raw_topics = d.get("topics")
+    topics: list[str] = []
+    if isinstance(raw_topics, list):
+        topics = [str(x).strip() for x in raw_topics if str(x).strip()]
+    elif isinstance(raw_topics, str) and raw_topics.strip():
+        topics = [raw_topics.strip()]
+    if not domain and not topics:
+        return None
+    return MetaTagResponse(domain=domain, topics=topics)
 
 
 @router.post("/", response_model=NoteResponse, status_code=status.HTTP_201_CREATED)
@@ -30,7 +54,10 @@ async def create_note(data: NoteCreate):
 
 
 def _note_to_response(
-    note: NoteModel, *, flashcards_count: int = 0
+    note: NoteModel,
+    *,
+    flashcards_count: int = 0,
+    meta_tag: MetaTagResponse | None = None,
 ) -> NoteResponse:
     return NoteResponse(
         note_id=note.note_id,
@@ -43,6 +70,7 @@ def _note_to_response(
         created_at=note.created_at,
         flashcards_count=flashcards_count,
         claim_type=note.claim_type,
+        meta_tag=meta_tag,
     )
 
 
@@ -62,7 +90,11 @@ async def list_notes(
     List the current user's notes. `keyword` 与 `search` 等效，均为标题/摘要/正文模糊搜索（实现可用其一）。
     """
     key = (keyword or search or "").strip() or None
-    q = select(NoteModel).where(NoteModel.user_id == user_id)
+    q = (
+        select(NoteModel, RawKnowledge.meta_tag_json)
+        .outerjoin(RawKnowledge, NoteModel.raw_id == RawKnowledge.raw_id)
+        .where(NoteModel.user_id == user_id)
+    )
     if raw_id:
         q = q.where(NoteModel.raw_id == raw_id)
     if claim_type and claim_type.strip():
@@ -82,8 +114,14 @@ async def list_notes(
         )
     q = q.limit(limit).offset(offset).order_by(NoteModel.created_at.desc())
     result = await db.execute(q)
-    notes = result.scalars().all()
-    return [_note_to_response(n, flashcards_count=0) for n in notes]
+    return [
+        _note_to_response(
+            n,
+            flashcards_count=0,
+            meta_tag=_meta_from_raw_json(meta_json),
+        )
+        for n, meta_json in result.all()
+    ]
 
 
 @router.get("/{note_id}", response_model=NoteResponse)
@@ -105,7 +143,19 @@ async def get_note(note_id: str, db: DbSession, user_id: CurrentUserId):
         .where(Flashcard.note_id == note_id, Flashcard.user_id == user_id)
     )
     flash_n = int(c.scalar_one() or 0)
-    return _note_to_response(note, flashcards_count=flash_n)
+    meta_json = None
+    if note.raw_id:
+        mr = await db.execute(
+            select(RawKnowledge.meta_tag_json).where(
+                RawKnowledge.raw_id == note.raw_id
+            )
+        )
+        meta_json = mr.scalar_one_or_none()
+    return _note_to_response(
+        note,
+        flashcards_count=flash_n,
+        meta_tag=_meta_from_raw_json(meta_json),
+    )
 
 
 @router.put("/{note_id}", response_model=NoteResponse)

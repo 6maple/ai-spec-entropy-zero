@@ -1,5 +1,9 @@
 /** Phase 1 默认文案（仅 zh-CN 入仓） */
 export const zhCN = {
+  common: {
+    refresh: '刷新',
+    close: '关闭',
+  },
   app: { loading: '加载中…', name: 'Entropy Zero' },
   nav: {
     home: '首页',
@@ -57,6 +61,7 @@ export const zhCN = {
     contentPreview: '内容预览',
     noteCount: '笔记数',
     cardCount: '复习卡数',
+    applyKeyword: '应用',
     pollStopped: '已停止自动刷新，可手动点击刷新',
     missingId: '缺少原始知识 ID',
     backList: '返回原始知识库',
@@ -89,6 +94,7 @@ export const zhCN = {
   },
   notes: {
     title: '我的笔记',
+    metaTag: '语义标签',
     empty: '暂无笔记',
     err: '无法加载笔记列表',
     filterTag: '标签',

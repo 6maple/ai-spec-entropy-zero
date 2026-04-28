@@ -104,9 +104,20 @@ class LLMRouter:
     def _render_prompt(
         self, prompt_name: str, lang: str, variables: dict[str, Any]
     ) -> str:
-        prompt_path = _PROMPTS_DIR / f"{prompt_name}_{lang}.jinja2"
-        template = Template(prompt_path.read_text(encoding="utf-8"))
-        return template.render(**variables)
+        """按语言选择模板；缺失时依次回退 zh、en，避免维护重复文件时主备链路断裂。"""
+        seen: set[str] = set()
+        for lg in (lang, "zh", "en"):
+            if lg in seen:
+                continue
+            seen.add(lg)
+            prompt_path = _PROMPTS_DIR / f"{prompt_name}_{lg}.jinja2"
+            if prompt_path.is_file():
+                template = Template(prompt_path.read_text(encoding="utf-8"))
+                return template.render(**variables)
+        raise FileNotFoundError(
+            f"Missing prompt template for {prompt_name!r} "
+            f"(start_lang={lang!r}, dir={_PROMPTS_DIR})"
+        )
 
     def _call_with_retries(
         self, client: OpenAI, profile: LLMProfile, prompt: str

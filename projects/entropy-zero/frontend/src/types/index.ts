@@ -10,6 +10,12 @@ export interface RawKnowledge {
   updated_at: string;
 }
 
+/** 与 raw_knowledge.meta_tag_json 对齐的文档级语义标签 */
+export interface DocMetaTag {
+  domain: string;
+  topics: string[];
+}
+
 export interface Note {
   note_id: string;
   user_id: string;
@@ -20,6 +26,8 @@ export interface Note {
   content_json: Point[];
   created_at: string;
   flashcards_count?: number;
+  /** 来自关联原始知识的 meta_tag_json */
+  meta_tag?: DocMetaTag | null;
 }
 
 export interface Point {

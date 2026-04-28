@@ -127,7 +127,7 @@ export default function RawLibraryPage() {
               type='button'
               className='rounded-lg bg-slate-200 px-2 text-sm dark:bg-[#2A4144]'
               onClick={() => setKw(keyword)}>
-              {t('common.refresh')}
+              {t('raw.applyKeyword')}
             </button>
           </div>
         </label>

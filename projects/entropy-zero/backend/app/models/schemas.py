@@ -92,6 +92,11 @@ class TaskDetailResponse(BaseModel):
 
 
 # ===== Notes =====
+class MetaTagResponse(BaseModel):
+    domain: str = ""
+    topics: List[str] = []
+
+
 class Point(BaseModel):
     p_id: str
     title: str
@@ -117,6 +122,7 @@ class NoteResponse(BaseModel):
     created_at: datetime
     flashcards_count: int = 0
     claim_type: str | None = None
+    meta_tag: Optional[MetaTagResponse] = None
 
 
 # ===== Flashcards =====

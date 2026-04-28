@@ -241,8 +241,15 @@ function TaskDetailDrawer({
                   type='button'
                   className='text-[#2B8F80] underline'
                   onClick={() => {
-                    void nav('/notes/' + d.note_id);
-                    onClose();
+                    const firstNoteId =
+                      d.note_id
+                        ?.split(',')
+                        .map((s) => s.trim())
+                        .find(Boolean) ?? null;
+                    if (firstNoteId) {
+                      void nav('/notes/' + encodeURIComponent(firstNoteId));
+                      onClose();
+                    }
                   }}
                 >
                   {t('tasks.openNote')}

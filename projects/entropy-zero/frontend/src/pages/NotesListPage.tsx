@@ -130,6 +130,25 @@ export default function NotesListPage() {
               className='font-medium text-[#2B8F80] hover:underline'>
               {n.title || n.note_id}
             </Link>
+            {n.meta_tag &&
+              (n.meta_tag.domain ||
+                (n.meta_tag.topics && n.meta_tag.topics.length > 0)) ? (
+              <div className='mt-1 flex flex-wrap gap-1.5'>
+                <span className='text-xs text-slate-500'>{t('notes.metaTag')}：</span>
+                {n.meta_tag.domain ? (
+                  <span className='rounded bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200'>
+                    {n.meta_tag.domain}
+                  </span>
+                ) : null}
+                {(n.meta_tag.topics ?? []).map((topic) => (
+                  <span
+                    key={topic}
+                    className='rounded bg-slate-100 px-2 py-0.5 text-xs text-slate-700 dark:bg-slate-800 dark:text-slate-300'>
+                    {topic}
+                  </span>
+                ))}
+              </div>
+            ) : null}
             <p className='line-clamp-2 text-sm text-slate-500'>{n.abstract}</p>
             <p className='text-xs text-slate-400'>{new Date(n.created_at).toLocaleString()}</p>
           </li>
