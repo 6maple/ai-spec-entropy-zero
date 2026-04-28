@@ -20,13 +20,12 @@
     {
       "src": "/api/(.*)",
       "dest": "/backend/api/index.py"
-    },
+    }
+  ],
+  "rewrites": [
     {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "env": {
