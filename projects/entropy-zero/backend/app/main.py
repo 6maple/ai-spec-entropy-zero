@@ -7,6 +7,7 @@ Handles knowledge ingestion, note management, and flashcard reviews.
 
 import logging
 import asyncio
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -63,6 +64,53 @@ app = FastAPI(
     lifespan=lifespan,
     redirect_slashes=False,
 )
+
+# Request path diagnostics for deployment routing issues.
+@app.middleware("http")
+async def request_diagnostics_middleware(request, call_next):
+    started_at = time.perf_counter()
+    raw_path_bytes = request.scope.get("raw_path", b"")
+    raw_path = (
+        raw_path_bytes.decode("utf-8", errors="replace")
+        if isinstance(raw_path_bytes, (bytes, bytearray))
+        else str(raw_path_bytes)
+    )
+    root_path = str(request.scope.get("root_path", ""))
+
+    log.info(
+        "[request.in] method=%s path=%s root_path=%s raw_path=%s query=%s",
+        request.method,
+        request.url.path,
+        root_path,
+        raw_path,
+        request.url.query,
+    )
+
+    try:
+        response = await call_next(request)
+    except Exception:
+        elapsed_ms = (time.perf_counter() - started_at) * 1000
+        log.exception(
+            "[request.error] method=%s path=%s root_path=%s raw_path=%s elapsed_ms=%.2f",
+            request.method,
+            request.url.path,
+            root_path,
+            raw_path,
+            elapsed_ms,
+        )
+        raise
+
+    elapsed_ms = (time.perf_counter() - started_at) * 1000
+    log.info(
+        "[request.out] method=%s path=%s root_path=%s raw_path=%s status=%s elapsed_ms=%.2f",
+        request.method,
+        request.url.path,
+        root_path,
+        raw_path,
+        response.status_code,
+        elapsed_ms,
+    )
+    return response
 
 # CORS configuration
 app.add_middleware(
